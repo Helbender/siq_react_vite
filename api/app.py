@@ -86,15 +86,11 @@ def retrieve_flights() -> tuple[Response, int]:
 @app.route("/pilots", methods=["GET", "POST"])
 def retrieve_pilots() -> tuple[Response, int]:
     if request.method == "GET":
-        pilots = {}
         # Retrieve all pilots from db
         with Session(engine) as session:
             stmt = select(Pilot)
-            result = session.execute(stmt).scalars()
-            for row in result:
-                pilots[row.nip] = row.to_json()
-
-            return jsonify(pilots), 200
+            result = session.execute(stmt).scalars().all()
+            return jsonify([row.to_json() for row in result]), 200
 
     return jsonify({"message": "Bad Manual Request"}), 403
 

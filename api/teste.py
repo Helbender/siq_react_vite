@@ -1,12 +1,12 @@
-from models import Base, Flight, Pilot, FlightPilots
-from sqlalchemy import create_engine
+from models import Base, Flight, Pilot, FlightPilots, Qualification
+from sqlalchemy import create_engine, select
 from datetime import date
 from sqlalchemy.orm import Session
 
 today = date.today()
 
 
-engine = create_engine("sqlite:///:memory:", echo=True)
+engine = create_engine("sqlite:///mydb.db", echo=False)
 Base.metadata.create_all(bind=engine)
 
 # u1 = Flight(
@@ -21,10 +21,18 @@ Base.metadata.create_all(bind=engine)
 # fp = FlightPilots(day_landings=2, qa1=True)
 # fp2 = FlightPilots(day_landings=10)
 
-pilot1 = Pilot(nip=135885, name="Tiago", rank="CAP", position="PC")
+pilot1 = Pilot(
+    nip=135885, name="Tiago", rank="CAP", position="PC", qualification=Qualification()
+)
 
-pilot2 = Pilot(nip=135887, name="Daniela", rank="CAP", position="PC")
+pilot2 = Pilot(
+    nip=135887, name="Daniela", rank="CAP", position="PC", qualification=Qualification()
+)
+# pq2 = Qualification()
 
+# pilot2.qualification = pq2
+
+# pq1.update(fp, today)
 # pilot.flight_pilots.append(fp)
 # u1.flight_pilots.append(fp)
 
@@ -38,13 +46,13 @@ pilot2 = Pilot(nip=135887, name="Daniela", rank="CAP", position="PC")
 
 # # session.commit()
 
-with Session(engine) as session:
-    session.add(pilot1)
-    session.add(pilot2)
-    #     session.add(u1)
-    #     session.add(fp)
-    #     session.add(fp2)
-    session.commit()
+# with Session(engine) as session:
+#     session.add(pilot1)
+#     session.add(pilot2)
+#     #     session.add(u1)
+#     #     session.add(fp)
+#     #     session.add(fp2)
+#     session.commit()
 
 
 # with Session(engine) as session:
@@ -58,11 +66,11 @@ with Session(engine) as session:
 #             print(pilot)
 
 
-# with Session(engine) as session:
-#     result = session.execute(select(Pilot)).scalars()
-#     # result = session.get(Pilot)
-#     for row in result:
-#         print(row.to_json())
+with Session(engine) as session:
+    result = session.execute(select(Pilot)).scalars()
+    # result = session.get(Pilot)
+    for row in result:
+        print(row.to_json())
 
 # with Session(engine) as session:
 #     result = session.execute(select(Flight)).scalars()
@@ -93,7 +101,7 @@ f: dict = {
         },
         {
             "nip": 135887,
-            "ATR": 2,
+            "ATR": 6,
             "ATN": 3,
             "P": 1,
             "NP": 1,
@@ -108,35 +116,39 @@ f: dict = {
     ],
 }
 
-flight = Flight(
-    airtask=f["airtask"],
-    date=f["date"],
-    origin=f["origin"],
-    destination=f["destination"],
-    departure_time=f["ATD"],
-    arrival_time=f["ATA"],
-)
 
+def insert_flight(f: dict):
+    flight = Flight(
+        airtask=f["airtask"],
+        date=f["date"],
+        origin=f["origin"],
+        destination=f["destination"],
+        departure_time=f["ATD"],
+        arrival_time=f["ATA"],
+    )
 
-with Session(engine, autoflush=False) as session:
-    session.add(flight)
-    for pilot in f["pilots"]:
-        result = session.get(Pilot, pilot["nip"])
-        print(type(result))
+    with Session(engine, autoflush=False) as session:
+        session.add(flight)
+        for pilot in f["pilots"]:
+            pilot_obj = session.get(Pilot, pilot["nip"])
+            qual = session.get(Qualification, pilot["nip"])
 
-        fp = FlightPilots(
-            day_landings=pilot["ATR"],
-            night_landings=pilot["ATN"],
-            prec_app=pilot["P"],
-            nprec_app=pilot["NP"],
-            qa1=pilot["QA1"],
-            qa2=pilot["QA2"],
-            bsp1=pilot["BSP1"],
-            bsp2=pilot["BSP2"],
-            ta=pilot["TA"],
-            vrp1=pilot["VRP1"],
-            vrp2=pilot["VRP2"],
-        )
-        result.flight_pilots.append(fp)
-        flight.flight_pilots.append(fp)
-    session.commit()
+            fp = FlightPilots(
+                day_landings=pilot["ATR"],
+                night_landings=pilot["ATN"],
+                prec_app=pilot["P"],
+                nprec_app=pilot["NP"],
+                qa1=pilot["QA1"],
+                qa2=pilot["QA2"],
+                bsp1=pilot["BSP1"],
+                bsp2=pilot["BSP2"],
+                ta=pilot["TA"],
+                vrp1=pilot["VRP1"],
+                vrp2=pilot["VRP2"],
+            )
+            qual.update(fp, flight.date)
+
+            pilot_obj.flight_pilots.append(fp)
+            print(pilot_obj)
+            flight.flight_pilots.append(fp)
+        session.commit()
