@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import date
 from typing import List, Optional
 from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import (
@@ -70,10 +70,10 @@ class FlightPilots(Base):
     )
     pilot_id: Mapped[int] = mapped_column(ForeignKey("pilots.nip"), primary_key=True)
 
-    day_landings: Mapped[Optional[str]]
-    night_landings: Mapped[Optional[str]]
-    prec_app: Mapped[Optional[str]]
-    nprec_app: Mapped[Optional[str]]
+    day_landings: Mapped[int]
+    night_landings: Mapped[int]
+    prec_app: Mapped[int]
+    nprec_app: Mapped[int]
     qa1: Mapped[Optional[bool]]  # = mapped_column(nullable=True, default=False)
     qa2: Mapped[Optional[bool]]  # = mapped_column(nullable=True, default=False)
     bsp1: Mapped[Optional[bool]]  # = mapped_column(nullable=True, default=False)
@@ -125,21 +125,64 @@ class Pilot(People, Base):
     )
     flight_pilots: Mapped[List[FlightPilots]] = relationship(back_populates="pilot")
 
+    def __repr__(self):
+        return super().__repr__() + self.qualification.__repr__()
+
 
 class Qualification(Base):
     __tablename__ = "qualifications"
 
     pilot_id: Mapped[int] = mapped_column(ForeignKey("pilots.nip"), primary_key=True)
     pilot: Mapped["Pilot"] = relationship(back_populates="qualification")
-    last_day_landings: Mapped[Optional[datetime]]
-    last_night_landings: Mapped[Optional[datetime]]
-    last_qa1_date: Mapped[Optional[datetime]]
-    last_qa2_date: Mapped[Optional[datetime]]
-    last_bsp1_date: Mapped[Optional[datetime]]
-    last_bsp2_date: Mapped[Optional[datetime]]
-    last_ta_date: Mapped[Optional[datetime]]
-    last_vrp1_date: Mapped[Optional[datetime]]
-    last_vrp2_date: Mapped[Optional[datetime]]
+    last_day_landings: Mapped[str] = mapped_column(default="1990-01-01")
+    last_night_landings: Mapped[str] = mapped_column(default="1990-01-01")
+    last_prec_app: Mapped[str] = mapped_column(default="1990-01-01")
+    last_nprec_app: Mapped[str] = mapped_column(default="1990-01-01")
+    last_qa1_date: Mapped[date] = mapped_column(insert_default=date(1990, 1, 1))
+    last_qa2_date: Mapped[date] = mapped_column(insert_default=date(1990, 1, 1))
+    last_bsp1_date: Mapped[date] = mapped_column(insert_default=date(1990, 1, 1))
+    last_bsp2_date: Mapped[date] = mapped_column(insert_default=date(1990, 1, 1))
+    last_ta_date: Mapped[date] = mapped_column(insert_default=date(1990, 1, 1))
+    last_vrp1_date: Mapped[date] = mapped_column(insert_default=date(1990, 1, 1))
+    last_vrp2_date: Mapped[date] = mapped_column(insert_default=date(1990, 1, 1))
+
+    def update(self, data: FlightPilots, date: date):
+        if data.qa1 and date > self.last_qa1_date:
+            self.last_qa1_date = date
+
+        if data.qa2 and date > self.last_qa2_date:
+            self.last_qa2_date = date
+
+        if data.bsp1 and date > self.last_bsp1_date:
+            self.last_bsp1_date = date
+
+        if data.bsp2 and date > self.last_qa2_date:
+            self.last_qa2_date = date
+        if data.ta and date > self.last_ta_date:
+            self.last_ta_date = date
+        if data.vrp1 and date > self.last_vrp1_date:
+            self.last_vrp1_date = date
+        if data.ta and date > self.last_vrp2_date:
+            self.last_vrp2_date = date
+
+        self.last_day_landings = get_last_five(
+            self.last_day_landings.split(), data.day_landings, date.strftime("%Y-%m-%d")
+        )
+        self.last_night_landings = get_last_five(
+            self.last_night_landings.split(),
+            data.night_landings,
+            date.strftime("%Y-%m-%d"),
+        )
+        self.last_prec_app = get_last_five(
+            self.last_prec_app.split(), data.prec_app, date.strftime("%Y-%m-%d")
+        )
+        self.last_nprec_app = get_last_five(
+            self.last_nprec_app.split(), data.nprec_app, date.strftime("%Y-%m-%d")
+        )
+        return self
+
+    def __repr__(self) -> str:
+        return f"\nATR:{self.last_day_landings} QA1: {self.last_qa1_date}\n"
 
 
 # class Crew(People):
@@ -147,3 +190,13 @@ class Qualification(Base):
 
 #     def __init__(self, nip, name, rank, position):
 #         super().__init__(nip, name, rank, position)
+
+
+def get_last_five(last: list, number: int, date: str) -> str:
+    for n in range(number):
+        last.append(date)
+        if len(last) > 5:
+            last.sort()
+            last.pop(0)
+    string = " ".join(last)
+    return string
