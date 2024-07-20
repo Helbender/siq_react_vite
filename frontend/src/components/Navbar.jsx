@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import {
   Box,
@@ -13,7 +12,6 @@ import {
 } from "@chakra-ui/react";
 import { LuSun } from "react-icons/lu";
 import { IoMoon } from "react-icons/io5";
-import CreateUserModal from "./CreateUserModal";
 
 const Navbar = () => {
   const { colorMode, toggleColorMode } = useColorMode();
@@ -54,7 +52,6 @@ const Navbar = () => {
             <Button onClick={toggleColorMode}>
               {colorMode === "light" ? <IoMoon /> : <LuSun />}
             </Button>
-            <CreateUserModal />
           </Flex>
         </Flex>
       </Box>

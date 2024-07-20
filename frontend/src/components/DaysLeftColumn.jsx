@@ -1,7 +1,26 @@
+/* eslint-disable react/prop-types */
 import { Box, Text } from "@chakra-ui/react";
 
 const DaysLeftColumn = ({ qualification, dates }) => {
-  console.log(qualification, dates);
+  let today = new Date();
+  let days = dates.map((date) => {
+    let qualificationDate = new Date(date);
+    // console.log(`Data da qualificação ${qualificationDate}`);
+    let semester = new Date(qualificationDate);
+    semester.setDate(qualificationDate.getDate() + 180);
+    // console.log(`Mais 180 dias: ${semester.toDateString()}`);
+    let days = Math.round(
+      // (today.getTime() - (qualificationDate.getTime() + semester)) / 86400000,
+      (qualificationDate.setDate(qualificationDate.getDate() + 180) -
+        today.getTime()) /
+        86400000,
+    );
+    // console.log(`Hoje é ${today}`);
+
+    return days;
+  });
+  // console.log(`${qualification} ${days}`);
+  // console.log(qualification, dates);
   function colorFormatter(days) {
     let color = "";
     if (days < 0) return (color = "red");
@@ -27,11 +46,13 @@ const DaysLeftColumn = ({ qualification, dates }) => {
       >
         {qualification}
       </Text>
-      {dates.map((date) => (
-        <Text bg={colorFormatter(date)} color="black" align={"center"}>
-          {date}
-        </Text>
-      ))}
+      {days.map((a, i) => {
+        return (
+          <Text key={i} bg={colorFormatter(a)}>
+            {a}
+          </Text>
+        );
+      })}
     </Box>
   );
 };

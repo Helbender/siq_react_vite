@@ -55,9 +55,9 @@ def retrieve_flights() -> tuple[Response, int]:
             pilot: dict
 
             for pilot in f["pilots"]:
-                pilot_obj: Pilot = session.get(Pilot, pilot["nip"])
+                pilot_obj: Pilot = session.get(Pilot, pilot["nip"])  # type: ignore
                 print(pilot_obj)
-                qual = session.get(Qualification, pilot["nip"])
+                qual: Qualification = session.get(Qualification, pilot["nip"])  # type: ignore
 
                 fp = FlightPilots(
                     day_landings=pilot["ATR"],
@@ -92,6 +92,21 @@ def retrieve_pilots() -> tuple[Response, int]:
             result = session.execute(stmt).scalars().all()
             return jsonify([row.to_json() for row in result]), 200
 
+    if request.method == "POST":
+        piloto = request.get_json()
+        with Session(engine) as session:
+            new_pilot = Pilot(
+                nip=int(piloto["nip"]),
+                name=piloto["name"],
+                rank=piloto["rank"],
+                position=piloto["position"],
+                qualification=Qualification(),
+            )
+            session.add(new_pilot)
+            session.commit()
+            print(piloto)
+
+        return jsonify({"piloto nip": piloto["nip"]}), 201
     return jsonify({"message": "Bad Manual Request"}), 403
 
 

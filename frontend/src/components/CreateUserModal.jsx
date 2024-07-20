@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import {
   Modal,
   ModalOverlay,
@@ -14,18 +15,38 @@ import {
   Input,
   // Stack,
 } from "@chakra-ui/react";
-import React from "react";
+import { useState } from "react";
+import axios from "axios";
+const API_URL = "http://127.0.0.1:5051";
 
-function CreateUserModal() {
+function CreateUserModal({ pilotos, setPilotos }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [posto, setPosto] = React.useState("");
-  const [nip, setnip] = React.useState("");
-  const [nome, setnome] = React.useState("");
-  const [fc, setfc] = React.useState("");
+  const [posto, setPosto] = useState("");
+  const [nip, setnip] = useState("");
+  const [nome, setnome] = useState("");
+  const [fc, setfc] = useState("");
+  console.log(pilotos);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(posto, nip, nome, fc);
+    const pilotToBeSaved = {
+      name: nome,
+      nip: nip,
+      position: fc,
+      rank: posto,
+      // qualification: [],
+    };
+    // pilotos = [...pilotos, pilotToBeSaved];
+    setPilotos([...pilotos, pilotToBeSaved]);
+    try {
+      const res = await axios.post(`${API_URL}/pilots`, pilotToBeSaved);
+      console.log(res);
+      onClose();
+      // setPilotos(res.data || []);
+    } catch (error) {
+      console.log(error);
+    }
+    // console.log(posto, nip, nome, fc);
   };
 
   return (
@@ -45,7 +66,7 @@ function CreateUserModal() {
                   placeholder="Posto"
                   onChange={(e) => {
                     setPosto(e.target.value);
-                    console.log(e.target.value);
+                    // console.log(e.target.value);
                   }}
                 ></Input>
               </FormControl>
@@ -55,7 +76,7 @@ function CreateUserModal() {
                   placeholder="NIP"
                   onChange={(e) => {
                     setnip(e.target.value);
-                    console.log(e.target.value);
+                    // console.log(e.target.value);
                   }}
                 ></Input>
               </FormControl>
@@ -65,7 +86,7 @@ function CreateUserModal() {
                   placeholder="Função a bordo"
                   onChange={(e) => {
                     setfc(e.target.value);
-                    console.log(e.target.value);
+                    // console.log(e.target.value);
                   }}
                 ></Input>
               </FormControl>
@@ -77,7 +98,7 @@ function CreateUserModal() {
                 placeholder="Nome"
                 onChange={(e) => {
                   setnome(e.target.value);
-                  console.log(e.target.value);
+                  // console.log(e.target.value);
                 }}
               ></Input>
             </FormControl>
