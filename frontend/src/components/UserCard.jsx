@@ -16,6 +16,7 @@ import DaysLeftColumn from "./DaysLeftColumn";
 import QualificationsPanel from "./QualificationsPanel";
 import { BiTrash } from "react-icons/bi";
 import axios from "axios";
+import EditUserModal from "./EditUserModal";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5051";
 
@@ -46,17 +47,12 @@ const UserCard = ({ user, pilotos, setPilotos }) => {
             <Heading size="sm">{`${user.rank} ${user.name}`}</Heading>
           </Flex>
           <Flex align={"center"}>
-            {/* <IconButton
-              variant="ghost"
-              colorScheme="red"
-              size={"sm"}
-              icon={<BiTrash />}
-            /> */}
+            <EditUserModal piloto={user} setPilotos={setPilotos} />
             <IconButton
               onClick={() => handleDeletePilot(user.nip)}
               variant="ghost"
               colorScheme="red"
-              size={"sm"}
+              size={"lg"}
               icon={<BiTrash />}
             />
           </Flex>
@@ -139,6 +135,26 @@ const UserCard = ({ user, pilotos, setPilotos }) => {
             >
               TA
             </Text>
+            <Text
+              color="white"
+              fontSize={"16"}
+              fontWeight={"bold"}
+              align={"center"}
+              paddingX={2}
+              bg="grey"
+            >
+              VRP1
+            </Text>
+            <Text
+              color="white"
+              fontSize={"16"}
+              fontWeight={"bold"}
+              align={"center"}
+              paddingX={2}
+              bg="grey"
+            >
+              VRP2
+            </Text>
           </Box>
           <Box borderColor={"black"} borderWidth={"2px"}>
             <QualificationsPanel qualification={user.qualification?.lastQA1} />
@@ -146,7 +162,10 @@ const UserCard = ({ user, pilotos, setPilotos }) => {
             <QualificationsPanel qualification={user.qualification?.lastBSP1} />
             <QualificationsPanel qualification={user.qualification?.lastBSP2} />
             <QualificationsPanel qualification={user.qualification?.lastTA} />
+            <QualificationsPanel qualification={user.qualification?.lastVRP1} />
+            <QualificationsPanel qualification={user.qualification?.lastVRP2} />
           </Box>
+          <Box borderColor={"black"} borderWidth={"2px"}></Box>
         </Flex>
       </CardBody>
     </Card>

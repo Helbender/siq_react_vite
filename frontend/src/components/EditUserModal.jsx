@@ -13,53 +13,61 @@ import {
   FormControl,
   FormLabel,
   Input,
-  // Stack,
+  IconButton,
 } from "@chakra-ui/react";
 import { useState } from "react";
+import { CiEdit } from "react-icons/ci";
 import axios from "axios";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5051";
 
-function CreateUserModal({ pilotos, setPilotos }) {
+function EditUserModal({ piloto, setPilotos }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [posto, setPosto] = useState("");
-  const [nip, setnip] = useState("");
-  const [name, setname] = useState("");
-  const [fc, setfc] = useState("");
+  const [posto, setPosto] = useState(piloto.rank);
+  const [name, setName] = useState(piloto.name);
+  const [fc, setfc] = useState(piloto.position);
 
-  const handleSubmit = async (e) => {
+  const handleEditUser = async (e) => {
     e.preventDefault();
-    const pilotToBeSaved = {
+    const UserToBeEdited = {
       name: name,
-      nip: nip,
       position: fc,
       rank: posto,
     };
     try {
-      const res = await axios.post(`${API_URL}/pilots`, pilotToBeSaved);
-
-      setPilotos([...pilotos, res.data]);
+      const res = await axios.patch(
+        `${API_URL}/pilots/${piloto.nip}`,
+        UserToBeEdited,
+      );
+      console.log(res.data);
+      setPilotos((prevUsers) =>
+        prevUsers.map((u) => (u.nip === piloto.nip ? res.data : u)),
+      );
+      console.log("teste2");
       onClose();
     } catch (error) {
       // console.log(error);
     }
   };
-
   return (
     <>
-      <Button onClick={onOpen}>Criar Piloto</Button>
-
+      <IconButton
+        onClick={onOpen}
+        variant="ghost"
+        size={"lg"}
+        icon={<CiEdit />}
+      />
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Novo Piloto</ModalHeader>
+          <ModalHeader>{`${piloto.rank} ${piloto.name}`}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <Flex flexDirection={"row"} gap={"4"}>
               <FormControl>
                 <FormLabel>Posto</FormLabel>
                 <Input
-                  placeholder="Posto"
+                  value={posto}
                   onChange={(e) => {
                     setPosto(e.target.value);
                     // console.log(e.target.value);
@@ -67,19 +75,9 @@ function CreateUserModal({ pilotos, setPilotos }) {
                 ></Input>
               </FormControl>
               <FormControl>
-                <FormLabel>NIP</FormLabel>
-                <Input
-                  placeholder="NIP"
-                  onChange={(e) => {
-                    setnip(e.target.value);
-                    // console.log(e.target.value);
-                  }}
-                ></Input>
-              </FormControl>
-              <FormControl>
                 <FormLabel>Função</FormLabel>
                 <Input
-                  placeholder="Função a bordo"
+                  value={fc}
                   onChange={(e) => {
                     setfc(e.target.value);
                     // console.log(e.target.value);
@@ -90,10 +88,10 @@ function CreateUserModal({ pilotos, setPilotos }) {
             <FormControl mt={5}>
               <FormLabel flexGrow={"2"}>Nome</FormLabel>
               <Input
+                value={name}
                 flexGrow={"2"}
-                placeholder="Nome"
                 onChange={(e) => {
-                  setname(e.target.value);
+                  setName(e.target.value);
                   // console.log(e.target.value);
                 }}
               ></Input>
@@ -104,7 +102,7 @@ function CreateUserModal({ pilotos, setPilotos }) {
               colorScheme="green"
               mr={3}
               type="submit"
-              onClick={handleSubmit}
+              onClick={handleEditUser}
             >
               Save
             </Button>
@@ -118,4 +116,4 @@ function CreateUserModal({ pilotos, setPilotos }) {
   );
 }
 
-export default CreateUserModal;
+export default EditUserModal;

@@ -120,6 +120,19 @@ def handle_pilots(nip: int) -> tuple[Response, int]:
             )
             session.commit()
         return jsonify({"deleted_id": f"{nip}"}), 200
+
+    if request.method == "PATCH":
+        piloto = request.get_json()
+        with Session(engine) as session:
+            modified_pilot = session.execute(select(Pilot).where(Pilot.nip == nip)).scalar_one()
+            modified_pilot.name = piloto["name"]
+            modified_pilot.rank = piloto["rank"]
+            modified_pilot.position = piloto["position"]
+            print(modified_pilot)
+
+            session.commit()
+            return jsonify(modified_pilot.to_json()), 200
+
     return jsonify({"message": "Bad Manual Request"}), 403
 
 
