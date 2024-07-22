@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import CreateUserModal from "./CreateUserModal";
 
-const API_URL = "http://127.0.0.1:5051";
+const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5051";
 
 const Pilots = () => {
   const [pilotos, setPilotos] = useState([]);
@@ -51,7 +51,12 @@ const Pilots = () => {
         mt="8"
       >
         {pilotos.map((pilot) => (
-          <UserCard key={pilot.nip} user={pilot} />
+          <UserCard
+            key={pilot.nip}
+            user={pilot}
+            pilotos={pilotos}
+            setPilotos={setPilotos}
+          />
         ))}
       </Grid>
     </Container>

@@ -17,7 +17,8 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import axios from "axios";
-const API_URL = "http://127.0.0.1:5051";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5051";
 
 function CreateUserModal({ pilotos, setPilotos }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -25,7 +26,6 @@ function CreateUserModal({ pilotos, setPilotos }) {
   const [nip, setnip] = useState("");
   const [nome, setnome] = useState("");
   const [fc, setfc] = useState("");
-  console.log(pilotos);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,15 +36,14 @@ function CreateUserModal({ pilotos, setPilotos }) {
       rank: posto,
       // qualification: [],
     };
-    // pilotos = [...pilotos, pilotToBeSaved];
-    setPilotos([...pilotos, pilotToBeSaved]);
     try {
       const res = await axios.post(`${API_URL}/pilots`, pilotToBeSaved);
-      console.log(res);
+
+      setPilotos([...pilotos, res.data]);
       onClose();
       // setPilotos(res.data || []);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
     // console.log(posto, nip, nome, fc);
   };

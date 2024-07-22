@@ -25,7 +25,6 @@ const UserCard = ({ user, pilotos, setPilotos }) => {
       const res = await axios.delete(`${API_URL}/pilots/${nip}`);
       console.log(res);
       if (res.data?.deleted_id) {
-        console.log(res.data?.deleted_id);
         setPilotos(pilotos.filter((piloto) => piloto.nip != nip));
       }
     } catch (error) {

@@ -119,7 +119,7 @@ def handle_pilots(nip: int) -> tuple[Response, int]:
                 delete(Qualification).where(Qualification.pilot_id == nip),
             )
             session.commit()
-        return jsonify({"deleted_id": f"{nip} deleted"}), 200
+        return jsonify({"deleted_id": f"{nip}"}), 200
     return jsonify({"message": "Bad Manual Request"}), 403
 
 
