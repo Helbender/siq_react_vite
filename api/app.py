@@ -1,9 +1,12 @@
+from __future__ import annotations
+
 from datetime import datetime
+
+from config import engine
 from flask import Flask, Response, jsonify, request
 from flask_cors import CORS
-from sqlalchemy import select
-from models import Flight, Pilot, FlightPilots, Qualification
-from config import engine
+from models import Flight, FlightPilots, Pilot, Qualification
+from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
 app = Flask(__name__)
@@ -16,8 +19,8 @@ def retrieve_flights() -> tuple[Response, int]:
     -   Retrieves all flights from the db and sends to frontend
 
     Method POST:
-    -   Saves a flight to the db"""
-
+    -   Saves a flight to the db
+    """
     if request.method == "GET":
         flights = {}
 
@@ -32,9 +35,7 @@ def retrieve_flights() -> tuple[Response, int]:
                 flight_pilots = session.execute(stmt2).scalars()
 
                 for flight_pilot in flight_pilots:
-                    flights[row.fid][str(flight_pilot.pilot_id)] = (
-                        flight_pilot.to_json()
-                    )
+                    flights[row.fid][str(flight_pilot.pilot_id)] = flight_pilot.to_json()
 
             return jsonify(flights), 200
 
@@ -104,11 +105,23 @@ def retrieve_pilots() -> tuple[Response, int]:
             )
             session.add(new_pilot)
             session.commit()
-            print(piloto)
+            response = new_pilot.to_json()
+        return jsonify(response), 201
+    return jsonify({"message": "Bad Manual Request"}), 403
 
-        return jsonify({"piloto nip": piloto["nip"]}), 201
+
+@app.route("/pilots/<nip>", methods=["DELETE", "PATCH"])
+def handle_pilots(nip: int) -> tuple[Response, int]:
+    if request.method == "DELETE":
+        with Session(engine) as session:
+            session.execute(delete(Pilot).where(Pilot.nip == nip))
+            result = session.execute(
+                delete(Qualification).where(Qualification.pilot_id == nip),
+            )
+            session.commit()
+        return jsonify({"deleted_id": f"{nip} deleted"}), 200
     return jsonify({"message": "Bad Manual Request"}), 403
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5051, debug=True)
+    app.run(host="0.0.0.0", port=5051, debug=True)  # noqa: S104, S201
