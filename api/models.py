@@ -1,5 +1,8 @@
+from __future__ import annotations  # noqa: D100, INP001
+
 from datetime import date
 from typing import List, Optional
+
 from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import (
     DeclarativeBase,
@@ -14,8 +17,6 @@ year_init = 2000
 
 class Base(DeclarativeBase):
     """subclasses will be converted to dataclasses"""
-
-    pass
 
 
 class People:
@@ -48,7 +49,7 @@ class Flight(Base):
     destination: Mapped[str] = mapped_column(String(4))
     departure_time: Mapped[str]
     arrival_time: Mapped[str]
-    flight_pilots: Mapped[List["FlightPilots"]] = relationship(back_populates="flight")
+    flight_pilots: Mapped[List[FlightPilots]] = relationship(back_populates="flight")
 
     def __repr__(self):
         return f"{self.__class__}\nid: {self.fid} airtask: {self.airtask} Data: {self.date}\nDe {self.origin} para {self.destination}\nATD: {self.departure_time}\tATA: {self.arrival_time}"
@@ -69,7 +70,8 @@ class FlightPilots(Base):
     __tablename__ = "flight_pilots"
 
     flight_id: Mapped[int] = mapped_column(
-        ForeignKey("flights_table.fid"), primary_key=True
+        ForeignKey("flights_table.fid"),
+        primary_key=True,
     )
     pilot_id: Mapped[int] = mapped_column(ForeignKey("pilots.nip"), primary_key=True)
 
@@ -85,8 +87,8 @@ class FlightPilots(Base):
     vrp1: Mapped[Optional[bool]]  # = mapped_column(nullable=True, default=False)
     vrp2: Mapped[Optional[bool]]  # = mapped_column(nullable=True, default=False)
 
-    pilot: Mapped["Pilot"] = relationship(back_populates="flight_pilots")
-    flight: Mapped["Flight"] = relationship(back_populates="flight_pilots")
+    pilot: Mapped[Pilot] = relationship(back_populates="flight_pilots")
+    flight: Mapped[Flight] = relationship(back_populates="flight_pilots")
 
     def __repr__(self):
         rep = f"Piloto: {self.pilot.name} Aterragens={self.day_landings} no airtask {self.flight.airtask} "
@@ -97,6 +99,7 @@ class FlightPilots(Base):
     def to_json(self):
         response = {
             "pilotName": self.pilot.name,
+            "nip": self.pilot.nip,
             "ATR": self.day_landings,
             "ATN": self.night_landings,
             "P": self.prec_app,
@@ -123,8 +126,9 @@ class FlightPilots(Base):
 class Pilot(People, Base):
     __tablename__ = "pilots"
 
-    qualification: Mapped["Qualification"] = relationship(
-        "Qualification", back_populates="pilot"
+    qualification: Mapped[Qualification] = relationship(
+        "Qualification",
+        back_populates="pilot",
     )
     flight_pilots: Mapped[List[FlightPilots]] = relationship(back_populates="pilot")
 
@@ -141,7 +145,7 @@ class Qualification(Base):
     __tablename__ = "qualifications"
 
     pilot_id: Mapped[int] = mapped_column(ForeignKey("pilots.nip"), primary_key=True)
-    pilot: Mapped["Pilot"] = relationship(back_populates="qualification")
+    pilot: Mapped[Pilot] = relationship(back_populates="qualification")
     last_day_landings: Mapped[str] = mapped_column(default=date_init)
     last_night_landings: Mapped[str] = mapped_column(default=date_init)
     last_prec_app: Mapped[str] = mapped_column(default=date_init)
@@ -174,7 +178,9 @@ class Qualification(Base):
             self.last_vrp2_date = date
 
         self.last_day_landings = Qualification.get_last_five(
-            self.last_day_landings.split(), data.day_landings, date.strftime("%Y-%m-%d")
+            self.last_day_landings.split(),
+            data.day_landings,
+            date.strftime("%Y-%m-%d"),
         )
         self.last_night_landings = Qualification.get_last_five(
             self.last_night_landings.split(),
@@ -182,10 +188,14 @@ class Qualification(Base):
             date.strftime("%Y-%m-%d"),
         )
         self.last_prec_app = Qualification.get_last_five(
-            self.last_prec_app.split(), data.prec_app, date.strftime("%Y-%m-%d")
+            self.last_prec_app.split(),
+            data.prec_app,
+            date.strftime("%Y-%m-%d"),
         )
         self.last_nprec_app = Qualification.get_last_five(
-            self.last_nprec_app.split(), data.nprec_app, date.strftime("%Y-%m-%d")
+            self.last_nprec_app.split(),
+            data.nprec_app,
+            date.strftime("%Y-%m-%d"),
         )
         return self
 

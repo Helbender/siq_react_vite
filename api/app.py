@@ -1,6 +1,6 @@
-from __future__ import annotations
+from __future__ import annotations  # noqa: D100, INP001
 
-from datetime import datetime
+from datetime import UTC, datetime
 
 from config import engine
 from flask import Flask, Response, jsonify, request
@@ -15,28 +15,34 @@ CORS(app)
 
 @app.route("/flights", methods=["GET", "POST"])
 def retrieve_flights() -> tuple[Response, int]:
-    """Method GET:
-    -   Retrieves all flights from the db and sends to frontend
+    """Retrieve all flights from the db and sends to frontend.
 
     Method POST:
     -   Saves a flight to the db
     """
     if request.method == "GET":
-        flights = {}
+        flights = []
+        i = 0
 
         # Retrieve all flights from db
         with Session(engine) as session:
             stmt = select(Flight)
             flights_obj = session.execute(stmt).scalars()
-
             for row in flights_obj:
-                flights[row.fid] = row.to_json()
+                flights.append(row.to_json())
                 stmt2 = select(FlightPilots).where(FlightPilots.flight_id == row.fid)
                 flight_pilots = session.execute(stmt2).scalars()
 
+                flights[i]["flight_pilots"] = []
                 for flight_pilot in flight_pilots:
-                    flights[row.fid][str(flight_pilot.pilot_id)] = flight_pilot.to_json()
-
+                    result = session.execute(
+                        select(Pilot).where(Pilot.nip == flight_pilot.pilot_id),
+                    ).scalar_one_or_none()
+                    if result is None:
+                        flights[i]["flight_pilots"].append({"pilotName": "Not found, maybe deleted"})
+                    else:
+                        flights[i]["flight_pilots"].append(flight_pilot.to_json())
+                i += 1
             return jsonify(flights), 200
 
     if request.method == "POST":
@@ -44,7 +50,7 @@ def retrieve_flights() -> tuple[Response, int]:
 
         flight = Flight(
             airtask=f["airtask"],
-            date=datetime.strptime(f["date"], "%Y-%m-%d").date(),
+            date=datetime.strptime(f["date"], "%Y-%m-%d").replace(tzinfo=UTC).date(),
             origin=f["origin"],
             destination=f["destination"],
             departure_time=f["ATD"],
@@ -56,9 +62,8 @@ def retrieve_flights() -> tuple[Response, int]:
             pilot: dict
 
             for pilot in f["pilots"]:
-                pilot_obj: Pilot = session.get(Pilot, pilot["nip"])  # type: ignore
-                print(pilot_obj)
-                qual: Qualification = session.get(Qualification, pilot["nip"])  # type: ignore
+                pilot_obj: Pilot = session.get(Pilot, pilot["nip"])  # type: ignore  # noqa: PGH003
+                qual: Qualification = session.get(Qualification, pilot["nip"])  # type: ignore  # noqa: PGH003
 
                 fp = FlightPilots(
                     day_landings=pilot["ATR"],
@@ -76,7 +81,6 @@ def retrieve_flights() -> tuple[Response, int]:
                 qual.update(fp, flight.date)
 
                 pilot_obj.flight_pilots.append(fp)
-                print(pilot_obj)
                 flight.flight_pilots.append(fp)
             session.commit()
 
@@ -86,6 +90,7 @@ def retrieve_flights() -> tuple[Response, int]:
 
 @app.route("/pilots", methods=["GET", "POST"])
 def retrieve_pilots() -> tuple[Response, int]:
+    """Placehold."""
     if request.method == "GET":
         # Retrieve all pilots from db
         with Session(engine) as session:
@@ -112,14 +117,19 @@ def retrieve_pilots() -> tuple[Response, int]:
 
 @app.route("/pilots/<nip>", methods=["DELETE", "PATCH"])
 def handle_pilots(nip: int) -> tuple[Response, int]:
+    """Placehold."""
     if request.method == "DELETE":
         with Session(engine) as session:
             session.execute(delete(Pilot).where(Pilot.nip == nip))
             result = session.execute(
                 delete(Qualification).where(Qualification.pilot_id == nip),
             )
-            session.commit()
-        return jsonify({"deleted_id": f"{nip}"}), 200
+
+            if result.rowcount == 1:
+                session.commit()
+                return jsonify({"deleted_id": f"{nip}"}), 200
+            else:  # noqa: RET505
+                return jsonify({"message": "Failed to delete"}), 304
 
     if request.method == "PATCH":
         piloto = request.get_json()
@@ -128,7 +138,6 @@ def handle_pilots(nip: int) -> tuple[Response, int]:
             modified_pilot.name = piloto["name"]
             modified_pilot.rank = piloto["rank"]
             modified_pilot.position = piloto["position"]
-            print(modified_pilot)
 
             session.commit()
             return jsonify(modified_pilot.to_json()), 200

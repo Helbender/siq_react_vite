@@ -1,6 +1,7 @@
-from models import Base, Flight, Pilot, FlightPilots, Qualification
-from sqlalchemy import create_engine, select
 from datetime import date
+
+from models import Base, Flight, FlightPilots, Pilot, Qualification
+from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
 today = date.today()
@@ -22,11 +23,19 @@ Base.metadata.create_all(bind=engine)
 # fp2 = FlightPilots(day_landings=10)
 
 pilot1 = Pilot(
-    nip=135885, name="Tiago", rank="CAP", position="PC", qualification=Qualification()
+    nip=135885,
+    name="Tiago",
+    rank="CAP",
+    position="PC",
+    qualification=Qualification(),
 )
 
 pilot2 = Pilot(
-    nip=135887, name="Daniela", rank="CAP", position="PC", qualification=Qualification()
+    nip=135887,
+    name="Daniela",
+    rank="CAP",
+    position="PC",
+    qualification=Qualification(),
 )
 # pq2 = Qualification()
 
@@ -46,13 +55,13 @@ pilot2 = Pilot(
 
 # # session.commit()
 
-# with Session(engine) as session:
-#     session.add(pilot1)
-#     session.add(pilot2)
-#     #     session.add(u1)
-#     #     session.add(fp)
-#     #     session.add(fp2)
-#     session.commit()
+with Session(engine) as session:
+    session.add(pilot1)
+    session.add(pilot2)
+    #     #     session.add(u1)
+    #     #     session.add(fp)
+    #     #     session.add(fp2)
+    session.commit()
 
 
 # with Session(engine) as session:
@@ -66,11 +75,11 @@ pilot2 = Pilot(
 #             print(pilot)
 
 
-with Session(engine) as session:
-    result = session.execute(select(Pilot)).scalars()
-    # result = session.get(Pilot)
-    for row in result:
-        print(row.to_json())
+# with Session(engine) as session:
+#     result = session.execute(select(Pilot)).scalars()
+#     # result = session.get(Pilot)
+#     for row in result:
+#         print(row.to_json())
 
 # with Session(engine) as session:
 #     result = session.execute(select(Flight)).scalars()
@@ -152,3 +161,6 @@ def insert_flight(f: dict):
             print(pilot_obj)
             flight.flight_pilots.append(fp)
         session.commit()
+
+
+insert_flight(f)

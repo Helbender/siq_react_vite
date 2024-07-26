@@ -46,7 +46,7 @@ function EditUserModal({ piloto, setPilotos }) {
       console.log("teste2");
       onClose();
     } catch (error) {
-      // console.log(error);
+      console.log(error);
     }
   };
   return (

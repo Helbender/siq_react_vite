@@ -1,9 +1,9 @@
 // import PILOTOS from "../dummy/pilotos";
 import { Button, Container, Grid, ButtonGroup } from "@chakra-ui/react";
-import UserCard from "./UserCard";
+import UserCard from "./pilotComponents/UserCard";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import CreateUserModal from "./CreateUserModal";
+import CreateUserModal from "./pilotComponents/CreateUserModal";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5051";
 
@@ -16,9 +16,9 @@ const Pilots = () => {
       setPilotos(allPilots);
     } else {
       setPilotos(allPilots.filter((piloto) => piloto.position == position));
+      // }
     }
   };
-
   const getSavedPilots = async () => {
     try {
       const res = await axios.get(`${API_URL}/pilots`);
