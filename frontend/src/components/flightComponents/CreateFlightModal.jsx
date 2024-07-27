@@ -14,10 +14,16 @@ import {
   FormLabel,
   Input,
   Stack,
+  GridItem,
+  Grid,
+  Divider,
   // Stack,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import Teste from "./Teste";
+import PilotInput from "./PilotInput";
+import axios from "axios";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5051";
 
 function CreateFlightModal() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -30,12 +36,18 @@ function CreateFlightModal() {
     ATA: "",
     ATR: "",
     fuel: "",
-    pilots: [{ nip: 1 }],
   });
+  let pilotList = [0, 1, 2, 3, 4, 5];
   const handleCreateFlight = async (e) => {
     e.preventDefault();
-    console.log(inputs);
-    //   const pilotToBeSaved = {
+    console.log(inputs.pilot0);
+    try {
+      const res = axios.post(`${API_URL}/flights`, inputs);
+    } catch (error) {
+      console.log(error);
+    }
+
+    //   const pilotToBeSaved = {   //   const pilotToBeSaved = {
     //     name: name,
     //     nip: nip,
     //     position: fc,
@@ -57,15 +69,16 @@ function CreateFlightModal() {
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <form onSubmit={handleCreateFlight}>
-          <ModalContent maxHeight={"800px"} maxWidth={"1000px"}>
+          <ModalContent minWidth={"1300px"}>
             <ModalHeader>Novo Modelo 1M</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
               <Stack>
                 <Flex gap={"5"} alignSelf={"center"}>
                   <FormControl maxWidth={"100px"}>
-                    <FormLabel>Airtask</FormLabel>
+                    <FormLabel textAlign={"center"}>Airtask</FormLabel>
                     <Input
+                      name="airtask"
                       type="text"
                       value={inputs.airtask}
                       onChange={(e) =>
@@ -74,8 +87,9 @@ function CreateFlightModal() {
                     />
                   </FormControl>
                   <FormControl maxWidth={"175px"}>
-                    <FormLabel>Data</FormLabel>
+                    <FormLabel textAlign={"center"}>Data</FormLabel>
                     <Input
+                      name="date"
                       type="date"
                       value={inputs.date}
                       onChange={(e) =>
@@ -84,8 +98,9 @@ function CreateFlightModal() {
                     />
                   </FormControl>
                   <FormControl ml={"5"} maxWidth={"75px"}>
-                    <FormLabel>ATD</FormLabel>
+                    <FormLabel textAlign={"center"}>ATD</FormLabel>
                     <Input
+                      name="departure_time"
                       type="time"
                       value={inputs.ATD}
                       onChange={(e) =>
@@ -94,8 +109,9 @@ function CreateFlightModal() {
                     />
                   </FormControl>
                   <FormControl maxWidth={"75px"}>
-                    <FormLabel>ATA</FormLabel>
+                    <FormLabel textAlign={"center"}>ATA</FormLabel>
                     <Input
+                      name="arrival_time"
                       type="time"
                       value={inputs.ATA}
                       onChange={(e) =>
@@ -104,18 +120,19 @@ function CreateFlightModal() {
                     />
                   </FormControl>
                   <FormControl maxWidth={"75px"}>
-                    <FormLabel>TOTAL</FormLabel>
+                    <FormLabel textAlign={"center"}>TOTAL</FormLabel>
                     <Input
                       type="time"
                       value={inputs.origin}
                       onChange={(e) =>
-                        setInputs({ ...inputs, origin: e.target.value })
+                        setInputs({ ...inputs, total: e.target.value })
                       }
                     />
                   </FormControl>
                   <FormControl ml={"5"} maxWidth={"75px"}>
-                    <FormLabel>Origem</FormLabel>
+                    <FormLabel textAlign={"center"}>Origem</FormLabel>
                     <Input
+                      name="origin"
                       type="text"
                       value={inputs.origin}
                       onChange={(e) =>
@@ -124,8 +141,9 @@ function CreateFlightModal() {
                     />
                   </FormControl>
                   <FormControl maxWidth={"75px"}>
-                    <FormLabel>Destino</FormLabel>
+                    <FormLabel textAlign={"center"}>Destino</FormLabel>
                     <Input
+                      name="destination"
                       type="text"
                       value={inputs.destination}
                       onChange={(e) =>
@@ -136,17 +154,18 @@ function CreateFlightModal() {
                 </Flex>
                 <Flex gap={"5"}>
                   <FormControl>
-                    <FormLabel>Aterragens</FormLabel>
+                    <FormLabel textAlign={"center"}>Aterragens</FormLabel>
                     <Input
+                      name="aterragens"
                       type="number"
                       value={inputs.ATR}
                       onChange={(e) =>
                         setInputs({ ...inputs, ATR: e.target.value })
                       }
                     />
-                  </FormControl>{" "}
+                  </FormControl>
                   <FormControl>
-                    <FormLabel>Nº Tripulantes</FormLabel>
+                    <FormLabel textAlign={"center"}>Nº Tripulantes</FormLabel>
                     <Input
                       type="number"
                       value={inputs.numberTrip}
@@ -156,7 +175,7 @@ function CreateFlightModal() {
                     />
                   </FormControl>
                   <FormControl>
-                    <FormLabel>ORM</FormLabel>
+                    <FormLabel textAlign={"center"}>ORM</FormLabel>
                     <Input
                       type="number"
                       value={inputs.ORM}
@@ -166,7 +185,7 @@ function CreateFlightModal() {
                     />
                   </FormControl>
                   <FormControl>
-                    <FormLabel>FUEL</FormLabel>
+                    <FormLabel textAlign={"center"}>FUEL</FormLabel>
                     <Input
                       placeholder="Kg"
                       type="number"
@@ -177,9 +196,33 @@ function CreateFlightModal() {
                     />
                   </FormControl>
                 </Flex>
-                <Flex>
-                  <Teste inputs={inputs} setInputs={setInputs} />
-                </Flex>
+                <Divider my={8} />
+                <Grid
+                  // alignItems={"center"}
+                  // alignContent={"center"}
+                  // alignSelf={"center"}
+                  // templateRows="repeat(7, 1fr)"
+                  templateColumns="repeat(9, 1fr)"
+                >
+                  <GridItem textAlign={"center"}>NIP</GridItem>
+                  <GridItem textAlign={"center"}>Nome</GridItem>
+                  <GridItem textAlign={"center"}>Posição</GridItem>
+                  <GridItem textAlign={"center"}>ATR</GridItem>
+                  <GridItem textAlign={"center"}>ATN</GridItem>
+                  <GridItem textAlign={"center"}>PrecApp</GridItem>
+                  <GridItem textAlign={"center"}>NPrecApp</GridItem>
+                  <GridItem textAlign={"center"}>Qual1</GridItem>
+                  <GridItem textAlign={"center"}>Qual2</GridItem>
+
+                  {pilotList.map((number) => (
+                    <PilotInput
+                      key={number}
+                      inputs={inputs}
+                      setInputs={setInputs}
+                      pilotNumber={`pilot${number}`}
+                    />
+                  ))}
+                </Grid>
               </Stack>
             </ModalBody>
             <ModalFooter>

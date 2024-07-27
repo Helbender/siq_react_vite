@@ -14,11 +14,9 @@ import {
   Table,
   Thead,
   Tbody,
-  Tfoot,
   Tr,
   Th,
   Td,
-  TableCaption,
   TableContainer,
 } from "@chakra-ui/react";
 import { BiTrash } from "react-icons/bi";
@@ -36,7 +34,7 @@ const FlightCard = ({ flight }) => {
     <Card>
       <CardHeader>
         <Flex align={"center"}>
-          <Heading>{`${flight.airtask}`} </Heading>
+          <Heading>{`${flight.airtask} ${flight.fid}`} </Heading>
           <Spacer />
           <IconButton
             variant="ghost"
@@ -107,7 +105,7 @@ const FlightCard = ({ flight }) => {
                   qualification = [...qualification, "VRP2"];
                 }
                 return (
-                  <Tr>
+                  <Tr key={pilot.nip}>
                     <Td>{pilot.nip}</Td>
                     <Td>{pilot.pilotName}</Td>
                     <Td>{pilot.ATR}</Td>

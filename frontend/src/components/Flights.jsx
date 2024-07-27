@@ -1,4 +1,4 @@
-import { Grid, Text, Container, Stack } from "@chakra-ui/react";
+import { Container, Stack } from "@chakra-ui/react";
 import FlightCard from "./flightComponents/FlightCard";
 import { useState, useEffect } from "react";
 import axios from "axios";
@@ -25,7 +25,7 @@ export default function Flights() {
 
       <Stack gap={5} mt="8" mb="10">
         {flights.map((flight) => (
-          <FlightCard key={flight.fid} flight={flight} />
+          <FlightCard key={flight.id} flight={flight} />
         ))}
       </Stack>
     </Container>
