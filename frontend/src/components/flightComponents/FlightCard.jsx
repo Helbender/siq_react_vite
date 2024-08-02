@@ -21,8 +21,22 @@ import {
 } from "@chakra-ui/react";
 import { BiTrash } from "react-icons/bi";
 import { useColorMode } from "@chakra-ui/react";
+import axios from "axios";
 
-const FlightCard = ({ flight }) => {
+const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5051";
+
+const FlightCard = ({ flight, flights, setFlights }) => {
+  const handleDeleteFlight = async (id) => {
+    try {
+      const res = await axios.delete(`${API_URL}/flights/${id}`);
+      console.log(res.data);
+      if (res.data?.deleted_id) {
+        setFlights(flights.filter((flight) => flight.id != id));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   console.log(flight);
   // eslint-disable-next-line no-unused-vars
   const { colorMode, toggleColorMode } = useColorMode();
@@ -34,12 +48,13 @@ const FlightCard = ({ flight }) => {
     <Card>
       <CardHeader>
         <Flex align={"center"}>
-          <Heading>{`${flight.airtask} ${flight.fid}`} </Heading>
+          <Heading>{`${flight.airtask} ${flight.id}`} </Heading>
           <Spacer />
           <IconButton
             variant="ghost"
             colorScheme="red"
             size={"lg"}
+            onClick={() => handleDeleteFlight(flight.id)}
             icon={<BiTrash />}
           />
           <Spacer />

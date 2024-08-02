@@ -40,9 +40,17 @@ function CreateFlightModal() {
   let pilotList = [0, 1, 2, 3, 4, 5];
   const handleCreateFlight = async (e) => {
     e.preventDefault();
-    console.log(inputs.pilot0);
+    // console.log(inputs.pilot0);
+    let data = inputs;
+    for (let i = 0; i < 6; i++) {
+      if (Object.hasOwn(inputs, `pilot${i}`)) {
+        data.pilots = [inputs[`pilot${i}`]];
+        delete data[`pilot${i}`];
+      }
+    }
     try {
-      const res = axios.post(`${API_URL}/flights`, inputs);
+      const res = axios.post(`${API_URL}/flights`, data);
+      console.log(res.data);
     } catch (error) {
       console.log(error);
     }

@@ -16,7 +16,7 @@ year_init = 2000
 
 
 class Base(DeclarativeBase):
-    """subclasses will be converted to dataclasses"""
+    """subclasses will be converted to dataclasses."""
 
 
 class People:
@@ -49,7 +49,11 @@ class Flight(Base):
     destination: Mapped[str] = mapped_column(String(4))
     departure_time: Mapped[str]
     arrival_time: Mapped[str]
-    flight_pilots: Mapped[List[FlightPilots]] = relationship(back_populates="flight")
+    flight_pilots: Mapped[List[FlightPilots]] = relationship(
+        back_populates="flight",
+        cascade="all, delete",
+        passive_deletes=True,
+    )
 
     def __repr__(self):
         return f"{self.__class__}\nid: {self.fid} airtask: {self.airtask} Data: {self.date}\nDe {self.origin} para {self.destination}\nATD: {self.departure_time}\tATA: {self.arrival_time}"
@@ -72,6 +76,7 @@ class FlightPilots(Base):
     flight_id: Mapped[int] = mapped_column(
         ForeignKey("flights_table.fid"),
         primary_key=True,
+        # ondelete="CASCADE",
     )
     pilot_id: Mapped[int] = mapped_column(ForeignKey("pilots.nip"), primary_key=True)
 

@@ -25,7 +25,12 @@ export default function Flights() {
 
       <Stack gap={5} mt="8" mb="10">
         {flights.map((flight) => (
-          <FlightCard key={flight.id} flight={flight} />
+          <FlightCard
+            key={flight.id}
+            flight={flight}
+            flights={flights}
+            setFlights={setFlights}
+          />
         ))}
       </Stack>
     </Container>

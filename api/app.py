@@ -47,7 +47,7 @@ def retrieve_flights() -> tuple[Response, int]:
 
     if request.method == "POST":
         f: dict = request.get_json()
-
+        print(f)
         flight = Flight(
             airtask=f["airtask"],
             date=datetime.strptime(f["date"], "%Y-%m-%d").replace(tzinfo=UTC).date(),
@@ -66,10 +66,10 @@ def retrieve_flights() -> tuple[Response, int]:
                 qual: Qualification = session.get(Qualification, pilot["nip"])  # type: ignore  # noqa: PGH003
 
                 fp = FlightPilots(
-                    day_landings=pilot["ATR"],
-                    night_landings=pilot["ATN"],
-                    prec_app=pilot["P"],
-                    nprec_app=pilot["NP"],
+                    day_landings=int(pilot["ATR"]),
+                    night_landings=int(pilot["ATN"]),
+                    prec_app=int(pilot["precapp"]),
+                    nprec_app=int(pilot["nprecapp"]),
                     qa1=pilot["QA1"],
                     qa2=pilot["QA2"],
                     bsp1=pilot["BSP1"],
@@ -141,6 +141,17 @@ def handle_pilots(nip: int) -> tuple[Response, int]:
 
             session.commit()
             return jsonify(modified_pilot.to_json()), 200
+
+    return jsonify({"message": "Bad Manual Request"}), 403
+
+
+@app.route("/flights/<flight_id>", methods=["DELETE", "PATCH"])
+def handle_flights(flight_id: int) -> tuple[Response, int]:
+    if request.method == "DELETE":
+        with Session(engine) as session:
+            result = session.execute(delete(Flight).where(Flight.fid == flight_id))
+            if result.rowcount == 1:
+                return jsonify({"deleted_id": f"Flight {flight_id}"}), 200
 
     return jsonify({"message": "Bad Manual Request"}), 403
 

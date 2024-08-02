@@ -34,6 +34,17 @@ const PilotInput = ({ inputs, setInputs, pilotNumber }) => {
   const [pilot, setPilot] = useState({
     nip: "",
     name: "",
+    ATR: 0,
+    ATN: 0,
+    precapp: 0,
+    nprecapp: 0,
+    QA1: false,
+    QA2: false,
+    BSP1: false,
+    BSP2: false,
+    TA: false,
+    VRP1: false,
+    VRP2: false,
   });
 
   const handleNipForm = (name) => {
@@ -43,18 +54,24 @@ const PilotInput = ({ inputs, setInputs, pilotNumber }) => {
     setNip(temp[0].nip);
     return temp[0].nip;
   };
-
+  const setPilotSelect = (p) => {
+    setName(pilotos.filter((piloto) => piloto.position == p));
+    setPilot({
+      ...pilot,
+      position: p,
+    });
+    let newpilot = { ...pilot, position: p };
+    let newinput = { ...inputs, [pilotNumber]: newpilot };
+    setInputs(newinput);
+  };
   const handlePositionSelect = (e) => {
     e.preventDefault();
     if (e.target.value === "PC") {
-      setName(pilotos.filter((piloto) => piloto.position == "PC"));
-      setPilot({
-        ...pilot,
-        position: "PC",
-      });
-      let newpilot = { ...pilot, position: "PC" };
-      let newinput = { ...inputs, [pilotNumber]: newpilot };
-      setInputs(newinput);
+      setPilotSelect("PC");
+    } else if (e.target.value === "CP") {
+      setPilotSelect("CP");
+    } else if (e.target.value === "OC") {
+      setPilotSelect("OC");
     }
   };
   return (
@@ -180,7 +197,7 @@ const PilotInput = ({ inputs, setInputs, pilotNumber }) => {
             onChange={(e) => {
               setPilot({
                 ...pilot,
-                [e.target.value]: e.target.value,
+                [e.target.value]: true,
               });
               let newpilot = { ...pilot, [e.target.value]: e.target.value };
               let newinput = { ...inputs, [pilotNumber]: newpilot };
@@ -204,7 +221,7 @@ const PilotInput = ({ inputs, setInputs, pilotNumber }) => {
             onChange={(e) => {
               setPilot({
                 ...pilot,
-                [e.target.value]: e.target.value,
+                [e.target.value]: true,
               });
               let newpilot = { ...pilot, [e.target.value]: e.target.value };
               let newinput = { ...inputs, [pilotNumber]: newpilot };
