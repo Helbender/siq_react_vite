@@ -9,10 +9,22 @@ from models import Flight, FlightPilots, Pilot, Qualification
 from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
-app = Flask(__name__)
+app = Flask(__name__)  # , static_folder="../frontend/dist", static_url_path="/")
 CORS(app)
 
+# frontend_folder = os.path.join(os.getcwd(), "..", "frontend", "dist")
 
+
+# Serve Frontend
+# @app.route("/", defaults={"filename": ""})
+# @app.route("/<path:filename>")
+# def index(filename):
+#     if not filename:
+#         filename = "index.html"
+#     return send_from_directory(frontend_folder, filename)
+
+
+# api routes
 @app.route("/flights", methods=["GET", "POST"])
 def retrieve_flights() -> tuple[Response, int]:
     """Retrieve all flights from the db and sends to frontend.

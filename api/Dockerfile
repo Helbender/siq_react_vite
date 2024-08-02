@@ -12,4 +12,4 @@ RUN pip install -r requirements.txt
 
 COPY . ./ 
 
-CMD [ "python", "app.py" ]
+CMD ["gunicorn", "-b", ":5051", "app:app"]

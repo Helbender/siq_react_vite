@@ -3,7 +3,6 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "proxy": "http://api:5051",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -43,5 +42,6 @@
     "eslint-plugin-react-refresh": "^0.4.7",
     "prettier": "^3.3.2",
     "vite": "^5.3.1"
-  }
+  },
+  "proxy": "http://api:5051"
 }

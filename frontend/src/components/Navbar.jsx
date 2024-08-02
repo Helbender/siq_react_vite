@@ -29,19 +29,19 @@ const Navbar = () => {
           <Flex alignItems={"center"} gap={3} display={{ sm: "flex" }}>
             <Breadcrumb separator={" "}>
               <BreadcrumbItem isCurrentPage>
-                <BreadcrumbLink as={Link} to="flights">
+                <BreadcrumbLink as={Link} to="flights_page">
                   Voos
                 </BreadcrumbLink>
               </BreadcrumbItem>
 
               <BreadcrumbItem>
-                <BreadcrumbLink as={Link} to="pilots">
+                <BreadcrumbLink as={Link} to="pilots_page">
                   Pilotos
                 </BreadcrumbLink>
               </BreadcrumbItem>
 
               <BreadcrumbItem>
-                <BreadcrumbLink as={Link} to="crew">
+                <BreadcrumbLink as={Link} to="crew_page">
                   OCs
                 </BreadcrumbLink>
               </BreadcrumbItem>

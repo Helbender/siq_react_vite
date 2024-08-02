@@ -1,22 +1,22 @@
 services:
+  api:
+    # image: images-gallery-api
+    restart: always
+    build: ./api
+    # ports:
+    #   - '5051:5051'
+    # volumes:
+    #   - ./api:/app
   frontend:
     # image: images-gallery-frontend
     restart: always
     build: ./frontend
     ports:
       - "5173:5173"
-    volumes:
-      - /app/node_modules
-      - ./frontend:/app
+    # volumes:
+    #   - /app/node_modules
+    #   - ./frontend:/app
     # environment:
     #   - CHOKIDAR_USEPOLLING=true
     depends_on:
       - api
-  api:
-    # image: images-gallery-api
-    restart: always
-    build: ./api
-    ports:
-      - '5051:5051'
-    volumes:
-      - ./api:/app

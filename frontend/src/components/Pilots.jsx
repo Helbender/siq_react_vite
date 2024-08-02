@@ -19,14 +19,26 @@ const Pilots = () => {
       // }
     }
   };
+  // const getSavedPilots = async () => {
+  //   try {
+  //     const res = await axios.get(`${API_URL}/pilots`);
+  //     console.log(res);
+  //     setPilotos(res.data || []);
+  //     setallPilots(res.data || []);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
   const getSavedPilots = async () => {
     try {
-      const res = await axios.get(`${API_URL}/pilots`);
-      // console.log(res);
-      setPilotos(res.data || []);
-      setallPilots(res.data || []);
+      const res = await fetch(API_URL + "/pilots");
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error);
+      }
+      setPilotos(data || []);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
   useEffect(() => {
