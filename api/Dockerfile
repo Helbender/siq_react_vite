@@ -2,7 +2,6 @@ FROM python:3.12.4-alpine3.20
 
 WORKDIR /app
 
-EXPOSE 5051
 
 COPY Pipfile Pipfile.lock ./
 
@@ -12,4 +11,5 @@ RUN pip install -r requirements.txt
 
 COPY . ./ 
 
+EXPOSE 5051
 CMD ["gunicorn", "-b", ":5051", "app:app"]

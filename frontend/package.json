@@ -43,5 +43,5 @@
     "prettier": "^3.3.2",
     "vite": "^5.3.1"
   },
-  "proxy": "http://api:5051"
+  "proxy":"http://localhost:5051"
 }

@@ -5,8 +5,6 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import CreateUserModal from "./pilotComponents/CreateUserModal";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5051";
-
 const Pilots = () => {
   const [pilotos, setPilotos] = useState([]);
   const [allPilots, setallPilots] = useState([]);
@@ -16,29 +14,16 @@ const Pilots = () => {
       setPilotos(allPilots);
     } else {
       setPilotos(allPilots.filter((piloto) => piloto.position == position));
-      // }
     }
   };
-  // const getSavedPilots = async () => {
-  //   try {
-  //     const res = await axios.get(`${API_URL}/pilots`);
-  //     console.log(res);
-  //     setPilotos(res.data || []);
-  //     setallPilots(res.data || []);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
   const getSavedPilots = async () => {
     try {
-      const res = await fetch(API_URL + "/pilots");
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error);
-      }
-      setPilotos(data || []);
+      const res = await axios.get(`/api/pilots`);
+      console.log(res);
+      setPilotos(res.data || []);
+      setallPilots(res.data || []);
     } catch (error) {
-      console.error(error);
+      console.log(error);
     }
   };
   useEffect(() => {

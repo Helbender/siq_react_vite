@@ -14,5 +14,12 @@ export default defineConfig({
     strictPort: true,
     host: true,
     origin: "http://0.0.0.0:5173",
+    proxy: {
+      "/api": {
+        target: "http://api:5051",
+        changeOrigin: true,
+        rewrite: (path) => path.replace("/^/api", ""),
+      },
+    },
   },
 });

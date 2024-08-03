@@ -1,17 +1,8 @@
 /* eslint-disable no-extra-boolean-cast */
 /* eslint-disable react/prop-types */
-import {
-  FormControl,
-  GridItem,
-  Input,
-  Select,
-  Flex,
-  Text,
-} from "@chakra-ui/react";
+import { FormControl, GridItem, Input, Select, Flex } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import axios from "axios";
-
-const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5051";
 
 const PilotInput = ({ inputs, setInputs, pilotNumber }) => {
   const [pilotos, setPilotos] = useState([]);
@@ -20,7 +11,7 @@ const PilotInput = ({ inputs, setInputs, pilotNumber }) => {
 
   const getSavedPilots = async () => {
     try {
-      const res = await axios.get(`${API_URL}/pilots`);
+      const res = await axios.get(`/api/pilots`);
       // console.log(res);
       setPilotos(res.data || []);
     } catch (error) {

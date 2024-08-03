@@ -18,8 +18,6 @@ import {
 import { useState } from "react";
 import axios from "axios";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5051";
-
 function CreateUserModal({ pilotos, setPilotos }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [posto, setPosto] = useState("");
@@ -36,8 +34,7 @@ function CreateUserModal({ pilotos, setPilotos }) {
       rank: posto,
     };
     try {
-      const res = await axios.post(`${API_URL}/pilots`, pilotToBeSaved);
-
+      const res = await axios.post(`/api/pilots`, pilotToBeSaved);
       setPilotos([...pilotos, res.data]);
       onClose();
     } catch (error) {

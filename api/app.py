@@ -4,13 +4,12 @@ from datetime import UTC, datetime
 
 from config import engine
 from flask import Flask, Response, jsonify, request
-from flask_cors import CORS
 from models import Flight, FlightPilots, Pilot, Qualification
 from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
 app = Flask(__name__)  # , static_folder="../frontend/dist", static_url_path="/")
-CORS(app)
+# CORS(app)
 
 # frontend_folder = os.path.join(os.getcwd(), "..", "frontend", "dist")
 
@@ -25,7 +24,7 @@ CORS(app)
 
 
 # api routes
-@app.route("/flights", methods=["GET", "POST"])
+@app.route("/api/flights", methods=["GET", "POST"])
 def retrieve_flights() -> tuple[Response, int]:
     """Retrieve all flights from the db and sends to frontend.
 
@@ -100,7 +99,7 @@ def retrieve_flights() -> tuple[Response, int]:
     return jsonify({"message": "Bad Manual Request"}), 403
 
 
-@app.route("/pilots", methods=["GET", "POST"])
+@app.route("/api/pilots", methods=["GET", "POST"])
 def retrieve_pilots() -> tuple[Response, int]:
     """Placehold."""
     if request.method == "GET":
@@ -127,7 +126,7 @@ def retrieve_pilots() -> tuple[Response, int]:
     return jsonify({"message": "Bad Manual Request"}), 403
 
 
-@app.route("/pilots/<nip>", methods=["DELETE", "PATCH"])
+@app.route("/api/pilots/<nip>", methods=["DELETE", "PATCH"])
 def handle_pilots(nip: int) -> tuple[Response, int]:
     """Placehold."""
     if request.method == "DELETE":
@@ -157,7 +156,7 @@ def handle_pilots(nip: int) -> tuple[Response, int]:
     return jsonify({"message": "Bad Manual Request"}), 403
 
 
-@app.route("/flights/<flight_id>", methods=["DELETE", "PATCH"])
+@app.route("/api/flights/<flight_id>", methods=["DELETE", "PATCH"])
 def handle_flights(flight_id: int) -> tuple[Response, int]:
     if request.method == "DELETE":
         with Session(engine) as session:
@@ -169,4 +168,4 @@ def handle_flights(flight_id: int) -> tuple[Response, int]:
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5051, debug=True)  # noqa: S104, S201
+    app.run(port=5051, debug=True)  # noqa: S201

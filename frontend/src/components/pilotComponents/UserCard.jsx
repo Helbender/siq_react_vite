@@ -18,12 +18,10 @@ import { BiTrash } from "react-icons/bi";
 import axios from "axios";
 import EditUserModal from "./EditUserModal";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5051";
-
 const UserCard = ({ user, pilotos, setPilotos }) => {
   const handleDeletePilot = async (nip) => {
     try {
-      const res = await axios.delete(`${API_URL}/pilots/${nip}`);
+      const res = await axios.delete(`/api/pilots/${nip}`);
       console.log(res);
       if (res.data?.deleted_id) {
         setPilotos(pilotos.filter((piloto) => piloto.nip != nip));

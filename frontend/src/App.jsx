@@ -19,11 +19,11 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route index element={<Navigate replace to="flights_page" />} />
+        <Route index element={<Navigate replace to="flights" />} />
         <Route path="/" element={<Master />}>
-          <Route path="/flights_page" element={<Flights />} />
+          <Route path="/flights" element={<Flights />} />
           <Route
-            path="/pilots_page"
+            path="/pilots"
             element={
               <Pilots
               // pilotos={pilotos}
@@ -32,7 +32,7 @@ function App() {
               />
             }
           />
-          <Route path="/crew_page" element={<Crew />} />
+          <Route path="/crew" element={<Crew />} />
         </Route>
       </Routes>
     </BrowserRouter>

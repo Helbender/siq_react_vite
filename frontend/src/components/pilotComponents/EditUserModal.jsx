@@ -19,8 +19,6 @@ import { useState } from "react";
 import { CiEdit } from "react-icons/ci";
 import axios from "axios";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5051";
-
 function EditUserModal({ piloto, setPilotos }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [posto, setPosto] = useState(piloto.rank);
@@ -36,7 +34,7 @@ function EditUserModal({ piloto, setPilotos }) {
     };
     try {
       const res = await axios.patch(
-        `${API_URL}/pilots/${piloto.nip}`,
+        `/api/pilots/${piloto.nip}`,
         UserToBeEdited,
       );
       console.log(res.data);

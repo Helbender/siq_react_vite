@@ -23,12 +23,10 @@ import { BiTrash } from "react-icons/bi";
 import { useColorMode } from "@chakra-ui/react";
 import axios from "axios";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5051";
-
 const FlightCard = ({ flight, flights, setFlights }) => {
   const handleDeleteFlight = async (id) => {
     try {
-      const res = await axios.delete(`${API_URL}/flights/${id}`);
+      const res = await axios.delete(`/api/flights/${id}`);
       console.log(res.data);
       if (res.data?.deleted_id) {
         setFlights(flights.filter((flight) => flight.id != id));

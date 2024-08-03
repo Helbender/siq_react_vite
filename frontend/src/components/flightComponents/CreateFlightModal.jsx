@@ -23,8 +23,6 @@ import { useState } from "react";
 import PilotInput from "./PilotInput";
 import axios from "axios";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5051";
-
 function CreateFlightModal() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [inputs, setInputs] = useState({
@@ -40,7 +38,6 @@ function CreateFlightModal() {
   let pilotList = [0, 1, 2, 3, 4, 5];
   const handleCreateFlight = async (e) => {
     e.preventDefault();
-    // console.log(inputs.pilot0);
     let data = inputs;
     for (let i = 0; i < 6; i++) {
       if (Object.hasOwn(inputs, `pilot${i}`)) {
@@ -49,7 +46,7 @@ function CreateFlightModal() {
       }
     }
     try {
-      const res = axios.post(`${API_URL}/flights`, data);
+      const res = axios.post(`/api/flights`, data);
       console.log(res.data);
     } catch (error) {
       console.log(error);

@@ -3,8 +3,8 @@ services:
     # image: images-gallery-api
     restart: always
     build: ./api
-    # ports:
-    #   - '5051:5051'
+    ports:
+      - '5051:5051'
     # volumes:
     #   - ./api:/app
   frontend:
@@ -12,7 +12,7 @@ services:
     restart: always
     build: ./frontend
     ports:
-      - "5173:5173"
+      - "5173:80"
     # volumes:
     #   - /app/node_modules
     #   - ./frontend:/app

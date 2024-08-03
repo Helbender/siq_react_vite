@@ -4,29 +4,33 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import CreateFlightModal from "./flightComponents/CreateFlightModal";
 
-const API_URL = import.meta.env.VITE_API_URL; //|| "http://127.0.0.1:5051";
 export default function Flights() {
   const [flights, setFlights] = useState([]);
 
-  // const getSavedFlights = async () => {
-  //   try {
-  //     const res = await axios.get(`${API_URL}/flights`);
-  //     setFlights(res.data || []);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
   const getSavedFlights = async () => {
     try {
-      const res = await fetch(`${API_URL}/flights`);
-      if (res.ok) {
-        const json = res.json();
-        console.log(json);
-      }
+      const res = await axios.get(`/api/flights`);
+      setFlights(res.data || []);
     } catch (error) {
-      console.error(error.message);
+      console.log(error);
     }
   };
+  // const getSavedFlights = () => {
+  //   try {
+  //     const res = fetch(`/api/flights`)
+  //       .then((res) => res.json())
+  //       .then((data) => {
+  //         console.log(data);
+  //         setFlights(data);
+  //       });
+  //     // if (res.ok) {
+  //     //   const json = res.json();
+  //     //   console.log(json);
+  //     // }
+  //   } catch (error) {
+  //     console.error(error.message);
+  //   }
+  // };
 
   useEffect(() => {
     getSavedFlights();
