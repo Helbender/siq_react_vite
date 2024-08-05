@@ -54,6 +54,8 @@ def retrieve_flights() -> tuple[Response, int]:
                     else:
                         flights[i]["flight_pilots"].append(flight_pilot.to_json())
                 i += 1
+            print("\n", "\n", flights, "\n", "\n")
+            # return jsonify(flights), 200
             return jsonify(flights), 200
 
     if request.method == "POST":
@@ -66,6 +68,17 @@ def retrieve_flights() -> tuple[Response, int]:
             destination=f["destination"],
             departure_time=f["ATD"],
             arrival_time=f["ATA"],
+            flight_type=f["flightType"],
+            flight_action=f["flightAction"],
+            tailnumber=f["tailNumber"],
+            total_time=f["ATE"],
+            atr=f["totalLandings"],
+            passengers=f["passengers"],
+            doe=f["doe"],
+            cargo=f["cargo"],
+            number_of_crew=f["numberOfCrew"],
+            orm=f["orm"],
+            fuel=f["fuel"],
         )
 
         with Session(engine, autoflush=False) as session:
@@ -162,6 +175,7 @@ def handle_flights(flight_id: int) -> tuple[Response, int]:
         with Session(engine) as session:
             result = session.execute(delete(Flight).where(Flight.fid == flight_id))
             if result.rowcount == 1:
+                session.commit()
                 return jsonify({"deleted_id": f"Flight {flight_id}"}), 200
 
     return jsonify({"message": "Bad Manual Request"}), 403

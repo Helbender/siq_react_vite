@@ -10,6 +10,7 @@ export default function Flights() {
   const getSavedFlights = async () => {
     try {
       const res = await axios.get(`/api/flights`);
+      console.log(res.data);
       setFlights(res.data || []);
     } catch (error) {
       console.log(error);
@@ -38,7 +39,6 @@ export default function Flights() {
   return (
     <Container maxW={"1000px"}>
       <CreateFlightModal flights={flights} setFlights={setFlights} />
-
       <Stack gap={5} mt="8" mb="10">
         {flights.map((flight) => (
           <FlightCard

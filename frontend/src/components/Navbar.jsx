@@ -17,7 +17,7 @@ const Navbar = () => {
   const { colorMode, toggleColorMode } = useColorMode();
   // const location = useLocation();
   return (
-    <Container maxW={"1000px"}>
+    <Container maxW={"800px"}>
       <Box
         px={4}
         my={4}

@@ -44,11 +44,22 @@ class Flight(Base):
 
     fid: Mapped[int] = mapped_column(primary_key=True)
     airtask: Mapped[str] = mapped_column(nullable=False)
+    flight_type: Mapped[str]
+    flight_action: Mapped[str]
+    tailnumber: Mapped[int]
     date: Mapped[date]
     origin: Mapped[str] = mapped_column(String(4))
     destination: Mapped[str] = mapped_column(String(4))
     departure_time: Mapped[str]
     arrival_time: Mapped[str]
+    total_time: Mapped[str]
+    atr: Mapped[int]
+    passengers: Mapped[int]
+    doe: Mapped[int]
+    cargo: Mapped[int]
+    number_of_crew: Mapped[int]
+    orm: Mapped[int]
+    fuel: Mapped[int]
     flight_pilots: Mapped[List[FlightPilots]] = relationship(
         back_populates="flight",
         cascade="all, delete",
@@ -67,6 +78,17 @@ class Flight(Base):
             "destination": self.destination,
             "ATD": self.departure_time,
             "ATA": self.arrival_time,
+            "ATE": self.total_time,
+            "flightType": self.flight_type,
+            "flightAction": self.flight_action,
+            "tailNumber": self.tailnumber,
+            "totalLandings": self.atr,
+            "passengers": self.passengers,
+            "doe": self.doe,
+            "cargo": self.cargo,
+            "numberOfCrew": self.number_of_crew,
+            "orm": self.orm,
+            "fuel": self.fuel,
         }
 
 
@@ -76,7 +98,6 @@ class FlightPilots(Base):
     flight_id: Mapped[int] = mapped_column(
         ForeignKey("flights_table.fid"),
         primary_key=True,
-        # ondelete="CASCADE",
     )
     pilot_id: Mapped[int] = mapped_column(ForeignKey("pilots.nip"), primary_key=True)
 
@@ -101,7 +122,7 @@ class FlightPilots(Base):
             rep += "QA1"
         return rep
 
-    def to_json(self):
+    def to_json(self) -> dict:
         response = {
             "pilotName": self.pilot.name,
             "nip": self.pilot.nip,

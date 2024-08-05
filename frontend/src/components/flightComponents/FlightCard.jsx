@@ -27,7 +27,7 @@ const FlightCard = ({ flight, flights, setFlights }) => {
   const handleDeleteFlight = async (id) => {
     try {
       const res = await axios.delete(`/api/flights/${id}`);
-      console.log(res.data);
+      // console.log(res.data);
       if (res.data?.deleted_id) {
         setFlights(flights.filter((flight) => flight.id != id));
       }
@@ -35,7 +35,7 @@ const FlightCard = ({ flight, flights, setFlights }) => {
       console.log(error);
     }
   };
-  console.log(flight);
+  // console.log(flight);
   // eslint-disable-next-line no-unused-vars
   const { colorMode, toggleColorMode } = useColorMode();
   let color = colorMode === "light" ? "black" : "white";
@@ -46,7 +46,7 @@ const FlightCard = ({ flight, flights, setFlights }) => {
     <Card>
       <CardHeader>
         <Flex align={"center"}>
-          <Heading>{`${flight.airtask} ${flight.id}`} </Heading>
+          <Heading>{`${flight.airtask}`} </Heading>
           <Spacer />
           <IconButton
             variant="ghost"
@@ -56,7 +56,10 @@ const FlightCard = ({ flight, flights, setFlights }) => {
             icon={<BiTrash />}
           />
           <Spacer />
-          <Heading>{`${l.getDate()}-${l.getMonth() + 1}-${l.getFullYear()}`}</Heading>
+          <Heading>{
+            `${l.toLocaleDateString("pt-pt")}`
+            // `${l.getDate()}-${l.getMonth() + 1}-${l.getFullYear()}`
+          }</Heading>
         </Flex>
         <Divider />
       </CardHeader>

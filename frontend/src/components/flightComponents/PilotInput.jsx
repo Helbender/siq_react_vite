@@ -1,26 +1,25 @@
 /* eslint-disable no-extra-boolean-cast */
 /* eslint-disable react/prop-types */
 import { FormControl, GridItem, Input, Select, Flex } from "@chakra-ui/react";
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { useState } from "react";
 
-const PilotInput = ({ inputs, setInputs, pilotNumber }) => {
-  const [pilotos, setPilotos] = useState([]);
+const PilotInput = ({ inputs, setInputs, pilotNumber, pilotos }) => {
+  // const [pilotos, setPilotos] = useState([]);
   const [name, setName] = useState([]);
   const [nip, setNip] = useState("");
 
-  const getSavedPilots = async () => {
-    try {
-      const res = await axios.get(`/api/pilots`);
-      // console.log(res);
-      setPilotos(res.data || []);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  useEffect(() => {
-    getSavedPilots();
-  }, []);
+  // const getSavedPilots = async () => {
+  //   try {
+  //     const res = await axios.get(`/api/pilots`);
+  //     // console.log(res);
+  //     setPilotos(res.data || []);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+  // useEffect(() => {
+  //   getSavedPilots();
+  // }, []);
 
   const [pilot, setPilot] = useState({
     nip: "",
@@ -190,7 +189,7 @@ const PilotInput = ({ inputs, setInputs, pilotNumber }) => {
                 ...pilot,
                 [e.target.value]: true,
               });
-              let newpilot = { ...pilot, [e.target.value]: e.target.value };
+              let newpilot = { ...pilot, [e.target.value]: true };
               let newinput = { ...inputs, [pilotNumber]: newpilot };
               setInputs(newinput);
             }}
@@ -214,7 +213,7 @@ const PilotInput = ({ inputs, setInputs, pilotNumber }) => {
                 ...pilot,
                 [e.target.value]: true,
               });
-              let newpilot = { ...pilot, [e.target.value]: e.target.value };
+              let newpilot = { ...pilot, [e.target.value]: true };
               let newinput = { ...inputs, [pilotNumber]: newpilot };
               setInputs(newinput);
             }}
