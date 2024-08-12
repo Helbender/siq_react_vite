@@ -23,9 +23,9 @@ class People:
     # __tablename__: str = ""
 
     nip: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str]
-    rank: Mapped[str]
-    position: Mapped[str]
+    name: Mapped[str] = mapped_column(String(20))
+    rank: Mapped[str] = mapped_column(String(5))
+    position: Mapped[str] = mapped_column(String(3))
 
     def __repr__(self):
         return f"{self.rank} {self.nip} {self.name}. I'm a {self.position}"
@@ -43,16 +43,16 @@ class Flight(Base):
     __tablename__ = "flights_table"
 
     fid: Mapped[int] = mapped_column(primary_key=True)
-    airtask: Mapped[str] = mapped_column(nullable=False)
-    flight_type: Mapped[str]
-    flight_action: Mapped[str]
+    airtask: Mapped[str] = mapped_column(String(7), nullable=False)
+    flight_type: Mapped[str] = mapped_column(String(4))
+    flight_action: Mapped[str] = mapped_column(String(4))
     tailnumber: Mapped[int]
     date: Mapped[date]
     origin: Mapped[str] = mapped_column(String(4))
     destination: Mapped[str] = mapped_column(String(4))
-    departure_time: Mapped[str]
-    arrival_time: Mapped[str]
-    total_time: Mapped[str]
+    departure_time: Mapped[str] = mapped_column(String(5))
+    arrival_time: Mapped[str] = mapped_column(String(5))
+    total_time: Mapped[str] = mapped_column(String(5))
     atr: Mapped[int]
     passengers: Mapped[int]
     doe: Mapped[int]
@@ -172,10 +172,10 @@ class Qualification(Base):
 
     pilot_id: Mapped[int] = mapped_column(ForeignKey("pilots.nip"), primary_key=True)
     pilot: Mapped[Pilot] = relationship(back_populates="qualification")
-    last_day_landings: Mapped[str] = mapped_column(default=date_init)
-    last_night_landings: Mapped[str] = mapped_column(default=date_init)
-    last_prec_app: Mapped[str] = mapped_column(default=date_init)
-    last_nprec_app: Mapped[str] = mapped_column(default=date_init)
+    last_day_landings: Mapped[str] = mapped_column(String(55), default=date_init)
+    last_night_landings: Mapped[str] = mapped_column(String(55), default=date_init)
+    last_prec_app: Mapped[str] = mapped_column(String(55), default=date_init)
+    last_nprec_app: Mapped[str] = mapped_column(String(55), default=date_init)
     last_qa1_date: Mapped[date] = mapped_column(insert_default=date(year_init, 1, 1))
     last_qa2_date: Mapped[date] = mapped_column(insert_default=date(year_init, 1, 1))
     last_bsp1_date: Mapped[date] = mapped_column(insert_default=date(year_init, 1, 1))
