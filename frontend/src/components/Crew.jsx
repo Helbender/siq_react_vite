@@ -1,9 +1,8 @@
+import { Container } from "@chakra-ui/react";
+import CreateCrewModal from "./crewComponents/CreateCrewModal";
+
 const Crew = () => {
-  return (
-    <div>
-      <p>Page 2</p>
-    </div>
-  );
+  return <Container>{/* <CreateCrewModal /> */}</Container>;
 };
 
 export default Crew;

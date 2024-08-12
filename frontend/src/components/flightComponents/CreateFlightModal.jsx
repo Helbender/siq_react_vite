@@ -17,6 +17,7 @@ import {
   GridItem,
   Grid,
   Divider,
+  Select,
   // Stack,
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
@@ -49,6 +50,21 @@ function CreateFlightModal({ flights, setFlights }) {
 
   let pilotList = [0, 1, 2, 3, 4, 5];
 
+  const getTimeDiff = (time1, time2) => {
+    time1 = time1.split(":");
+    time2 = time2.split(":");
+    let timeString1 = new Date(0, 0, 0, time1[0], time1[1], 0, 0);
+    let timeString2 = new Date(0, 0, 0, time2[0], time2[1], 0, 0);
+    let dif = (timeString2 - timeString1) / 3600 / 1000;
+    let hours = Math.floor(dif);
+    let minutes = (dif - hours) * 60;
+    let time = String(
+      (hours < 10 ? "0" + hours : hours) +
+        ":" +
+        (minutes < 10 ? "0" + minutes : minutes),
+    );
+    return time;
+  };
   const handleCreateFlight = async (e) => {
     e.preventDefault();
     let data = inputs;
@@ -60,7 +76,10 @@ function CreateFlightModal({ flights, setFlights }) {
     }
     try {
       const res = axios.post(`/api/flights`, data);
-      setFlights([...flights, data]);
+      console.log((await res).status);
+      if ((await res).status === 201) {
+        setFlights([...flights, data]);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -80,7 +99,9 @@ function CreateFlightModal({ flights, setFlights }) {
 
   return (
     <>
-      <Button onClick={onOpen}>Novo Modelo</Button>
+      <Button onClick={onOpen} colorScheme="green">
+        Novo Modelo
+      </Button>
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
@@ -90,13 +111,14 @@ function CreateFlightModal({ flights, setFlights }) {
             <ModalCloseButton />
             <ModalBody>
               <Stack>
-                <Flex gap={"5"} alignSelf={"center"}>
-                  <FormControl maxWidth={"120px"}>
+                <Flex gap={"5"}>
+                  <FormControl>
                     <FormLabel textAlign={"center"}>Airtask</FormLabel>
                     <Input
                       name="airtask"
                       type="text"
                       isRequired
+                      textAlign={"center"}
                       value={inputs.airtask}
                       onChange={(e) =>
                         setInputs({ ...inputs, airtask: e.target.value })
@@ -105,27 +127,56 @@ function CreateFlightModal({ flights, setFlights }) {
                   </FormControl>
                   <FormControl>
                     <FormLabel textAlign={"center"}>Modalidade</FormLabel>
-                    <Input
+                    <Select
                       name="modalidade"
                       type="text"
                       isRequired
+                      placeholder=" "
                       value={inputs.flightType}
                       onChange={(e) =>
                         setInputs({ ...inputs, flightType: e.target.value })
                       }
-                    />
+                    >
+                      <option value="ADEM">ADEM</option>
+                      <option value="ADROP">ADROP</option>
+                      <option value="AIREV">AIREV</option>
+                      <option value="ALSO">ALSO</option>
+                      <option value="AMOV">AMOV</option>
+                      <option value="AQUAL">AQUAL</option>
+                      <option value="ITAS">ITAS</option>
+                      <option value="MNT">MNT</option>
+                      <option value="PHOTO">PHOTO</option>
+                      <option value="RECCE">RECCE</option>
+                      <option value="SAO">SAO</option>
+                      <option value="SAR">SAR</option>
+                      <option value="SMOV">SMOV</option>
+                      <option value="TALD">TALD</option>
+                      <option value="VIPLF">VIPLF</option>
+                      <option value="VIS">VIS</option>
+                      <option value="ISR">ISR</option>
+                      <option value="TRCA">TRCA</option>
+                      <option value="SIM">SIM</option>
+                    </Select>
                   </FormControl>
                   <FormControl>
                     <FormLabel textAlign={"center"}>Acção</FormLabel>
-                    <Input
+                    <Select
                       name="action"
                       type="text"
                       isRequired
+                      placeholder=" "
                       value={inputs.flightAction}
                       onChange={(e) =>
                         setInputs({ ...inputs, flightAction: e.target.value })
                       }
-                    />
+                    >
+                      <option value="OPER">OPER</option>
+                      <option value="MNT">MNT</option>
+                      <option value="TRM">TRM</option>
+                      <option value="TRQ">TRQ</option>
+                      <option value="TRU">TRU</option>
+                      <option value="INST">INST</option>
+                    </Select>
                   </FormControl>
 
                   <FormControl maxWidth={"175px"}>
@@ -156,9 +207,9 @@ function CreateFlightModal({ flights, setFlights }) {
                       name="arrival_time"
                       type="time"
                       value={inputs.ATA}
-                      onChange={(e) =>
-                        setInputs({ ...inputs, ATA: e.target.value })
-                      }
+                      onChange={(e) => {
+                        setInputs({ ...inputs, ATA: e.target.value });
+                      }}
                     />
                   </FormControl>
                   <FormControl maxWidth={"90px"}>
@@ -166,8 +217,15 @@ function CreateFlightModal({ flights, setFlights }) {
                     <Input
                       type="time"
                       value={inputs.ATE}
-                      onChange={(e) =>
-                        setInputs({ ...inputs, ATE: e.target.value })
+                      // onChange={(e) => {
+                      //   setInputs({ ...inputs, ATE: e.target.value });
+                      // }}
+                      // isReadOnly
+                      onFocusCapture={() =>
+                        setInputs({
+                          ...inputs,
+                          ATE: getTimeDiff(inputs.ATD, inputs.ATA),
+                        })
                       }
                     />
                   </FormControl>
@@ -206,15 +264,29 @@ function CreateFlightModal({ flights, setFlights }) {
                 <Flex mt="5" gap={"5"}>
                   <FormControl>
                     <FormLabel textAlign={"center"}>Nº Cauda</FormLabel>
-                    <Input
+                    <Select
                       name="tailNumber"
                       type="number"
                       isRequired
+                      placeholder=" "
                       value={inputs.tailNumber}
                       onChange={(e) =>
                         setInputs({ ...inputs, tailNumber: e.target.value })
                       }
-                    />
+                    >
+                      <option value={16701}>16701</option>
+                      <option value={16702}>16702</option>
+                      <option value={16703}>16703</option>
+                      <option value={16704}>16704</option>
+                      <option value={16705}>16705</option>
+                      <option value={16706}>16706</option>
+                      <option value={16707}>16707</option>
+                      <option value={16708}>16708</option>
+                      <option value={16709}>16709</option>
+                      <option value={16710}>16710</option>
+                      <option value={16711}>16711</option>
+                      <option value={16712}>16712</option>
+                    </Select>
                   </FormControl>
                   <FormControl>
                     <FormLabel textAlign={"center"}>Aterragens</FormLabel>
@@ -294,15 +366,14 @@ function CreateFlightModal({ flights, setFlights }) {
                 </Flex>
                 <Divider my={8} />
                 <Grid
-                  // alignItems={"center"}
+                  alignItems={"center"}
                   // alignContent={"center"}
                   // alignSelf={"center"}
-                  // templateRows="repeat(7, 1fr)"
                   templateColumns="repeat(9, 1fr)"
                 >
-                  <GridItem textAlign={"center"}>NIP</GridItem>
-                  <GridItem textAlign={"center"}>Nome</GridItem>
                   <GridItem textAlign={"center"}>Posição</GridItem>
+                  <GridItem textAlign={"center"}>Nome</GridItem>
+                  <GridItem textAlign={"center"}>NIP</GridItem>
                   <GridItem textAlign={"center"}>ATR</GridItem>
                   <GridItem textAlign={"center"}>ATN</GridItem>
                   <GridItem textAlign={"center"}>PrecApp</GridItem>

@@ -17,12 +17,13 @@ const Navbar = () => {
   const { colorMode, toggleColorMode } = useColorMode();
   // const location = useLocation();
   return (
-    <Container maxW={"800px"}>
+    <Container maxW={"800px"} mb={10}>
       <Box
-        px={4}
+        px={5}
         my={4}
-        borderRadius={5}
-        bg={useColorModeValue("gray.200", "gray.700")}
+        // mx={10}
+        borderRadius={10}
+        bg={useColorModeValue("gray.400", "gray.700")}
       >
         <Flex h="16" alignItems={"center"} justifyContent={"space-between"}>
           {/* Left Side*/}

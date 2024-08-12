@@ -1,6 +1,7 @@
 /* eslint-disable react/jsx-key */
 /* eslint-disable react/prop-types */
 import {
+  Stack,
   Card,
   Flex,
   CardHeader,
@@ -10,7 +11,6 @@ import {
   CardBody,
   IconButton,
   Spacer,
-  Highlight,
   Table,
   Thead,
   Tbody,
@@ -22,6 +22,7 @@ import {
 import { BiTrash } from "react-icons/bi";
 import { useColorMode } from "@chakra-ui/react";
 import axios from "axios";
+import StyledText from "../styledcomponents/StyledText";
 
 const FlightCard = ({ flight, flights, setFlights }) => {
   const handleDeleteFlight = async (id) => {
@@ -38,12 +39,11 @@ const FlightCard = ({ flight, flights, setFlights }) => {
   // console.log(flight);
   // eslint-disable-next-line no-unused-vars
   const { colorMode, toggleColorMode } = useColorMode();
-  let color = colorMode === "light" ? "black" : "white";
 
   const l = new Date(Date.parse(flight.date));
 
   return (
-    <Card>
+    <Card boxShadow={"lg"} bg={colorMode === "light" ? "gray.100" : "gray.700"}>
       <CardHeader>
         <Flex align={"center"}>
           <Heading>{`${flight.airtask}`} </Heading>
@@ -64,24 +64,45 @@ const FlightCard = ({ flight, flights, setFlights }) => {
         <Divider />
       </CardHeader>
       <CardBody>
-        <Text>
-          <Highlight
-            query="ATD"
-            styles={{ color: color, fontWeight: "bold" }}
-          >{`ATD ${flight.ATD}`}</Highlight>
-        </Text>
-        <Text>
-          <Highlight
-            query="ATA"
-            styles={{ color: color, fontWeight: "bold" }}
-          >{`ATA ${flight.ATA}`}</Highlight>
-        </Text>
-        <Text>
-          <Highlight
-            query={["De", "para"]}
-            styles={{ color: color, fontWeight: "bold" }}
-          >{`De ${flight.origin} para ${flight.destination}`}</Highlight>
-        </Text>
+        <Flex alignItems={"top"}>
+          <Stack>
+            <Text>{`${flight.flghtType} / ${flight.flightAction}`}</Text>
+            <StyledText
+              query={"Nº de Cauda"}
+              text={`Nº de Cauda: ${flight.tailnumber}`}
+            />
+            <StyledText
+              query={"Nº TRIP"}
+              text={`Nº TRIP: ${flight.passengers}`}
+            />
+
+            <StyledText
+              query={"Aterragens"}
+              text={`Aterragens: ${flight.totalLandings}`}
+            />
+          </Stack>
+          <Spacer />
+          <Stack>
+            <StyledText query={"ORM"} text={`ORM: ${flight.orm}`} />
+
+            <StyledText
+              query={["PAX", "DOE"]}
+              text={`PAX/DOE: ${flight.passengers} ${flight.doe}`}
+            />
+            <StyledText query={"CARGO"} text={`CARGO: ${flight.cargo} Kg`} />
+            <StyledText query={"FUEL"} text={`FUEL: ${flight.fuel} Kg`} />
+          </Stack>
+          <Spacer />
+          <Stack>
+            <StyledText query={"ATD"} text={`ATD ${flight.ATD}`} />
+            <StyledText query={"ATA"} text={`ATA ${flight.ATA}`} />
+            <StyledText query={"ATE"} text={`ATE ${flight.ATE}`} />
+            <StyledText
+              query={["De", "para"]}
+              text={`De ${flight.origin} para ${flight.destination}`}
+            />
+          </Stack>
+        </Flex>
         <Divider my="5" />
         <TableContainer>
           <Table>

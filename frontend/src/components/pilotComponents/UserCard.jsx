@@ -31,7 +31,7 @@ const UserCard = ({ user, pilotos, setPilotos }) => {
     }
   };
   return (
-    <Card bg={useColorModeValue("gray.200", "gray.700")}>
+    <Card bg={useColorModeValue("gray.200", "gray.700")} boxShadow={"xl"}>
       <CardHeader>
         <Flex gap={4}>
           <Flex flex={"1"} flexDirection={"row"} align="center" gap={"5"}>
@@ -39,6 +39,7 @@ const UserCard = ({ user, pilotos, setPilotos }) => {
               bg={user.position === "PC" ? "blue.500" : "green"}
               size="40px"
               boxShadow="dark-lg"
+              pt={"1"}
             >
               {user.position}
             </Circle>

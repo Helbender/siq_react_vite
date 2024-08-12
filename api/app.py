@@ -11,17 +11,6 @@ from sqlalchemy.orm import Session
 app = Flask(__name__)  # , static_folder="../frontend/dist", static_url_path="/")
 # CORS(app)
 
-# frontend_folder = os.path.join(os.getcwd(), "..", "frontend", "dist")
-
-
-# Serve Frontend
-# @app.route("/", defaults={"filename": ""})
-# @app.route("/<path:filename>")
-# def index(filename):
-#     if not filename:
-#         filename = "index.html"
-#     return send_from_directory(frontend_folder, filename)
-
 
 # api routes
 @app.route("/api/flights", methods=["GET", "POST"])
@@ -85,7 +74,7 @@ def retrieve_flights() -> tuple[Response, int]:
             session.add(flight)
             pilot: dict
 
-            for pilot in f["pilots"]:
+            for pilot in f["flight_pilots"]:
                 pilot_obj: Pilot = session.get(Pilot, pilot["nip"])  # type: ignore  # noqa: PGH003
                 qual: Qualification = session.get(Qualification, pilot["nip"])  # type: ignore  # noqa: PGH003
 

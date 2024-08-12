@@ -65,26 +65,32 @@ const PilotInput = ({ inputs, setInputs, pilotNumber, pilotos }) => {
     }
   };
   return (
-    <GridItem colSpan={9}>
+    <GridItem
+      colSpan={9}
+      alignSelf={"center"}
+      alignContent={"center"}
+      alignItems={"center"}
+    >
       <Flex flexDirection={"row"} mt={2}>
-        <FormControl mx={1} isReadOnly alignSelf={"center"}>
-          <Input
-            // border="1px"
-            // borderColor="gray"
-            // borderRadius="5px"
+        <FormControl ml={5} alignItems={"center"}>
+          <Select
+            name="posição"
+            placeholder=" "
+            type="text"
+            onChange={handlePositionSelect}
+            maxW={20}
             textAlign={"center"}
-            value={nip}
           >
-            {/* {!!nip ? nip : "-"} */}
-          </Input>
+            <option value="PC">PC</option>
+            <option value="CP">CP</option>
+            <option value="OC">OC</option>
+          </Select>
         </FormControl>
         <FormControl mx={1}>
           <Select
             name="name"
             type="text"
             onChange={(e) => {
-              console.log(e);
-              console.log(e.target.value);
               let nip = handleNipForm(e.target.value);
               setPilot({
                 ...pilot,
@@ -106,17 +112,16 @@ const PilotInput = ({ inputs, setInputs, pilotNumber, pilotos }) => {
             })}
           </Select>
         </FormControl>
-        <FormControl mx={1}>
-          <Select
-            name="posição"
-            placeholder=" "
-            type="text"
-            onChange={handlePositionSelect}
+        <FormControl mx={1} isReadOnly alignSelf={"center"}>
+          <Input
+            // border="1px"
+            // borderColor="gray"
+            // borderRadius="5px"
+            textAlign={"center"}
+            value={nip}
           >
-            <option value="PC">PC</option>
-            <option value="CP">CP</option>
-            <option value="OC">OC</option>
-          </Select>
+            {/* {!!nip ? nip : "-"} */}
+          </Input>
         </FormControl>
         <FormControl mx={1}>
           <Input
@@ -142,7 +147,6 @@ const PilotInput = ({ inputs, setInputs, pilotNumber, pilotos }) => {
                 ...pilot,
                 ATN: e.target.value,
               });
-
               let newpilot = { ...pilot, ATN: e.target.value };
               let newinput = { ...inputs, [pilotNumber]: newpilot };
               setInputs(newinput);
