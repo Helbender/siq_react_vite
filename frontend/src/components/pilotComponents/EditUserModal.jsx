@@ -41,7 +41,6 @@ function EditUserModal({ piloto, setPilotos }) {
       setPilotos((prevUsers) =>
         prevUsers.map((u) => (u.nip === piloto.nip ? res.data : u)),
       );
-      console.log("teste2");
       onClose();
     } catch (error) {
       console.log(error);
