@@ -1,16 +1,26 @@
+/* eslint-disable react/prop-types */
 import { Container, Stack, Center, FormControl, Input } from "@chakra-ui/react";
 import FlightCard from "./flightComponents/FlightCard";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import CreateFlightModal from "./flightComponents/CreateFlightModal";
 
-export default function Flights() {
+export default function Flights({ token, setToken }) {
   const [flights, setFlights] = useState([]);
+  console.log("Token " + token);
 
-  const getSavedFlights = async () => {
+  const getSavedFlights = () => {
     try {
-      const res = await axios.get(`/api/flights`);
-      setFlights(res.data || []);
+      axios({
+        method: "GET",
+        url: `/api/flights`,
+        headers: { Authorization: "Bearer " + token },
+      }).then((response) => {
+        const res = response.data;
+        res.access_token && setToken(res.access_token);
+        console.log(res);
+        setFlights(res || []);
+      });
     } catch (error) {
       console.log(error);
     }

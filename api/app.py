@@ -1,19 +1,103 @@
 from __future__ import annotations  # noqa: D100, INP001
 
-from datetime import UTC, datetime
+import json
+import os
+from datetime import UTC, datetime, timedelta, timezone
 
 from config import engine
 from flask import Flask, Response, jsonify, request
+from flask.cli import load_dotenv
+from flask_jwt_extended import (
+    JWTManager,
+    create_access_token,
+    get_jwt,
+    get_jwt_identity,
+    jwt_required,
+    unset_jwt_cookies,
+)
 from models import Flight, FlightPilots, Pilot, Qualification
+from sendemail import main
 from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
+load_dotenv(path="./.env")
+JWT_KEY: str = os.environ.get("JWT_KEY", "")
 app = Flask(__name__)  # , static_folder="../frontend/dist", static_url_path="/")
 # CORS(app)
+app.config["JWT_SECRET_KEY"] = JWT_KEY
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=12)
+jwt = JWTManager(app)
 
 
-# api routes
+# apli login routes
+@app.after_request
+def refresh_expiring_jwts(response: Response) -> Response:
+    """Handle Token Expiration."""
+    try:
+        exp_timestamp = get_jwt()["exp"]
+        now = datetime.now(timezone.utc)
+        target_timestamp = datetime.timestamp(now + timedelta(hours=6))
+        if target_timestamp > exp_timestamp:
+            access_token = create_access_token(identity=get_jwt_identity())
+            data = response.get_json()
+            if type(data) is dict:
+                data["access_token"] = access_token
+                response.data = json.dumps(data)
+        return response  # noqa: TRY300
+    except (RuntimeError, KeyError):
+        # Case where there is not a valid JWT. Just return the original respone
+        return response
+
+
+@app.route("/api/token", methods=["POST"])
+def create_token() -> tuple[Response | dict[str, str], int]:
+    """Recebe os dados de logins e trata da autorização."""
+    login_data: dict = request.get_json()
+    email: str = login_data["email"]
+    password: str = login_data["password"]
+
+    if email != "teste" or password != "teste":
+        return {"message": "Wrong email or password"}, 401
+
+    access_token = create_access_token(identity=email)
+    response = {"access_token": access_token}
+    return response, 200
+
+
+@app.route("/api/profile")
+@jwt_required()  # new line
+def my_profile() -> Response:
+    """Handle Authorization test endpoint."""
+    response_body = {
+        "name": "Nagato",
+        "about": "Hello! I'm a full stack developer that loves python and javascript",
+    }
+
+    return response_body  # type: ignore  # noqa: PGH003, RET504
+
+
+@app.route("/api/logout", methods=["POST"])
+def logout():
+    response = jsonify({"msg": "logout sucessful"})
+    unset_jwt_cookies(response)
+    return response, 200
+
+
+@app.route("/api/recover/<email>", methods=["POST"])
+def recover_pass(email) -> tuple[Response, int]:
+    if request.method == "POST":
+        with Session(engine) as session:
+            tripulante = session.execute(select(Pilot).where(Pilot.email == email)).scalar_one()
+            json_data = main(email)
+
+            tripulante.recover = json_data
+            session.commit()
+    return jsonify({"msg": "Internal Error"}), 200
+
+
+# api DATABASE routes
 @app.route("/api/flights", methods=["GET", "POST"])
+@jwt_required()  # new line
 def retrieve_flights() -> tuple[Response, int]:
     """Retrieve all flights from the db and sends to frontend.
 
