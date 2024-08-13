@@ -23,9 +23,9 @@ class People:
     # __tablename__: str = ""
 
     nip: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str]
-    rank: Mapped[str]
-    position: Mapped[str]
+    name: Mapped[str] = mapped_column(String(20))
+    rank: Mapped[str] = mapped_column(String(5))
+    position: Mapped[str] = mapped_column(String(3))
 
     def __repr__(self):
         return f"{self.rank} {self.nip} {self.name}. I'm a {self.position}"
