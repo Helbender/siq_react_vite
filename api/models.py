@@ -26,6 +26,9 @@ class People:
     name: Mapped[str] = mapped_column(String(20))
     rank: Mapped[str] = mapped_column(String(5))
     position: Mapped[str] = mapped_column(String(3))
+    email: Mapped[str] = mapped_column(String(345))
+    password: Mapped[str] = mapped_column(String(20))
+    recover: Mapped[str] = mapped_column(String(100))
 
     def __repr__(self):
         return f"{self.rank} {self.nip} {self.name}. I'm a {self.position}"

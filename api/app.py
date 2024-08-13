@@ -53,7 +53,7 @@ def refresh_expiring_jwts(response: Response) -> Response:
 def create_token() -> tuple[Response | dict[str, str], int]:
     """Recebe os dados de logins e trata da autorização."""
     login_data: dict = request.get_json()
-    email: str = login_data["email"]
+    email: str = login_data["nip"]
     password: str = login_data["password"]
 
     if email != "teste" or password != "teste":
