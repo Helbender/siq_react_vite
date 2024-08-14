@@ -5,18 +5,14 @@ import {
   FormControl,
   FormLabel,
   Input,
-  Center,
-  Flex,
   Stack,
   Heading,
   Button,
-  Spacer,
 } from "@chakra-ui/react";
-import { Link } from "@chakra-ui/react";
 import axios from "axios";
 import { useState } from "react";
 
-function RecoverPass(props) {
+function RecoverPass() {
   const [email, setEmail] = useState("");
 
   function sendEmail() {

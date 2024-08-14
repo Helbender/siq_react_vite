@@ -69,7 +69,7 @@ function LoginPage(props) {
             type="text"
             value={loginForm.nip}
             name="nip"
-            placeholder="Email"
+            placeholder="NIP"
             onChange={handleChange}
           />
         </FormControl>

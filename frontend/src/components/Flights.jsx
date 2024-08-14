@@ -7,7 +7,6 @@ import CreateFlightModal from "./flightComponents/CreateFlightModal";
 
 export default function Flights({ token, setToken }) {
   const [flights, setFlights] = useState([]);
-  console.log("Token " + token);
 
   const getSavedFlights = () => {
     try {

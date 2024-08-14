@@ -70,7 +70,7 @@ def main(recipient_email):
     subject = "SIQ - Restauro de password"
 
     # Create the recovery URL with email and code
-    recovery_url = f"https://esq502.pt/recovery?email={recipient_email}&token={code}"
+    recovery_url = f"https://esq502.pt/recovery/{code}"
 
     # Prepare the HTML email body with a clickable link
     body = f"""<!DOCTYPE html>

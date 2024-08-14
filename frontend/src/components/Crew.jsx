@@ -1,8 +1,14 @@
-import { Container } from "@chakra-ui/react";
-import CreateCrewModal from "./crewComponents/CreateCrewModal";
+import { Container, Text } from "@chakra-ui/react";
+import { useParams } from "react-router-dom";
 
 const Crew = () => {
-  return <Container>{/* <CreateCrewModal /> */}</Container>;
+  let params = useParams();
+  console.log(params);
+  return (
+    <Container>
+      <Text>CREW</Text>
+    </Container>
+  );
 };
 
 export default Crew;
