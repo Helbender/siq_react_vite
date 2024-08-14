@@ -9,7 +9,8 @@ import { Button } from "@chakra-ui/react";
 import axios from "axios";
 import RecoverPass from "./components/loginComponents/RecoverPass";
 import PasswordChange from "./components/loginComponents/PasswordChange";
-
+import { Box, Text } from "@chakra-ui/react";
+import { Fragment } from "react";
 function App() {
   const { token, removeToken, setToken } = useToken();
 
@@ -31,44 +32,60 @@ function App() {
   }
   return (
     <BrowserRouter>
-      <Button onClick={handleLogout}>Logout</Button>
       {/* <RecoverPass /> */}
       {!token && token !== "" && token !== undefined ? (
         <LoginPage setToken={setToken} />
       ) : (
-        <Routes>
-          <Route index element={<Navigate replace to="flights" />} />
-          <Route path="/" element={<Master />}>
+        <Fragment>
+          <Routes>
+            <Route index element={<Navigate replace to="flights" />} />
+            <Route path="/" element={<Master />}>
+              <Route
+                path="/flights"
+                element={<Flights token={token} setToken={setToken} />}
+              />
+              \
+              <Route
+                path="/pilots"
+                element={
+                  <Pilots
+                  // pilotos={pilotos}
+                  // setPilotos={setPilotos}
+                  // getSavedPilots={getSavedPilots}
+                  />
+                }
+              />
+              <Route path="/crew" element={<Crew />} />
+            </Route>
             <Route
-              path="/flights"
-              element={<Flights token={token} setToken={setToken} />}
+              // this path will match URLs like
+              // - /teams/hotspur
+              // - /teams/real
+              path="/recovery/:token"
+              // the matching param will be available to the loader
+              loader={({ params }) => {}}
+              // and the action
+              action={({ params }) => {}}
+              element={<PasswordChange />}
             />
-            \
-            <Route
-              path="/pilots"
-              element={
-                <Pilots
-                // pilotos={pilotos}
-                // setPilotos={setPilotos}
-                // getSavedPilots={getSavedPilots}
-                />
-              }
-            />
-            <Route path="/crew" element={<Crew />} />
-          </Route>
-          <Route
-            // this path will match URLs like
-            // - /teams/hotspur
-            // - /teams/real
-            path="/recovery/:token"
-            // the matching param will be available to the loader
-            // loader={({ params }) => {}}
-            // and the action
-            // action={({ params }) => {}}
-            element={<PasswordChange />}
-          />
-        </Routes>
+          </Routes>
+          <Button justifySelf={"center"} onClick={handleLogout}>
+            Logout
+          </Button>
+        </Fragment>
       )}
+      <Box
+        position={"fixed"}
+        bottom={0}
+        w="100%"
+        bg="gray.300"
+        py="3"
+        alignItems={"center"}
+      >
+        <Text textAlign={"center"} color={"black"}>
+          Esquadra 502 @ 2024
+        </Text>
+      </Box>
     </BrowserRouter>
   );
 }

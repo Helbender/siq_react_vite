@@ -1,8 +1,15 @@
-import { Flex, FormControl, FormLabel, Input, Text } from "@chakra-ui/react";
+import { Flex, FormControl, FormLabel, Input } from "@chakra-ui/react";
 import { useState } from "react";
+import { useParams } from "react-router-dom";
 
 function PasswordChange() {
   const [password, setPassword] = useState("");
+  let params = useParams();
+  console.log(params);
+
+  function handleChangePassword(event) {
+    setPassword(event.target.value);
+  }
 
   return (
     <Flex

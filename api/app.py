@@ -87,10 +87,10 @@ def logout():
 def recover_pass(email) -> tuple[Response, int]:
     if request.method == "POST":
         # with Session(engine) as session:
-        #     tripulante = session.execute(select(Pilot).where(Pilot.email == email)).scalar_one()
+        # tripulante = session.execute(select(Pilot).where(Pilot.email == email)).scalar_one()
         json_data = main(email)
-
-    #     tripulante.recover = json_data
+        print(json_data)
+        # tripulante.recover = json_data
     #     session.commit()
     return jsonify({"msg": "Internal Error"}), 200
 

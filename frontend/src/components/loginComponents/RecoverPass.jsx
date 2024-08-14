@@ -1,6 +1,5 @@
 /* eslint-disable react/prop-types */
 import {
-  Text,
   Box,
   FormControl,
   FormLabel,
@@ -46,18 +45,6 @@ function RecoverPass() {
           Recover
         </Button>
       </Stack>
-      <Box
-        position={"fixed"}
-        bottom={0}
-        w="100%"
-        bg="gray.300"
-        py="3"
-        alignItems={"center"}
-      >
-        <Text textAlign={"center"} color={"black"}>
-          Esquadra 502 @ 2024
-        </Text>
-      </Box>
     </Box>
   );
 }
