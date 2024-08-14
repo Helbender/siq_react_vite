@@ -60,7 +60,7 @@ function App() {
             // this path will match URLs like
             // - /teams/hotspur
             // - /teams/real
-            path="/recovery/:teamId"
+            path="/recovery/:token"
             // the matching param will be available to the loader
             // loader={({ params }) => {}}
             // and the action

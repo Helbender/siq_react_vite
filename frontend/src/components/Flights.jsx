@@ -33,13 +33,13 @@ export default function Flights({ token, setToken }) {
       <Center>
         <CreateFlightModal flights={flights} setFlights={setFlights} />
         <FormControl maxW="130px">
-          <Input value="50A0000" />
+          <Input placeholder="00A0000" />
         </FormControl>
       </Center>
       <Stack gap={5} mt="8" mb="10" overflow="scroll">
         {flights.map((flight) => (
           <FlightCard
-            key={flight.id}
+            key={flight.fid}
             flight={flight}
             flights={flights}
             setFlights={setFlights}

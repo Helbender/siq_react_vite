@@ -216,7 +216,7 @@ function CreateFlightModal({ flights, setFlights }) {
                     <FormLabel textAlign={"center"}>TOTAL</FormLabel>
                     <Input
                       type="time"
-                      value={inputs.ATE}
+                      defaultValue={inputs.ATE}
                       // onChange={(e) => {
                       //   setInputs({ ...inputs, ATE: e.target.value });
                       // }}
