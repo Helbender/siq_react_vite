@@ -10,17 +10,22 @@ import {
   Stack,
   Heading,
   Button,
-  Spacer,
+  Link,useToast
 } from "@chakra-ui/react";
-import { Link } from "@chakra-ui/react";
 import axios from "axios";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 
 function LoginPage(props) {
   const [loginForm, setloginForm] = useState({
     nip: "",
     password: "",
   });
+  const navigate = useNavigate();
+  const toast = useToast();
+  const navigateRecover = () => navigate("/recover");
+
 
   function logMeIn(event) {
     axios({
@@ -36,16 +41,28 @@ function LoginPage(props) {
       })
       .catch((error) => {
         if (error.response) {
+          const errorMessage = error.response
+          ? "Invalid NIP or password."
+          : "Unable to reach the server. Please try again later.";
+  
+        toast({
+          title: "Login failed.",
+          description: errorMessage,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          position: "top",
+        });
           console.log(error.response);
           console.log(error.response.status);
           console.log(error.response.headers);
         }
       });
 
-    setloginForm({
-      nip: "",
-      password: "",
-    });
+    // setloginForm({
+    //   nip: "",
+    //   password: "",
+    // });
 
     event.preventDefault();
   }
@@ -84,14 +101,22 @@ function LoginPage(props) {
             onChange={handleChange}
           />
         </FormControl>
-        <Link textAlign={"center"} mt="5">
+        <Link
+          mt={4}
+          color="teal.500"
+          fontWeight="bold"
+          onClick={navigateRecover}
+          aria-label="Recover Password"
+          width={["80%", "60%", "100%"]} // Adjust link width for small screens and larger screens
+          textAlign="center"
+        >
           Recover Password
         </Link>
         <Button mt="10" onClick={logMeIn}>
           Login
         </Button>
       </Stack>
-      <Box
+      {/* <Box 
         position={"fixed"}
         bottom={0}
         w="100%"
@@ -103,6 +128,7 @@ function LoginPage(props) {
           Esquadra 502 @ 2024
         </Text>
       </Box>
+          */}
     </Box>
   );
 }
