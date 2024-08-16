@@ -173,7 +173,7 @@ class Pilot(People, Base):
 
     def to_json(self) -> dict:
         result = super().to_json()
-        result["qualification"] = self.qualification.to_json()
+        # result["qualification"] = self.qualification.to_json()
         return result
 
 

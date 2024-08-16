@@ -5,8 +5,8 @@ import os
 from datetime import UTC, datetime, timedelta, timezone
 
 from config import engine
+from dotenv import load_dotenv
 from flask import Flask, Response, jsonify, request
-from flask.cli import load_dotenv
 from flask_jwt_extended import (
     JWTManager,
     create_access_token,
@@ -20,13 +20,17 @@ from sendemail import main
 from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
-load_dotenv(path="./.env")
+load_dotenv(dotenv_path="./.env")
 JWT_KEY: str = os.environ.get("JWT_KEY", "")
+
 app = Flask(__name__)  # , static_folder="../frontend/dist", static_url_path="/")
 # CORS(app)
 app.config["JWT_SECRET_KEY"] = JWT_KEY
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=12)
 jwt = JWTManager(app)
+
+
+application = app  # to work with CPANEL PYTHON APPS
 
 
 # apli login routes

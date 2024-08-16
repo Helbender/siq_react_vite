@@ -2,7 +2,7 @@ import Pilots from "./components/Pilots";
 import Crew from "./components/Crew";
 import Flights from "./components/Flights";
 import Master from "./components/Master";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, useNavigate, Route, Routes } from "react-router-dom";
 import useToken from "./components/loginComponents/useToken";
 import LoginPage from "./components/loginComponents/LoginPage";
 import { Button } from "@chakra-ui/react";
@@ -16,6 +16,7 @@ import RecoverProcess from "./components/loginComponents/RecoverProcess";
 
 function App() {
   const { token, removeToken, setToken } = useToken();
+  // const navigate = useNavigate();
 
   function handleLogout() {
     axios({
@@ -24,6 +25,7 @@ function App() {
     })
       .then((response) => {
         removeToken();
+        // navigate("/");
       })
       .catch((error) => {
         if (error.response) {
@@ -70,9 +72,11 @@ function App() {
                 path="/main/pilots"
                 element={
                   <Pilots
-                  // pilotos={pilotos}
-                  // setPilotos={setPilotos}
-                  // getSavedPilots={getSavedPilots}
+                    // pilotos={pilotos}
+                    // setPilotos={setPilotos}
+                    // getSavedPilots={getSavedPilots}
+                    token={token}
+                    setToken={setToken}
                   />
                 }
               />

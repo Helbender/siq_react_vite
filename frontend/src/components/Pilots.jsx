@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import CreateUserModal from "./pilotComponents/CreateUserModal";
 
-const Pilots = () => {
+const Pilots = ({ token, setToken }) => {
   const [pilotos, setPilotos] = useState([]);
   const [allPilots, setallPilots] = useState([]);
 
@@ -18,7 +18,9 @@ const Pilots = () => {
   };
   const getSavedPilots = async () => {
     try {
-      const res = await axios.get(`/api/pilots`);
+      const res = await axios.get(`/api/pilots`, {
+        headers: { Authorization: "Bearer " + token },
+      });
       console.log(res);
       setPilotos(res.data || []);
       setallPilots(res.data || []);
