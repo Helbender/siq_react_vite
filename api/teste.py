@@ -27,16 +27,18 @@ pilot1 = Pilot(
     name="Tiago",
     rank="CAP",
     position="PC",
+    email="tfp.branco@gmail.com",
+    password="12345",
     qualification=Qualification(),
 )
 
-pilot2 = Pilot(
-    nip=135887,
-    name="Daniela",
-    rank="CAP",
-    position="PC",
-    qualification=Qualification(),
-)
+# pilot2 = Pilot(
+#     nip=135887,
+#     name="Daniela",
+#     rank="CAP",
+#     position="PC",
+#     qualification=Qualification(),
+# )
 # pq2 = Qualification()
 
 # pilot2.qualification = pq2
@@ -57,7 +59,7 @@ pilot2 = Pilot(
 
 with Session(engine) as session:
     session.add(pilot1)
-    session.add(pilot2)
+    # session.add(pilot2)
     #     #     session.add(u1)
     #     #     session.add(fp)
     #     #     session.add(fp2)
@@ -163,4 +165,4 @@ def insert_flight(f: dict):
         session.commit()
 
 
-insert_flight(f)
+# insert_flight(f)

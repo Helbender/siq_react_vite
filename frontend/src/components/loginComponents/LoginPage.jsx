@@ -10,12 +10,12 @@ import {
   Stack,
   Heading,
   Button,
-  Link,useToast
+  Link,
+  useToast,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
 
 function LoginPage(props) {
   const [loginForm, setloginForm] = useState({
@@ -25,7 +25,6 @@ function LoginPage(props) {
   const navigate = useNavigate();
   const toast = useToast();
   const navigateRecover = () => navigate("/recover");
-
 
   function logMeIn(event) {
     axios({
@@ -37,22 +36,22 @@ function LoginPage(props) {
       },
     })
       .then((response) => {
+        console.log("RESPONSE" + response);
         props.setToken(response.data.access_token);
+        navigate("/main");
       })
       .catch((error) => {
         if (error.response) {
-          const errorMessage = error.response
-          ? "Invalid NIP or password."
-          : "Unable to reach the server. Please try again later.";
-  
-        toast({
-          title: "Login failed.",
-          description: errorMessage,
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-          position: "top",
-        });
+          const errorMessage = error.response.data?.message;
+
+          toast({
+            title: "Login failed.",
+            description: errorMessage,
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+            position: "top",
+          });
           console.log(error.response);
           console.log(error.response.status);
           console.log(error.response.headers);

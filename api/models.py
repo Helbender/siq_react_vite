@@ -26,9 +26,11 @@ class People:
     name: Mapped[str] = mapped_column(String(20))
     rank: Mapped[str] = mapped_column(String(5))
     position: Mapped[str] = mapped_column(String(3))
-    email: Mapped[str] = mapped_column(String(345))
-    password: Mapped[str] = mapped_column(String(20))
-    recover: Mapped[str] = mapped_column(String(100))
+    email: Mapped[str] = mapped_column(String(50))
+    admin: Mapped[bool] = mapped_column(default=False)
+    recover: Mapped[str] = mapped_column(String(500), default="")
+    squadron: Mapped[str] = mapped_column(String(6), default="")
+    password: Mapped[str] = mapped_column(String(150))
 
     def __repr__(self):
         return f"{self.rank} {self.nip} {self.name}. I'm a {self.position}"
@@ -39,6 +41,11 @@ class People:
             "name": self.name,
             "rank": self.rank,
             "position": self.position,
+            "email": self.email,
+            "admin": self.admin,
+            "recover": self.recover,
+            "squadron": self.squadron,
+            "password": self.password,
         }
 
 

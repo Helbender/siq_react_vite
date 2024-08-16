@@ -10,18 +10,43 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function RecoverProcess() {
-  let params = useParams();
-  console.log(params);
+  const navigate = useNavigate();
 
+  let params = useParams();
+  // console.log("RPROCESS " + params.token);
+  const [nip, setNip] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const toast = useToast(); // Initialize the toast hook
 
+  const checkToken = async () => {
+    try {
+      const response = await axios.post("/api/recovery", {
+        token: params.token,
+        email: params.email,
+      });
+      setNip(response.data.nip);
+      console.log(response.data);
+    } catch (error) {
+      toast({
+        title: error.response.data.message,
+        description: "You need to reset the password again",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top",
+      });
+      console.log(error.response.data);
+    }
+  };
+  useEffect(() => {
+    checkToken();
+  }, []);
   const handleChangeNewPassword = (event) => {
     setNewPassword(event.target.value);
   };
@@ -56,9 +81,10 @@ function RecoverProcess() {
 
     try {
       // Update the API endpoint and payload
-      await axios.post("/api/storenewpass", {
-        newpass: newPassword,
+      const response = await axios.patch(`/api/storenewpass/${nip}`, {
+        password: newPassword,
       });
+      console.log(response);
 
       toast.close(loadingToast);
 
@@ -70,6 +96,7 @@ function RecoverProcess() {
         isClosable: true,
         position: "top",
       });
+      navigate("/");
     } catch (error) {
       toast.close(loadingToast);
 
@@ -152,7 +179,7 @@ function RecoverProcess() {
           width={["80%", "60%", "100%"]} // Adjust button width for small screens and larger screens
           mx="auto" // Center the button
         >
-          Guardar
+          Save
         </Button>
       </Stack>
       <Box

@@ -54,7 +54,7 @@ def create_json_data(token):
     timestamp = datetime.now(timezone.utc).isoformat()  # Get current timestamp in ISO format
 
     data = {
-        "token": hashed_token,
+        "token": token,
         "timestamp": timestamp,
     }
 
@@ -70,7 +70,7 @@ def main(recipient_email):
     subject = "SIQ - Restauro de password"
 
     # Create the recovery URL with email and code
-    recovery_url = f"https://esq502.pt/recovery/{code}"
+    recovery_url = f"https://esq502.pt/recovery/{code}/{recipient_email}"
 
     # Prepare the HTML email body with a clickable link
     body = f"""<!DOCTYPE html>

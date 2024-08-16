@@ -53,15 +53,24 @@ def refresh_expiring_jwts(response: Response) -> Response:
 def create_token() -> tuple[Response | dict[str, str], int]:
     """Recebe os dados de logins e trata da autorização."""
     login_data: dict = request.get_json()
-    email: str = login_data["nip"]
+    nip: int = login_data["nip"]
     password: str = login_data["password"]
 
-    if email != "teste" or password != "teste":
-        return {"message": "Wrong email or password"}, 401
+    # if nip != "teste" or password != "teste":
+    # return {"message": "Wrong nip or password"}, 401
 
-    access_token = create_access_token(identity=email)
-    response = {"access_token": access_token}
-    return response, 200
+    with Session(engine) as session:
+        pilot = session.execute(select(Pilot).where(Pilot.nip == nip)).scalar_one_or_none()
+        if pilot != None:
+            if password != pilot.password:
+                return {"message": "Wrong password"}, 401
+
+            access_token = create_access_token(identity=nip)
+            response = {"access_token": access_token}
+            return response, 200
+        else:
+            return {"message": f"No user with NIP {nip}"}, 404
+    return {"message": "Something went wrong in the server"}, 500
 
 
 @app.route("/api/profile")
@@ -83,16 +92,59 @@ def logout():
     return response, 200
 
 
+@app.route("/api/recovery", methods=["POST"])
+def recover_process():
+    """API endpoint to check token validity"""
+    email = request.json.get("email")
+    token = request.json.get("token")
+    with Session(engine) as session:
+        tripulante = session.execute(select(Pilot).where(Pilot.email == email)).scalar_one_or_none()
+        try:
+            recover_data = json.loads(tripulante.recover)
+        except json.JSONDecodeError:
+            return jsonify({"message": "Token already was used"}), 403
+
+        if token == recover_data["token"]:
+            now = datetime.now(timezone.utc)
+            token_timestamp = datetime.fromisoformat(recover_data["timestamp"])
+            exp_timestamp = now + timedelta(hours=12)
+            if exp_timestamp > token_timestamp:
+                # tripulante.recover = ""
+                # session.commit()
+                return jsonify({"message": "Token Valid", "nip": tripulante.nip}), 200
+
+    return jsonify({"message": "Token Expired"}), 408
+
+
 @app.route("/api/recover/<email>", methods=["POST"])
 def recover_pass(email) -> tuple[Response, int]:
-    if request.method == "POST":
-        # with Session(engine) as session:
-        # tripulante = session.execute(select(Pilot).where(Pilot.email == email)).scalar_one()
+    with Session(engine) as session:
+        tripulante = session.execute(select(Pilot).where(Pilot.email == email)).scalar_one_or_none()
+
+        if tripulante is None:
+            return jsonify({"message": "User not found"}), 404
+
         json_data = main(email)
-        print(json_data)
-        # tripulante.recover = json_data
-    #     session.commit()
-    return jsonify({"msg": "Internal Error"}), 200
+        tripulante.recover = json_data
+        session.commit()
+        return jsonify({"message": "Recovery email sent"}), 200
+
+    return jsonify({"message": "Internal Error"}), 500
+
+
+@app.route("/api/storenewpass/<nip>", methods=["PATCH"])
+def storeNewPassord(nip: int) -> tuple[Response, int]:
+    if request.method == "PATCH":
+        piloto: dict = request.get_json()
+        with Session(engine) as session:
+            modified_pilot = session.execute(select(Pilot).where(Pilot.nip == nip)).scalar_one()
+            for k, v in piloto.items():
+                setattr(modified_pilot, k, v)
+            modified_pilot.recover = ""
+            session.commit()
+
+            return jsonify(modified_pilot.to_json()), 200
+    return jsonify({"message": "Internal Error"}), 500
 
 
 # api DATABASE routes
@@ -128,7 +180,6 @@ def retrieve_flights() -> tuple[Response, int]:
                         flights[i]["flight_pilots"].append(flight_pilot.to_json())
                 i += 1
             print("\n", "\n", flights, "\n", "\n")
-            # return jsonify(flights), 200
             return jsonify(flights), 200
 
     if request.method == "POST":
@@ -186,6 +237,7 @@ def retrieve_flights() -> tuple[Response, int]:
 
 
 @app.route("/api/pilots", methods=["GET", "POST"])
+@jwt_required()  # new line
 def retrieve_pilots() -> tuple[Response, int]:
     """Placehold."""
     if request.method == "GET":
@@ -213,6 +265,7 @@ def retrieve_pilots() -> tuple[Response, int]:
 
 
 @app.route("/api/pilots/<nip>", methods=["DELETE", "PATCH"])
+@jwt_required()  # new line
 def handle_pilots(nip: int) -> tuple[Response, int]:
     """Placehold."""
     if request.method == "DELETE":
@@ -229,12 +282,11 @@ def handle_pilots(nip: int) -> tuple[Response, int]:
                 return jsonify({"message": "Failed to delete"}), 304
 
     if request.method == "PATCH":
-        piloto = request.get_json()
+        piloto: dict = request.get_json()
         with Session(engine) as session:
             modified_pilot = session.execute(select(Pilot).where(Pilot.nip == nip)).scalar_one()
-            modified_pilot.name = piloto["name"]
-            modified_pilot.rank = piloto["rank"]
-            modified_pilot.position = piloto["position"]
+            for k, v in piloto.items():
+                setattr(modified_pilot, k, v)
 
             session.commit()
             return jsonify(modified_pilot.to_json()), 200
@@ -243,6 +295,7 @@ def handle_pilots(nip: int) -> tuple[Response, int]:
 
 
 @app.route("/api/flights/<flight_id>", methods=["DELETE", "PATCH"])
+@jwt_required()  # new line
 def handle_flights(flight_id: int) -> tuple[Response, int]:
     if request.method == "DELETE":
         with Session(engine) as session:

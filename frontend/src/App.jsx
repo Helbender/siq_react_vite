@@ -42,15 +42,15 @@ function App() {
           <Route path="/recover" element={<RecoverPass />} />
           <Route
             exact
-            path="/recovery/:token"
+            path="/recovery/:token/:email"
             // the matching param will be available to the loader
-            loader={({ params }) => {
-              console.log(params);
-            }}
-            // and the action
-            action={({ params }) => {
-              console.log(params);
-            }}
+            // loader={({ params }) => {
+            //   console.log("LOADER" + params);
+            // }}
+            // // and the action
+            // action={({ params }) => {
+            //   console.log("ACTION" + params);
+            // }}
             element={<RecoverProcess />}
           />
           <Route path="/about" element={<AboutPage />} />

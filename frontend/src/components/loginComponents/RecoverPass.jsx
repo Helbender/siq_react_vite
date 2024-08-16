@@ -37,7 +37,7 @@ function RecoverPass() {
       toast({
         title: "Error.",
         description:
-          error.response?.data?.msg ||
+          error.response?.data?.message ||
           "Failed to send the recovery email. Please try again.",
         status: "error",
         duration: 5000,
