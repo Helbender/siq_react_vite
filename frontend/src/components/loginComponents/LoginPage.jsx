@@ -1,12 +1,9 @@
 /* eslint-disable react/prop-types */
 import {
-  Text,
   Box,
   FormControl,
   FormLabel,
   Input,
-  Center,
-  Flex,
   Stack,
   Heading,
   Button,
@@ -16,6 +13,7 @@ import {
 import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 function LoginPage(props) {
   const [loginForm, setloginForm] = useState({
@@ -25,6 +23,24 @@ function LoginPage(props) {
   const navigate = useNavigate();
   const toast = useToast();
   const navigateRecover = () => navigate("/recover");
+
+  const [timeoutId, setTimeoutId] = useState(null);
+
+  const startTimeout = (delay) => {
+    if (timeoutId) {
+      clearTimeout(timeoutId); // Clear any existing timeout
+    }
+
+    // Set a new timeout
+    const id = setTimeout(() => {
+      console.log("Timeout executed!");
+      props.removeToken();
+      navigate("/");
+    }, delay);
+
+    // Store the new timeout ID
+    setTimeoutId(id);
+  };
 
   function logMeIn(event) {
     axios({
@@ -37,8 +53,12 @@ function LoginPage(props) {
     })
       .then((response) => {
         console.log("RESPONSE" + response);
+
         props.setToken(response.data.access_token);
-        navigate("/main");
+        const decodedToken = jwtDecode(response.data.access_token);
+        console.log(decodedToken.admin, decodedToken.name);
+        startTimeout(1 * 60 * 60 * 1000);
+        navigate("/");
       })
       .catch((error) => {
         if (error.response) {
@@ -58,11 +78,6 @@ function LoginPage(props) {
         }
       });
 
-    // setloginForm({
-    //   nip: "",
-    //   password: "",
-    // });
-
     event.preventDefault();
   }
   function handleChange(event) {
@@ -75,7 +90,7 @@ function LoginPage(props) {
       h={"100vh"}
       display={"flex"}
       justifyContent={"center"}
-      alignItems={"center"}
+      alignItems={{ sm: "center", md: "top" }}
     >
       <Stack>
         <Heading mb={"25px"}>Esquadra 502</Heading>
@@ -115,19 +130,6 @@ function LoginPage(props) {
           Login
         </Button>
       </Stack>
-      {/* <Box 
-        position={"fixed"}
-        bottom={0}
-        w="100%"
-        bg="gray.300"
-        py="3"
-        alignItems={"center"}
-      >
-        <Text textAlign={"center"} color={"black"}>
-          Esquadra 502 @ 2024
-        </Text>
-      </Box>
-          */}
     </Box>
   );
 }

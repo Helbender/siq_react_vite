@@ -34,7 +34,11 @@ const Pilots = ({ token, setToken }) => {
 
   return (
     <Container maxWidth={"1200px"} alignItems={"center"}>
-      <CreateUserModal pilotos={pilotos} setPilotos={setPilotos} />
+      <CreateUserModal
+        pilotos={pilotos}
+        setPilotos={setPilotos}
+        token={token}
+      />
       <ButtonGroup ml="5" colorScheme="blue">
         <Button onClick={() => handlePositionFilter("ALL")}>Todos</Button>
         <Button onClick={() => handlePositionFilter("PC")}>PC</Button>

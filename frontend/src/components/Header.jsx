@@ -1,6 +1,8 @@
-import React from 'react';
+/* eslint-disable react/prop-types */
+import React from "react";
 import {
   Box,
+  Button,
   Flex,
   Heading,
   Link as ChakraLink,
@@ -14,14 +16,39 @@ import {
   useDisclosure,
   useMediaQuery,
   VStack,
-} from '@chakra-ui/react';
-import { useNavigate } from 'react-router-dom';
-import { FaHome, FaInfoCircle, FaInstagram, FaBars, FaSignOutAlt } from 'react-icons/fa';
+} from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
+import {
+  FaHome,
+  FaInfoCircle,
+  FaInstagram,
+  FaBars,
+  FaSignOutAlt,
+} from "react-icons/fa";
+import axios from "axios";
 
-function Header({ isLoggedIn, onLogout }) {
+function Header({ token, removeToken }) {
   const navigate = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [isSmallScreen] = useMediaQuery("(max-width: 480px)");
+
+  function handleLogout() {
+    axios({
+      method: "POST",
+      url: "/api/logout",
+    })
+      .then(() => {
+        removeToken();
+        navigate("/");
+      })
+      .catch((error) => {
+        if (error.response) {
+          console.log(error.response);
+          console.log(error.response.status);
+          console.log(error.response.headers);
+        }
+      });
+  }
 
   return (
     <Box
@@ -40,8 +67,8 @@ function Header({ isLoggedIn, onLogout }) {
           <Heading
             size="lg"
             cursor="pointer"
-            onClick={() => navigate('/')}
-            _hover={{ textDecoration: 'underline' }}
+            onClick={() => navigate("/")}
+            _hover={{ textDecoration: "underline" }}
           >
             Esquadra 502 - Elefantes
           </Heading>
@@ -54,8 +81,8 @@ function Header({ isLoggedIn, onLogout }) {
               ml={4}
               color="white"
               fontSize="lg"
-              _hover={{ textDecoration: 'underline' }}
-              onClick={() => navigate('/')}
+              _hover={{ textDecoration: "underline" }}
+              onClick={() => navigate("/")}
               aria-label="Home"
             >
               <FaHome size={20} />
@@ -65,7 +92,7 @@ function Header({ isLoggedIn, onLogout }) {
               ml={4}
               color="white"
               fontSize="lg"
-              _hover={{ textDecoration: 'underline' }}
+              _hover={{ textDecoration: "underline" }}
               href="https://www.instagram.com/esquadra502/"
               isExternal
               aria-label="Instagram"
@@ -77,18 +104,18 @@ function Header({ isLoggedIn, onLogout }) {
               ml={4}
               color="white"
               fontSize="lg"
-              _hover={{ textDecoration: 'underline' }}
-              onClick={() => navigate('/about')}
+              _hover={{ textDecoration: "underline" }}
+              onClick={() => navigate("/about")}
               aria-label="About"
             >
               <FaInfoCircle size={20} />
             </ChakraLink>
-            {isLoggedIn && (
+            {!token && token !== "" && token !== undefined ? null : (
               <IconButton
                 icon={<FaSignOutAlt />}
                 variant="outline"
                 color="white"
-                onClick={onLogout}
+                onClick={handleLogout}
                 aria-label="Logout"
                 ml={4}
               />
@@ -112,7 +139,7 @@ function Header({ isLoggedIn, onLogout }) {
                       size="md"
                       cursor="pointer"
                       onClick={() => {
-                        navigate('/');
+                        navigate("/");
                         onClose();
                       }}
                     >
@@ -126,7 +153,7 @@ function Header({ isLoggedIn, onLogout }) {
                         color="teal.500"
                         fontSize="lg"
                         onClick={() => {
-                          navigate('/');
+                          navigate("/");
                           onClose();
                         }}
                         aria-label="Home"
@@ -138,7 +165,7 @@ function Header({ isLoggedIn, onLogout }) {
                         color="teal.500"
                         fontSize="lg"
                         onClick={() => {
-                          navigate('/about');
+                          navigate("/about");
                           onClose();
                         }}
                         aria-label="About"
@@ -156,20 +183,6 @@ function Header({ isLoggedIn, onLogout }) {
                       >
                         <FaInstagram /> Instagram
                       </ChakraLink>
-                      {isLoggedIn && (
-                        <ChakraLink
-                          p={2}
-                          color="teal.500"
-                          fontSize="lg"
-                          onClick={() => {
-                            onLogout();
-                            onClose();
-                          }}
-                          aria-label="Logout"
-                        >
-                          <FaSignOutAlt /> Logout
-                        </ChakraLink>
-                      )}
                     </VStack>
                   </DrawerBody>
                 </DrawerContent>

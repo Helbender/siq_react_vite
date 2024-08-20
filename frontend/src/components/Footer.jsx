@@ -1,7 +1,5 @@
 // Footer.jsx
-import React from 'react';
-import { Box, Text, Stack, Divider, Link as ChakraLink } from "@chakra-ui/react";
-import { FaFacebook, FaTwitter, FaInstagram } from 'react-icons/fa'; // Import social media icons
+import { Box, Text, Link as ChakraLink } from "@chakra-ui/react";
 
 function Footer() {
   return (
@@ -30,7 +28,7 @@ function Footer() {
           <FaInstagram size={24} />
         </ChakraLink>
       </Stack> */}
-  </Box>
+    </Box>
   );
 }
 

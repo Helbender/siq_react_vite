@@ -1,14 +1,5 @@
-import {
-  Text,
-  Box,
-  Stack,
-  Heading,
-  Button,
-  useToast,
-} from "@chakra-ui/react";
+import { Text, Box, Stack, Heading, Button } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import Header from "./Header"; // Import Header component
-import Footer from "./Footer"; // Import Footer component
 
 function AboutPage() {
   const navigate = useNavigate();
@@ -26,8 +17,17 @@ function AboutPage() {
       p={2}
       mt="0px" // Adjust padding top as needed
     >
-      <Box mb={[0, 15]}> {/* Smaller margin-bottom for small screens */}
-        <Heading pt={20} pb={10} textAlign={"center"} fontSize={["2xl", "2xl", "3xl"]}> {/* Responsive font size */}
+      <Box mb={[0, 15]}>
+        {" "}
+        {/* Smaller margin-bottom for small screens */}
+        <Heading
+          pt={20}
+          pb={10}
+          textAlign={"center"}
+          fontSize={["2xl", "2xl", "3xl"]}
+        >
+          {" "}
+          {/* Responsive font size */}
           Sistema Integrado de Qualificações
         </Heading>
       </Box>
@@ -41,12 +41,8 @@ function AboutPage() {
         <Text fontSize={["md", "lg", "xl"]}>
           <strong>Desenvolvido por dois grandes Elefantes:</strong>
         </Text>
-        <Text fontSize={["md", "lg", "xl"]}>
-          Cap. PilAv Tiago Branco
-        </Text>
-        <Text fontSize={["md", "lg", "xl"]}>
-          Maj. PilAv Pedro Andrade
-        </Text>
+        <Text fontSize={["md", "lg", "xl"]}>Cap. PilAv Tiago Branco</Text>
+        <Text fontSize={["md", "lg", "xl"]}>Maj. PilAv Pedro Andrade</Text>
         <Text fontSize={["md", "lg", "xl"]} mt={4}>
           Elefantes - Sobre as asas ínclitas da Fama
         </Text>

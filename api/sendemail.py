@@ -1,11 +1,13 @@
 import hashlib
 import json
+import os
 import random
 import smtplib
 import string
 from datetime import datetime, timezone
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.utils import formataddr
 
 
 def generate_code(length=8):
@@ -21,13 +23,15 @@ def hash_code(code):
 
 def send_email(subject, body, to):
     """Send an email with the provided subject, body, and recipient."""
-    smtp_server = "mail.esq502.pt"  # SMTP server address
-    smtp_port = 465  # SSL port
-    smtp_user = "noreply@esq502.pt"
-    smtp_password = "3M^ds124*$"
+    smtp_server = os.getenv("SMTP_SERVER", "mail.esq502.pt")
+    smtp_port = int(os.getenv("SMTP_PORT", 465))  # SSL port
+    smtp_user = os.getenv("SMTP_USER", "noreply@esq502.pt")
+    smtp_password = os.getenv("SMTP_PASSWORD", "3M^ds124*$")
 
     # Create the email message
     msg = MIMEMultipart()
+    sender_address = formataddr(("Jarbas", smtp_user))
+
     msg["From"] = smtp_user
     msg["To"] = to
     msg["Subject"] = subject
@@ -70,7 +74,7 @@ def main(recipient_email):
     subject = "SIQ - Restauro de password"
 
     # Create the recovery URL with email and code
-    recovery_url = f"https://esq502.pt/recovery/{code}/{recipient_email}"
+    recovery_url = f"https://esq502.pt/#/recovery/{code}/{recipient_email}"
 
     # Prepare the HTML email body with a clickable link
     body = f"""<!DOCTYPE html>

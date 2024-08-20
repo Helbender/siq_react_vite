@@ -7,6 +7,7 @@ from datetime import UTC, datetime, timedelta, timezone
 from config import engine
 from dotenv import load_dotenv
 from flask import Flask, Response, jsonify, request
+from flask_cors import CORS
 from flask_jwt_extended import (
     JWTManager,
     create_access_token,
@@ -20,13 +21,14 @@ from sendemail import main
 from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
+# logging.basicConfig(filename="record.log", level=logging.DEBUG)
 load_dotenv(dotenv_path="./.env")
 JWT_KEY: str = os.environ.get("JWT_KEY", "")
 
 app = Flask(__name__)  # , static_folder="../frontend/dist", static_url_path="/")
-# CORS(app)
+CORS(app)
 app.config["JWT_SECRET_KEY"] = JWT_KEY
-app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=12)
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
 jwt = JWTManager(app)
 
 
@@ -40,14 +42,14 @@ def refresh_expiring_jwts(response: Response) -> Response:
     try:
         exp_timestamp = get_jwt()["exp"]
         now = datetime.now(timezone.utc)
-        target_timestamp = datetime.timestamp(now + timedelta(hours=6))
+        target_timestamp = datetime.timestamp(now + timedelta(minutes=30))
         if target_timestamp > exp_timestamp:
             access_token = create_access_token(identity=get_jwt_identity())
             data = response.get_json()
             if type(data) is dict:
                 data["access_token"] = access_token
                 response.data = json.dumps(data)
-        return response  # noqa: TRY300
+        return response
     except (RuntimeError, KeyError):
         # Case where there is not a valid JWT. Just return the original respone
         return response
@@ -69,7 +71,9 @@ def create_token() -> tuple[Response | dict[str, str], int]:
             if password != pilot.password:
                 return {"message": "Wrong password"}, 401
 
-            access_token = create_access_token(identity=nip)
+            access_token = create_access_token(
+                identity=nip, additional_claims={"admin": pilot.admin, "name": pilot.name}
+            )
             response = {"access_token": access_token}
             return response, 200
         else:
@@ -259,6 +263,8 @@ def retrieve_pilots() -> tuple[Response, int]:
                 name=piloto["name"],
                 rank=piloto["rank"],
                 position=piloto["position"],
+                email=piloto["email"],
+                password=piloto["password"],
                 qualification=Qualification(),
             )
             session.add(new_pilot)
@@ -312,4 +318,4 @@ def handle_flights(flight_id: int) -> tuple[Response, int]:
 
 
 if __name__ == "__main__":
-    app.run(port=5051, debug=True)  # noqa: S201
+    app.run(host="0.0.0.0", port=5051, debug=True)  # noqa: S201

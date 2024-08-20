@@ -18,27 +18,27 @@ import {
 import { useState } from "react";
 import axios from "axios";
 
-function CreateUserModal({ pilotos, setPilotos }) {
+function CreateUserModal({ pilotos, setPilotos, token }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [posto, setPosto] = useState("");
-  const [nip, setnip] = useState("");
-  const [name, setname] = useState("");
-  const [fc, setfc] = useState("");
+  const [inputs, setInputs] = useState([]);
 
+  const handleInputsChange = async (event) => {
+    event.preventDefault();
+    const { value, name } = event.target;
+    setInputs(() => ({ ...inputs, [name]: value }));
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const pilotToBeSaved = {
-      name: name,
-      nip: nip,
-      position: fc,
-      rank: posto,
-    };
+    setInputs(() => ({ ...inputs, password: 12345 }));
     try {
-      const res = await axios.post(`/api/pilots`, pilotToBeSaved);
+      console.log(inputs);
+      const res = await axios.post(`/api/pilots`, inputs, {
+        headers: { Authorization: "Bearer " + token },
+      });
       setPilotos([...pilotos, res.data]);
       onClose();
     } catch (error) {
-      // console.log(error);
+      console.log(error);
     }
   };
 
@@ -56,43 +56,44 @@ function CreateUserModal({ pilotos, setPilotos }) {
               <FormControl>
                 <FormLabel>Posto</FormLabel>
                 <Input
+                  name="rank"
                   placeholder="Posto"
-                  onChange={(e) => {
-                    setPosto(e.target.value);
-                    // console.log(e.target.value);
-                  }}
+                  onChange={handleInputsChange}
                 ></Input>
               </FormControl>
               <FormControl>
                 <FormLabel>NIP</FormLabel>
                 <Input
+                  name="nip"
                   placeholder="NIP"
-                  onChange={(e) => {
-                    setnip(e.target.value);
-                    // console.log(e.target.value);
-                  }}
+                  onChange={handleInputsChange}
                 ></Input>
               </FormControl>
               <FormControl>
                 <FormLabel>Função</FormLabel>
                 <Input
+                  name="position"
                   placeholder="Função a bordo"
-                  onChange={(e) => {
-                    setfc(e.target.value);
-                    // console.log(e.target.value);
-                  }}
+                  onChange={handleInputsChange}
                 ></Input>
               </FormControl>
             </Flex>
             <FormControl mt={5}>
               <FormLabel flexGrow={"2"}>Nome</FormLabel>
               <Input
+                name="name"
                 flexGrow={"2"}
                 placeholder="Nome"
-                onChange={(e) => {
-                  setname(e.target.value);
-                  // console.log(e.target.value);
-                }}
+                onChange={handleInputsChange}
+              ></Input>
+            </FormControl>
+            <FormControl>
+              <FormLabel>Email</FormLabel>
+              <Input
+                name="email"
+                type="email"
+                placeholder="Email"
+                onChange={handleInputsChange}
               ></Input>
             </FormControl>
           </ModalBody>
