@@ -58,11 +58,11 @@ function RecoverPass() {
       justifyContent={"center"}
       alignItems={"center"}
     >
-      <Stack mb={{ base: "10", md: "25" }}>
+      <Stack mb={{ base: "10", md: "25" }} textAlign={"center"}>
         <Heading textAlign={"center"} my={10} fontSize={["xl", "2xl", "3xl"]}>
           Sistema Integrado de Qualificações
         </Heading>
-        <FormControl>
+        <FormControl mx="auto">
           <FormLabel textAlign={"center"}>Email</FormLabel>
           <Input
             type="email"
@@ -72,7 +72,10 @@ function RecoverPass() {
             onChange={handleChange}
             aria-label="Email input"
             mx="auto" // Center the input field
-            width={["80%", "60%", "100%"]} // Adjust input width for small screens and larger screens
+            alignContent={"center"}
+            alignItems={"center"}
+            alignSelf={"center"}
+            width={["60", "80%", "100%"]} // Adjust input width for small screens and larger screens
           />
         </FormControl>
 
@@ -80,15 +83,15 @@ function RecoverPass() {
           mt={5}
           colorScheme="teal"
           onClick={sendEmail}
-          width={["80%", "60%", "100%"]} // Adjust button width for small screens and larger screens
+          width={["60%", "80%", "100%"]} // Adjust button width for small screens and larger screens
           mx="auto" // Center the button
         >
           Recover
         </Button>
         <Button
           onClick={goBack}
-          width={["80%", "60%", "100%"]} // Adjust button width for small screens and larger screens
-          // mx="auto" // Center the button
+          width={["60%", "80%", "100%"]} // Adjust button width for small screens and larger screens
+          mx="auto" // Center the button
         >
           Go Back
         </Button>

@@ -2,7 +2,7 @@ import Pilots from "./components/Pilots";
 import Crew from "./components/Crew";
 import Flights from "./components/Flights";
 import Master from "./components/Master";
-import { BrowserRouter, useNavigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, HashRouter } from "react-router-dom";
 import useToken from "./components/loginComponents/useToken";
 import LoginPage from "./components/loginComponents/LoginPage";
 import { Button } from "@chakra-ui/react";
@@ -16,7 +16,6 @@ import RecoverProcess from "./components/loginComponents/RecoverProcess";
 
 function App() {
   const { token, removeToken, setToken } = useToken();
-  // const navigate = useNavigate();
 
   function handleLogout() {
     axios({
@@ -36,7 +35,8 @@ function App() {
       });
   }
   return (
-    <BrowserRouter>
+    // <BrowserRouter>
+    <HashRouter>
       <Header />
       {!token && token !== "" && token !== undefined ? (
         <Routes>
@@ -89,7 +89,8 @@ function App() {
         </Fragment>
       )}
       <Footer />
-    </BrowserRouter>
+    </HashRouter>
+    // </BrowserRouter>
   );
 }
 
