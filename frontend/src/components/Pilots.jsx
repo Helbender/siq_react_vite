@@ -4,42 +4,22 @@ import UserCard from "./pilotComponents/UserCard";
 import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import CreateUserModal from "./pilotComponents/CreateUserModal";
-import { AuthContext } from "../Context";
+import { AuthContext } from "../AuthContext";
 
 const Pilots = () => {
-  const [pilotos, setPilotos] = useState([]);
-  const [allPilots, setallPilots] = useState([]);
-  const { token } = useContext(AuthContext);
+  const { pilotos } = useContext(AuthContext);
   const handlePositionFilter = (position) => {
     if (position === "ALL") {
-      setPilotos(allPilots);
+      null;
     } else {
-      setPilotos(allPilots.filter((piloto) => piloto.position == position));
+      // setPilotos(pilotos.filter((piloto) => piloto.position == position));
+      console.log(pilotos);
     }
   };
-  const getSavedPilots = async () => {
-    try {
-      const res = await axios.get(`/api/pilots`, {
-        headers: { Authorization: "Bearer " + token },
-      });
-      console.log(res);
-      setPilotos(res.data || []);
-      setallPilots(res.data || []);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  useEffect(() => {
-    getSavedPilots();
-  }, []);
 
   return (
     <Container maxWidth={"1200px"} alignItems={"center"}>
-      <CreateUserModal
-        pilotos={pilotos}
-        setPilotos={setPilotos}
-        token={token}
-      />
+      <CreateUserModal />
       <ButtonGroup ml="5" colorScheme="blue">
         <Button onClick={() => handlePositionFilter("ALL")}>Todos</Button>
         <Button onClick={() => handlePositionFilter("PC")}>PC</Button>
@@ -55,12 +35,7 @@ const Pilots = () => {
         mt="8"
       >
         {pilotos.map((pilot) => (
-          <UserCard
-            key={pilot.nip}
-            user={pilot}
-            pilotos={pilotos}
-            setPilotos={setPilotos}
-          />
+          <UserCard key={pilot.nip} user={pilot} />
         ))}
       </Grid>
     </Container>

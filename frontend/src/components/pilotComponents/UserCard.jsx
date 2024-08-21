@@ -17,11 +17,17 @@ import QualificationsPanel from "./QualificationsPanel";
 import { BiTrash } from "react-icons/bi";
 import axios from "axios";
 import EditUserModal from "./EditUserModal";
+import { useContext } from "react";
+import { AuthContext } from "../../AuthContext";
 
-const UserCard = ({ user, pilotos, setPilotos }) => {
+const UserCard = ({ user }) => {
+  const { token, pilotos, setPilotos } = useContext(AuthContext);
+
   const handleDeletePilot = async (nip) => {
     try {
-      const res = await axios.delete(`/api/pilots/${nip}`);
+      const res = await axios.delete(`/api/pilots/${nip}`, {
+        headers: { Authorization: "Bearer " + token },
+      });
       console.log(res);
       if (res.data?.deleted_id) {
         setPilotos(pilotos.filter((piloto) => piloto.nip != nip));
@@ -46,7 +52,7 @@ const UserCard = ({ user, pilotos, setPilotos }) => {
             <Heading size="sm">{`${user.rank} ${user.name}`}</Heading>
           </Flex>
           <Flex align={"center"}>
-            <EditUserModal piloto={user} setPilotos={setPilotos} />
+            <EditUserModal piloto={user} />
             <IconButton
               onClick={() => handleDeletePilot(user.nip)}
               variant="ghost"

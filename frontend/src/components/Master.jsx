@@ -1,13 +1,13 @@
 import Navbar from "./Navbar";
 import { Outlet } from "react-router-dom";
-import { Text, Box } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 
 export default function Master() {
   return (
     <Box w="100vw">
       {/* // <div className=" h-[100dvh] bg-gray-200"> */}
       {/* <div className="flex flex-col items-center gap-8 "> */}
-      <Text
+      {/* <Text
         bgGradient={"linear(to-r, cyan.400, blue.500)"}
         bgClip={"text"}
         fontSize={"50"}
@@ -16,7 +16,7 @@ export default function Master() {
         mt="10"
       >
         Sistema de Qualificações
-      </Text>
+      </Text> */}
       <Navbar />
       <Outlet />
       {/* // </div> */}

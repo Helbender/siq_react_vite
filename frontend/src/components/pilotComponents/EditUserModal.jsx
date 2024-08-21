@@ -15,28 +15,29 @@ import {
   Input,
   IconButton,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { CiEdit } from "react-icons/ci";
 import axios from "axios";
+import { AuthContext } from "../../AuthContext";
 
-function EditUserModal({ piloto, setPilotos }) {
+function EditUserModal({ piloto }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [posto, setPosto] = useState(piloto.rank);
-  const [name, setName] = useState(piloto.name);
-  const [fc, setfc] = useState(piloto.position);
+  const { token, setPilotos } = useContext(AuthContext);
+  const [inputs, setInputs] = useState(piloto);
+
+  const handleInputsChange = async (event) => {
+    event.preventDefault();
+    const { value, name } = event.target;
+    setInputs(() => ({ ...inputs, [name]: value }));
+  };
 
   const handleEditUser = async (e) => {
     e.preventDefault();
-    const UserToBeEdited = {
-      name: name,
-      position: fc,
-      rank: posto,
-    };
+
     try {
-      const res = await axios.patch(
-        `/api/pilots/${piloto.nip}`,
-        UserToBeEdited,
-      );
+      const res = await axios.patch(`/api/pilots/${piloto.nip}`, inputs, {
+        headers: { Authorization: "Bearer " + token },
+      });
       console.log(res.data);
       setPilotos((prevUsers) =>
         prevUsers.map((u) => (u.nip === piloto.nip ? res.data : u)),
@@ -64,33 +65,26 @@ function EditUserModal({ piloto, setPilotos }) {
               <FormControl>
                 <FormLabel>Posto</FormLabel>
                 <Input
-                  value={posto}
-                  onChange={(e) => {
-                    setPosto(e.target.value);
-                    // console.log(e.target.value);
-                  }}
+                  name="rank"
+                  value={inputs.rank}
+                  onChange={handleInputsChange}
                 ></Input>
               </FormControl>
               <FormControl>
                 <FormLabel>Função</FormLabel>
                 <Input
-                  value={fc}
-                  onChange={(e) => {
-                    setfc(e.target.value);
-                    // console.log(e.target.value);
-                  }}
+                  value={inputs.position}
+                  onChange={handleInputsChange}
                 ></Input>
               </FormControl>
             </Flex>
             <FormControl mt={5}>
               <FormLabel flexGrow={"2"}>Nome</FormLabel>
               <Input
-                value={name}
+                name="name"
+                value={inputs.name}
                 flexGrow={"2"}
-                onChange={(e) => {
-                  setName(e.target.value);
-                  // console.log(e.target.value);
-                }}
+                onChange={handleInputsChange}
               ></Input>
             </FormControl>
           </ModalBody>

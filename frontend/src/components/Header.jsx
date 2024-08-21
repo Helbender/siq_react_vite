@@ -29,7 +29,7 @@ import {
 } from "react-icons/fa";
 import axios from "axios";
 import { useContext } from "react";
-import { AuthContext } from "../Context";
+import { AuthContext } from "../AuthContext";
 
 function Header() {
   const { token, removeToken, getUser } = useContext(AuthContext);

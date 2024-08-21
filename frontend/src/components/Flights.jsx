@@ -1,36 +1,35 @@
 /* eslint-disable react/prop-types */
 import { Container, Stack, Center, FormControl, Input } from "@chakra-ui/react";
 import FlightCard from "./flightComponents/FlightCard";
-import { useState, useEffect, useContext } from "react";
-import axios from "axios";
 import CreateFlightModal from "./flightComponents/CreateFlightModal";
-import { AuthContext } from "../Context";
+import { AuthContext } from "../AuthContext";
+import { useContext } from "react";
 
 export default function Flights() {
-  const [flights, setFlights] = useState([]);
-  const { token, setToken } = useContext(AuthContext);
+  // const [flights, setFlights] = useContext(FlightContext);
+  const { token, flights, setFlights } = useContext(AuthContext);
 
-  const getSavedFlights = () => {
-    try {
-      axios({
-        method: "GET",
-        url: `/api/flights`,
-        headers: { Authorization: "Bearer " + token },
-      }).then((response) => {
-        const res = response.data;
-        console.log("Flights");
-        console.log(res);
-        res.access_token && setToken(res.access_token);
-        setFlights(res || []);
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // const getSavedFlights = () => {
+  //   try {
+  //     axios({
+  //       method: "GET",
+  //       url: `/api/flights`,
+  //       headers: { Authorization: "Bearer " + token },
+  //     }).then((response) => {
+  //       const res = response.data;
+  //       console.log("Flights");
+  //       console.log(res);
+  //       // res.access_token && setToken(res.access_token);
+  //       setFlights(res || []);
+  //     });
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
-  useEffect(() => {
-    getSavedFlights();
-  }, []);
+  // useEffect(() => {
+  //   getSavedFlights();
+  // }, []);
   return (
     <Container maxW={"1000px"}>
       <Center>

@@ -10,7 +10,7 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import AboutPage from "./components/About";
 import RecoverProcess from "./components/loginComponents/RecoverProcess";
-import { AuthContext } from "./Context";
+import { AuthContext } from "./AuthContext";
 
 function App() {
   // const { token, removeToken, setToken } = useToken();
@@ -43,17 +43,7 @@ function App() {
 
             <Route path="/" element={<Master />}>
               <Route path="/flights" index element={<Flights />} />
-
-              <Route
-                path="/pilots"
-                element={
-                  <Pilots
-                  // pilotos={pilotos}
-                  // setPilotos={setPilotos}
-                  // getSavedPilots={getSavedPilots}
-                  />
-                }
-              />
+              <Route path="/pilots" element={<Pilots />} />
               <Route path="/crew" element={<Crew />} />
             </Route>
           </Routes>

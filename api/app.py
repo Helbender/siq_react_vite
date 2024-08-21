@@ -72,12 +72,12 @@ def create_token() -> tuple[Response | dict[str, str], int]:
                 return {"message": "Wrong password"}, 401
 
             access_token = create_access_token(
-                identity=nip, additional_claims={"admin": pilot.admin, "name": pilot.name}
+                identity=nip,
+                additional_claims={"admin": pilot.admin, "name": pilot.name},
             )
             response = {"access_token": access_token}
             return response, 200
-        else:
-            return {"message": f"No user with NIP {nip}"}, 404
+        return {"message": f"No user with NIP {nip}"}, 404
     return {"message": "Something went wrong in the server"}, 500
 
 
@@ -296,6 +296,8 @@ def handle_pilots(nip: int) -> tuple[Response, int]:
         with Session(engine) as session:
             modified_pilot = session.execute(select(Pilot).where(Pilot.nip == nip)).scalar_one()
             for k, v in piloto.items():
+                if k == "qualification":
+                    continue
                 setattr(modified_pilot, k, v)
 
             session.commit()

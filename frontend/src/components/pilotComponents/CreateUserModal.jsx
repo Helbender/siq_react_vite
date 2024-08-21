@@ -15,12 +15,14 @@ import {
   Input,
   // Stack,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import axios from "axios";
+import { AuthContext } from "../../AuthContext";
 
-function CreateUserModal({ pilotos, setPilotos, token }) {
+function CreateUserModal() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [inputs, setInputs] = useState([]);
+  const { token, pilotos, setPilotos } = useContext(AuthContext);
 
   const handleInputsChange = async (event) => {
     event.preventDefault();
