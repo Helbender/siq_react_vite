@@ -91,6 +91,7 @@ function LoginPage(props) {
       display={"flex"}
       justifyContent={"center"}
       alignItems={{ sm: "center", md: "top" }}
+      overflowY="auto"
     >
       <Stack>
         <Heading mb={"25px"}>Esquadra 502</Heading>

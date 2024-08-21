@@ -16,8 +16,9 @@ export default function Flights({ token, setToken }) {
         headers: { Authorization: "Bearer " + token },
       }).then((response) => {
         const res = response.data;
-        res.access_token && setToken(res.access_token);
+        console.log("Flights");
         console.log(res);
+        res.access_token && setToken(res.access_token);
         setFlights(res || []);
       });
     } catch (error) {
@@ -37,14 +38,17 @@ export default function Flights({ token, setToken }) {
         </FormControl>
       </Center>
       <Stack gap={5} mt="8" mb="10" overflow="scroll">
-        {flights.map((flight) => (
-          <FlightCard
-            key={flight.fid}
-            flight={flight}
-            flights={flights}
-            setFlights={setFlights}
-          />
-        ))}
+        {flights.length
+          ? !!flights.length &&
+            flights.map((flight) => (
+              <FlightCard
+                key={flight.fid}
+                flight={flight}
+                flights={flights}
+                setFlights={setFlights}
+              />
+            ))
+          : null}
       </Stack>
     </Container>
   );

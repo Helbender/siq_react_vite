@@ -49,6 +49,19 @@ class People:
         }
 
 
+class CrewAndPositions(Base):
+    __tablename__ = "crew_and_positions"
+
+    position: Mapped[str] = mapped_column(String(5), unique=True, nullable=False, primary_key=True)
+    qualifications: Mapped[Optional[str]] = mapped_column(String(200), nullable=True)
+
+    def _repr_(self) -> str:
+        return f"Position: {self.position}, Qualifications: {self.qualifications}"
+
+    def to_json(self) -> dict:
+        return {"position": self.position, "qualifications": self.qualifications}
+
+
 class Flight(Base):
     __tablename__ = "flights_table"
 
