@@ -1,12 +1,14 @@
 /* eslint-disable react/prop-types */
 import { Container, Stack, Center, FormControl, Input } from "@chakra-ui/react";
 import FlightCard from "./flightComponents/FlightCard";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import CreateFlightModal from "./flightComponents/CreateFlightModal";
+import { AuthContext } from "../Context";
 
-export default function Flights({ token, setToken }) {
+export default function Flights() {
   const [flights, setFlights] = useState([]);
+  const { token, setToken } = useContext(AuthContext);
 
   const getSavedFlights = () => {
     try {
@@ -32,7 +34,11 @@ export default function Flights({ token, setToken }) {
   return (
     <Container maxW={"1000px"}>
       <Center>
-        <CreateFlightModal flights={flights} setFlights={setFlights} />
+        <CreateFlightModal
+          flights={flights}
+          setFlights={setFlights}
+          token={token}
+        />
         <FormControl maxW="130px">
           <Input placeholder="00A0000" />
         </FormControl>

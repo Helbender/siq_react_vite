@@ -11,11 +11,13 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import axios from "axios";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
+import { AuthContext } from "../../Context";
 
-function LoginPage(props) {
+function LoginPage() {
+  const { removeToken, setToken } = useContext(AuthContext);
+
   const [loginForm, setloginForm] = useState({
     nip: "",
     password: "",
@@ -34,7 +36,7 @@ function LoginPage(props) {
     // Set a new timeout
     const id = setTimeout(() => {
       console.log("Timeout executed!");
-      props.removeToken();
+      removeToken();
       navigate("/");
     }, delay);
 
@@ -52,11 +54,10 @@ function LoginPage(props) {
       },
     })
       .then((response) => {
-        console.log("RESPONSE" + response);
+        console.log("RESPONSE");
+        console.log(response);
 
-        props.setToken(response.data.access_token);
-        const decodedToken = jwtDecode(response.data.access_token);
-        console.log(decodedToken.admin, decodedToken.name);
+        setToken(response.data.access_token);
         startTimeout(1 * 60 * 60 * 1000);
         navigate("/");
       })

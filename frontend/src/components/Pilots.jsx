@@ -1,14 +1,15 @@
 // import PILOTOS from "../dummy/pilotos";
 import { Button, Container, Grid, ButtonGroup } from "@chakra-ui/react";
 import UserCard from "./pilotComponents/UserCard";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import CreateUserModal from "./pilotComponents/CreateUserModal";
+import { AuthContext } from "../Context";
 
-const Pilots = ({ token, setToken }) => {
+const Pilots = () => {
   const [pilotos, setPilotos] = useState([]);
   const [allPilots, setallPilots] = useState([]);
-
+  const { token } = useContext(AuthContext);
   const handlePositionFilter = (position) => {
     if (position === "ALL") {
       setPilotos(allPilots);

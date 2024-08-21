@@ -1,5 +1,4 @@
 /* eslint-disable react/prop-types */
-import React from "react";
 import {
   Box,
   Flex,
@@ -13,7 +12,6 @@ import {
   DrawerContent,
   DrawerCloseButton,
   useDisclosure,
-  useMediaQuery,
   VStack,
   Divider,
   Spacer,
@@ -30,11 +28,15 @@ import {
   FaTools,
 } from "react-icons/fa";
 import axios from "axios";
+import { useContext } from "react";
+import { AuthContext } from "../Context";
 
-function Header({ token, removeToken }) {
+function Header() {
+  const { token, removeToken, getUser } = useContext(AuthContext);
   const navigate = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [isSmallScreen] = useMediaQuery("(max-width: 480px)");
+  // const [isSmallScreen] = useMediaQuery("(max-width: 480px)");
+
   function handleLogout() {
     axios({
       method: "POST",
@@ -76,16 +78,6 @@ function Header({ token, removeToken }) {
           mr={4} // Adds margin to the right of the button
         />
 
-        {/* {!isSmallScreen && (
-          <Heading
-            size="lg"
-            cursor="pointer"
-            onClick={() => navigate("/")}
-            _hover={{ textDecoration: "underline" }}
-          >
-            Esquadra 502 - Elefantes
-          </Heading>
-        )} */}
         {/* Centered Heading */}
         <Flex flex="1" justify="center">
           <Heading
@@ -102,7 +94,7 @@ function Header({ token, removeToken }) {
           <DrawerOverlay>
             <DrawerContent>
               <DrawerCloseButton />
-              {!token ? (
+              {token ? (
                 //Drawer render if logged in
                 <>
                   <DrawerHeader>
@@ -129,7 +121,7 @@ function Header({ token, removeToken }) {
                         onClose();
                       }}
                     >
-                      Maj Pedro Andrade
+                      {getUser()}
                     </Heading>
                   </DrawerHeader>
                   <DrawerBody>
@@ -202,20 +194,17 @@ function Header({ token, removeToken }) {
               ) : (
                 //Drawer render if not logged in
 
-                <>
-                  <DrawerHeader>
-                    <Heading
-                      size="sm"
-                      fontSize="sm"
-                      color="teal.500"
-                      mt="10"
-                      textAlign="center"
-                    >
-                      Por favor efetue o seu login
-                    </Heading>
-                  </DrawerHeader>
-                  <DrawerBody></DrawerBody>
-                </>
+                <DrawerHeader>
+                  <Heading
+                    size="sm"
+                    fontSize="sm"
+                    color="teal.500"
+                    mt="10"
+                    textAlign="center"
+                  >
+                    Por favor efetue o seu login
+                  </Heading>
+                </DrawerHeader>
               )}
 
               <DrawerFooter>

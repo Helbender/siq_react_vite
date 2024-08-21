@@ -53,7 +53,7 @@ class CrewAndPositions(Base):
     __tablename__ = "crew_and_positions"
 
     position: Mapped[str] = mapped_column(String(5), unique=True, nullable=False, primary_key=True)
-    qualifications: Mapped[Optional[str]] = mapped_column(String(200), nullable=True)
+    qualifications: Mapped[Optional[str]] = mapped_column(String(1000), nullable=True)
 
     def _repr_(self) -> str:
         return f"Position: {self.position}, Qualifications: {self.qualifications}"

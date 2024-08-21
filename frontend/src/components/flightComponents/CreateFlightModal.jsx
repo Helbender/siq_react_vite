@@ -24,7 +24,7 @@ import { useState, useEffect } from "react";
 import PilotInput from "./PilotInput";
 import axios from "axios";
 
-function CreateFlightModal({ flights, setFlights }) {
+function CreateFlightModal({ flights, setFlights, token }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [pilotos, setPilotos] = useState([]);
   let today = new Date();
@@ -86,7 +86,9 @@ function CreateFlightModal({ flights, setFlights }) {
   };
   const getSavedPilots = async () => {
     try {
-      const res = await axios.get(`/api/pilots`);
+      const res = await axios.get(`/api/pilots`, {
+        headers: { Authorization: "Bearer " + token },
+      });
       // console.log(res);
       setPilotos(res.data || []);
     } catch (error) {
