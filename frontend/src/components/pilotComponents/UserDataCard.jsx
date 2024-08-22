@@ -13,12 +13,30 @@ import {
   CardFooter,
   Text,
   VStack,
+  Spacer,
 } from "@chakra-ui/react";
 import CreateUserModal from "./CreateUserModal";
 import { BiTrash } from "react-icons/bi";
 import StyledText from "../styledcomponents/StyledText";
+import axios from "axios";
+import { AuthContext } from "../../AuthContext";
+import { useContext } from "react";
 
 function UserDataCard({ user }) {
+  const { token, pilotos, setPilotos } = useContext(AuthContext);
+  const handleDeletePilot = async (nip) => {
+    try {
+      const res = await axios.delete(`/api/pilots/${nip}`, {
+        headers: { Authorization: "Bearer " + token },
+      });
+      console.log(res);
+      if (res.data?.deleted_id) {
+        setPilotos(pilotos.filter((piloto) => piloto.nip != nip));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <Card bg={useColorModeValue("gray.200", "gray.700")} boxShadow={"xl"}>
       <CardHeader>
@@ -51,59 +69,13 @@ function UserDataCard({ user }) {
         </VStack>
       </CardBody>
       <CardFooter>
-        <Flex align={"left"}>
-          <CreateUserModal user={user} />
-          <IconButton
-            //   onClick={() => handleDeletePilot(user.nip)}
-            variant="ghost"
-            colorScheme="red"
-            size={"lg"}
-            icon={<BiTrash />}
-          />
+        <Flex gap={5}>
+          <Spacer />
+          <CreateUserModal edit={true} user={user} />
+          <CreateUserModal isDelete={true} user={user} />
         </Flex>
       </CardFooter>
     </Card>
-    // <Box
-    //   borderWidth={1}
-    //   borderRadius="md"
-    //   overflow="hidden"
-    //   p={4}
-    //   mb={35}
-    //   //   bg="white"
-    //   shadow="md"
-    //   maxW="90%"
-    // >
-    //   <Box mb={2}>
-    //     <strong>NIP:</strong> {user.nip}
-    //   </Box>
-    //   <Box mb={2}>
-    //     <strong>Name:</strong> {user.name}
-    //   </Box>
-    //   <Box mb={2}>
-    //     <strong>Rank:</strong> {user.rank}
-    //   </Box>
-    //   <Box mb={2}>
-    //     <strong>Position:</strong> {user.position}
-    //   </Box>
-    //   <Box mb={2}>
-    //     <strong>Email:</strong> {user.email}
-    //   </Box>
-    //   <Box mb={2}>
-    //     <strong>Admin:</strong> {user.admin ? "Yes" : "No"}
-    //   </Box>
-    //   <Box mb={2}>
-    //     <strong>Squadron:</strong> {user.squadron}
-    //   </Box>
-    //   <HStack spacing={2} justifyContent="center">
-    //     <CreateUserModal edit={true} user={user} />
-    //     {/* <IconButton
-    //       icon={<FaMailBulk />}
-    //       colorScheme="blue"
-    //       onClick={() => onEmailClick(user.email)}
-    //       aria-label="Send Email"
-    //     /> */}
-    //   </HStack>
-    // </Box>
   );
 }
 

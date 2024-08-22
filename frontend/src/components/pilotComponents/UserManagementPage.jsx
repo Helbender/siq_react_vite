@@ -11,26 +11,23 @@ import {
   Tbody,
   Td,
   IconButton,
-  Button,
-  useDisclosure,
   useBreakpointValue,
-  VStack,
-  Box,
   Grid,
+  useToast,
 } from "@chakra-ui/react";
 import { AuthContext } from "../../AuthContext";
 import CreateUserModal from "./CreateUserModal";
-import { FaEdit, FaMailBulk, FaPlus } from "react-icons/fa";
-import UserCard from "./UserCard";
+import { FaMailBulk } from "react-icons/fa";
 import UserDataCard from "./UserDataCard";
-// import EditUserModal from "./EditUserModal";
+import { useSendEmail } from "../../Functions/useSendEmail";
 
 function UserManagementPage() {
   const { pilotos, setPilotos } = useContext(AuthContext);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const displayAsTable = useBreakpointValue({ base: false, xl: true });
-
+  const sendEmail = useSendEmail();
+  const toast = useToast();
   // Filter users based on search term
   useEffect(() => {
     const results = pilotos.filter((user) =>
@@ -90,19 +87,23 @@ function UserManagementPage() {
                 <Td>
                   <HStack spacing={2} align="center">
                     <CreateUserModal edit={true} user={user} />
-
-                    {/* <IconButton
-                    icon={<FaEdit />}
-                    colorScheme="yellow"
-                    // onClick={() => handleDeleteUser(user)}
-                    aria-label="Edit User"
-                  /> */}
                     <IconButton
                       icon={<FaMailBulk />}
                       colorScheme="blue"
-                      // onClick={() => handleEmailClick(user.email)}
+                      onClick={() => {
+                        toast({
+                          title: "Sending Email",
+                          description: "Wait while we send the Email",
+                          status: "info",
+                          duration: 5000,
+                          isClosable: true,
+                          position: "top",
+                        });
+                        sendEmail(user.email, `/api/recover/${user.email}`);
+                      }}
                       aria-label="Email User"
                     />
+                    <CreateUserModal isDelete={true} user={user} />
                   </HStack>
                 </Td>
               </Tr>
