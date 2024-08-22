@@ -10,10 +10,10 @@ export default defineConfig({
     strictPort: true,
   },
   server: {
-    port: 5174,
+    port: 5173,
     strictPort: true,
     host: true,
-    origin: "http://0.0.0.0:5174",
+    origin: "http://0.0.0.0:5173",
     proxy: {
       "/api": {
         target: "http://localhost:5051",

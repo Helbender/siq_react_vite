@@ -1,8 +1,7 @@
 // import PILOTOS from "../dummy/pilotos";
 import { Button, Container, Grid, ButtonGroup } from "@chakra-ui/react";
 import UserCard from "./pilotComponents/UserCard";
-import { useContext, useEffect, useState } from "react";
-import axios from "axios";
+import { useContext } from "react";
 import CreateUserModal from "./pilotComponents/CreateUserModal";
 import { AuthContext } from "../AuthContext";
 
@@ -19,7 +18,7 @@ const Pilots = () => {
 
   return (
     <Container maxWidth={"1200px"} alignItems={"center"}>
-      <CreateUserModal />
+      <CreateUserModal add={true} />
       <ButtonGroup ml="5" colorScheme="blue">
         <Button onClick={() => handlePositionFilter("ALL")}>Todos</Button>
         <Button onClick={() => handlePositionFilter("PC")}>PC</Button>

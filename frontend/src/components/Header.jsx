@@ -36,7 +36,9 @@ function Header() {
   const navigate = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
   // const [isSmallScreen] = useMediaQuery("(max-width: 480px)");
-
+  // if (token) {
+  //   const { getUser, admin } = getUser();
+  // }
   function handleLogout() {
     axios({
       method: "POST",
@@ -121,7 +123,7 @@ function Header() {
                         onClose();
                       }}
                     >
-                      {getUser()}
+                      {/* {getUser + (admin ? "YES" : "NO")} */}
                     </Heading>
                   </DrawerHeader>
                   <DrawerBody>
@@ -158,6 +160,7 @@ function Header() {
                       </ChakraLink>
                       <Spacer />
 
+                      {/* {admin ? ( */}
                       <ChakraLink
                         p={2}
                         color="teal.500"
@@ -173,6 +176,8 @@ function Header() {
                           <Box ml={2}>Definições</Box>
                         </Flex>
                       </ChakraLink>
+                      {/* ) : null} */}
+
                       {/* Horizontal line above Logout */}
                       <ChakraLink
                         p={2}

@@ -14,29 +14,16 @@ import {
   Text,
   VStack,
   Spacer,
+  useToast,
 } from "@chakra-ui/react";
 import CreateUserModal from "./CreateUserModal";
-import { BiTrash } from "react-icons/bi";
 import StyledText from "../styledcomponents/StyledText";
-import axios from "axios";
-import { AuthContext } from "../../AuthContext";
-import { useContext } from "react";
+import { FaMailBulk } from "react-icons/fa";
+import { useSendEmail } from "../../Functions/useSendEmail";
 
 function UserDataCard({ user }) {
-  const { token, pilotos, setPilotos } = useContext(AuthContext);
-  const handleDeletePilot = async (nip) => {
-    try {
-      const res = await axios.delete(`/api/pilots/${nip}`, {
-        headers: { Authorization: "Bearer " + token },
-      });
-      console.log(res);
-      if (res.data?.deleted_id) {
-        setPilotos(pilotos.filter((piloto) => piloto.nip != nip));
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const toast = useToast();
+  const sendEmail = useSendEmail();
   return (
     <Card bg={useColorModeValue("gray.200", "gray.700")} boxShadow={"xl"}>
       <CardHeader>
@@ -72,6 +59,22 @@ function UserDataCard({ user }) {
         <Flex gap={5}>
           <Spacer />
           <CreateUserModal edit={true} user={user} />
+          <IconButton
+            icon={<FaMailBulk />}
+            colorScheme="blue"
+            onClick={() => {
+              toast({
+                title: "Sending Email",
+                description: "Wait while we send the Email",
+                status: "info",
+                duration: 5000,
+                isClosable: true,
+                position: "top",
+              });
+              sendEmail(user.email, `/api/recover/${user.email}`);
+            }}
+            aria-label="Email User"
+          />
           <CreateUserModal isDelete={true} user={user} />
         </Flex>
       </CardFooter>

@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }) => {
   };
   const getUser = () => {
     const decodedToken = jwtDecode(token);
-    return decodedToken.name;
+    return { name: decodedToken.name, admin: decodedToken.admin };
   };
   useEffect(() => {
     getSavedFlights();

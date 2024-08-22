@@ -23,19 +23,6 @@ import CreateUserModal from "./CreateUserModal";
 const UserCard = ({ user }) => {
   const { token, pilotos, setPilotos } = useContext(AuthContext);
 
-  const handleDeletePilot = async (nip) => {
-    try {
-      const res = await axios.delete(`/api/pilots/${nip}`, {
-        headers: { Authorization: "Bearer " + token },
-      });
-      console.log(res);
-      if (res.data?.deleted_id) {
-        setPilotos(pilotos.filter((piloto) => piloto.nip != nip));
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
   return (
     <Card bg={useColorModeValue("gray.200", "gray.700")} boxShadow={"xl"}>
       <CardHeader>
@@ -51,15 +38,9 @@ const UserCard = ({ user }) => {
             </Circle>
             <Heading size="sm">{`${user.rank} ${user.name}`}</Heading>
           </Flex>
-          <Flex align={"center"}>
-            <CreateUserModal user={user} />
-            <IconButton
-              onClick={() => handleDeletePilot(user.nip)}
-              variant="ghost"
-              colorScheme="red"
-              size={"lg"}
-              icon={<BiTrash />}
-            />
+          <Flex align={"center"} gap={2}>
+            <CreateUserModal edit={true} user={user} />
+            <CreateUserModal isDelete={true} user={user} />
           </Flex>
         </Flex>
       </CardHeader>
