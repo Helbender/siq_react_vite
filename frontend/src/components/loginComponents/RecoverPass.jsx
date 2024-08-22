@@ -6,50 +6,29 @@ import {
   Stack,
   Heading,
   Button,
-  useToast,
 } from "@chakra-ui/react";
-import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSendEmail } from './useSendEmail'; // Import the custom hook
 
 function RecoverPass() {
   const [email, setEmail] = useState("");
-  const toast = useToast();
+  const sendEmail = useSendEmail(); // Use the custom hook
   const navigate = useNavigate();
-  const goBack = () => navigate("/");
 
-  const sendEmail = async () => {
-    try {
-      const response = await axios.post(`/api/recover/${email}`);
-      console.log("Email sent response:", response); // Log response for debugging
-      toast({
-        title: "Email sent.",
-        description: "Please check your email.",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-        position: "top",
-      });
+  const handleChange = (event) => {
+    setEmail(event.target.value);
+  };
+
+  const handleRecover = async () => {
+    const success = await sendEmail(email, `/api/recover/${email}`);
+    if (success) {
       navigate("/");
-    } catch (error) {
-      console.error("Error sending email:", error); // Log error for debugging
-
-      toast({
-        title: "Error.",
-        description:
-          error.response?.data?.message ||
-          "Failed to send the recovery email. Please try again.",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-        position: "top",
-      });
     }
   };
 
-  function handleChange(event) {
-    setEmail(event.target.value);
-  }
+  const goBack = () => navigate("/");
+
   return (
     <Box
       w={"100vw"}
@@ -72,9 +51,6 @@ function RecoverPass() {
             onChange={handleChange}
             aria-label="Email input"
             mx="auto" // Center the input field
-            alignContent={"center"}
-            alignItems={"center"}
-            alignSelf={"center"}
             width={["60", "80%", "100%"]} // Adjust input width for small screens and larger screens
           />
         </FormControl>
@@ -82,7 +58,7 @@ function RecoverPass() {
         <Button
           mt={5}
           colorScheme="teal"
-          onClick={sendEmail}
+          onClick={handleRecover} // Use the new handler
           width={["60%", "80%", "100%"]} // Adjust button width for small screens and larger screens
           mx="auto" // Center the button
         >

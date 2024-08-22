@@ -72,7 +72,115 @@ function Header({ token, removeToken }) {
           >
             Esquadra 502 - Elefantes
           </Heading>
+<<<<<<< Updated upstream
         )}
+=======
+        </Flex>
+        {/* Drawer for Menu Items */}
+        <Drawer isOpen={isOpen} placement="left" onClose={onClose}>
+          <DrawerOverlay>
+            <DrawerContent>
+              <DrawerCloseButton />
+              {token ? (
+                //Drawer render if logged in
+                <>
+                  <DrawerHeader>
+                    <Heading
+                      size="md"
+                      fontSize={"16"}
+                      color="teal.500"
+                      mt="10"
+                      cursor="pointer"
+                      onClick={() => {
+                        navigate("/");
+                        onClose();
+                      }}
+                    >
+                      Bem-vindo,
+                    </Heading>
+                    <Heading
+                      size="md"
+                      mt="0"
+                      color={"teal.500"}
+                      cursor="pointer"
+                      onClick={() => {
+                        navigate("/");
+                        onClose();
+                      }}
+                    >
+                      {getUser()}
+                    </Heading>
+                  </DrawerHeader>
+                  <DrawerBody>
+                    <VStack align="flex-start" h="100%">
+                      <ChakraLink
+                        p={2}
+                        color="teal.500"
+                        fontSize="lg"
+                        onClick={() => {
+                          navigate("/");
+                          onClose();
+                        }}
+                        aria-label="Voos"
+                      >
+                        <Flex align="center">
+                          <FaPlaneArrival />
+                          <Box ml={2}>Voos</Box>
+                        </Flex>
+                      </ChakraLink>
+                      <ChakraLink
+                        p={2}
+                        color="teal.500"
+                        fontSize="lg"
+                        onClick={() => {
+                          navigate("/");
+                          onClose();
+                        }}
+                        aria-label="Qualificações"
+                      >
+                        <Flex align="center">
+                          <FaTable />
+                          <Box ml={2}>Qualificações</Box>
+                        </Flex>
+                      </ChakraLink>
+                      <Spacer />
+                      <ChakraLink
+                        p={2}
+                        color="teal.500"
+                        fontSize="lg"
+                        onClick={() => {
+                          navigate("/users");
+                          onClose();
+                        }}
+                        aria-label="Definições"
+                      >
+                        <Flex align="center">
+                          <FaTools />
+                          <Box ml={2}>Definições</Box>
+                        </Flex>
+                      </ChakraLink>
+                      {/* Horizontal line above Logout */}
+                      <ChakraLink
+                        p={2}
+                        color="teal.500"
+                        fontSize="lg"
+                        onClick={() => {
+                          handleLogout();
+                          onClose();
+                        }}
+                        aria-label="Logout"
+                      >
+                        <Flex align={"center"}>
+                          <FaSignOutAlt /> <Box ml={2}>Logout</Box>
+                        </Flex>
+                      </ChakraLink>
+                      <Divider borderWidth="1px" borderColor={"teal.500"} />
+                    </VStack>
+                  </DrawerBody>
+                </>
+              ) : (
+                //Drawer render if not logged in
+>>>>>>> Stashed changes
 
         {!isSmallScreen ? (
           <Flex align="center">
