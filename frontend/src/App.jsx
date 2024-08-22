@@ -11,6 +11,7 @@ import Footer from "./components/Footer";
 import AboutPage from "./components/About";
 import RecoverProcess from "./components/loginComponents/RecoverProcess";
 import { AuthContext } from "./AuthContext";
+import UserManagementPage from "./components/pilotComponents/UserManagementPage";
 
 function App() {
   // const { token, removeToken, setToken } = useToken();
@@ -45,6 +46,7 @@ function App() {
               <Route path="/flights" index element={<Flights />} />
               <Route path="/pilots" element={<Pilots />} />
               <Route path="/crew" element={<Crew />} />
+              <Route path="/users" element={<UserManagementPage />} />
             </Route>
           </Routes>
         </Fragment>

@@ -157,18 +157,19 @@ function Header() {
                         </Flex>
                       </ChakraLink>
                       <Spacer />
+
                       <ChakraLink
                         p={2}
                         color="teal.500"
                         fontSize="lg"
                         onClick={() => {
-                          navigate("/");
+                          navigate("/users");
                           onClose();
                         }}
-                        aria-label="Definições"
                       >
                         <Flex align="center">
                           <FaTools />
+
                           <Box ml={2}>Definições</Box>
                         </Flex>
                       </ChakraLink>

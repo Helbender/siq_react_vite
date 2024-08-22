@@ -16,9 +16,9 @@ import DaysLeftColumn from "./DaysLeftColumn";
 import QualificationsPanel from "./QualificationsPanel";
 import { BiTrash } from "react-icons/bi";
 import axios from "axios";
-import EditUserModal from "./EditUserModal";
 import { useContext } from "react";
 import { AuthContext } from "../../AuthContext";
+import CreateUserModal from "./CreateUserModal";
 
 const UserCard = ({ user }) => {
   const { token, pilotos, setPilotos } = useContext(AuthContext);
@@ -52,7 +52,7 @@ const UserCard = ({ user }) => {
             <Heading size="sm">{`${user.rank} ${user.name}`}</Heading>
           </Flex>
           <Flex align={"center"}>
-            <EditUserModal piloto={user} />
+            <CreateUserModal user={user} />
             <IconButton
               onClick={() => handleDeletePilot(user.nip)}
               variant="ghost"

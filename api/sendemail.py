@@ -32,7 +32,7 @@ def send_email(subject, body, to):
     msg = MIMEMultipart()
     sender_address = formataddr(("Jarbas", smtp_user))
 
-    msg["From"] = smtp_user
+    msg["From"] = sender_address
     msg["To"] = to
     msg["Subject"] = subject
 
