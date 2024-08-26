@@ -2,34 +2,15 @@
 import { Container, Stack, Center, FormControl, Input } from "@chakra-ui/react";
 import FlightCard from "./flightComponents/FlightCard";
 import CreateFlightModal from "./flightComponents/CreateFlightModal";
-import { AuthContext } from "../AuthContext";
+import { AuthContext } from "../Contexts/AuthContext";
 import { useContext } from "react";
+import { FlightContext } from "../Contexts/FlightsContext";
 
 export default function Flights() {
   // const [flights, setFlights] = useContext(FlightContext);
-  const { token, flights, setFlights } = useContext(AuthContext);
+  const { token } = useContext(AuthContext);
+  const { flights, setFlights } = useContext(FlightContext);
 
-  // const getSavedFlights = () => {
-  //   try {
-  //     axios({
-  //       method: "GET",
-  //       url: `/api/flights`,
-  //       headers: { Authorization: "Bearer " + token },
-  //     }).then((response) => {
-  //       const res = response.data;
-  //       console.log("Flights");
-  //       console.log(res);
-  //       // res.access_token && setToken(res.access_token);
-  //       setFlights(res || []);
-  //     });
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   getSavedFlights();
-  // }, []);
   return (
     <Container maxW={"1000px"}>
       <Center>
@@ -42,7 +23,7 @@ export default function Flights() {
           <Input placeholder="00A0000" />
         </FormControl>
       </Center>
-      <Stack gap={5} mt="8" mb="10" overflow="scroll">
+      <Stack gap={5} mt="8" mb="10" overflow="initial">
         {flights.length
           ? !!flights.length &&
             flights.map((flight) => (

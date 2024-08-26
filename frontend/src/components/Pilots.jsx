@@ -1,9 +1,9 @@
 // import PILOTOS from "../dummy/pilotos";
 import { Button, Container, Grid, ButtonGroup } from "@chakra-ui/react";
-import UserCard from "./pilotComponents/UserCard";
+import UserCard from "./pilotComponents/PilotCard";
 import { useContext } from "react";
 import CreateUserModal from "./pilotComponents/CreateUserModal";
-import { AuthContext } from "../AuthContext";
+import { AuthContext } from "../Contexts/AuthContext";
 
 const Pilots = () => {
   const { pilotos } = useContext(AuthContext);

@@ -14,10 +14,8 @@ import {
 } from "@chakra-ui/react";
 import DaysLeftColumn from "./DaysLeftColumn";
 import QualificationsPanel from "./QualificationsPanel";
-import { BiTrash } from "react-icons/bi";
-import axios from "axios";
 import { useContext } from "react";
-import { AuthContext } from "../../AuthContext";
+import { AuthContext } from "../../Contexts/AuthContext";
 import CreateUserModal from "./CreateUserModal";
 
 const UserCard = ({ user }) => {

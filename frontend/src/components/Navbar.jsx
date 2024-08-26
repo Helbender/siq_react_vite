@@ -48,12 +48,6 @@ const Navbar = () => {
               </BreadcrumbItem>
             </Breadcrumb>
           </Flex>
-          {/* Right Side*/}
-          <Flex gap={3} alignItems={"center"} display={{ base: "md" }}>
-            <Button onClick={toggleColorMode}>
-              {colorMode === "light" ? <IoMoon /> : <LuSun />}
-            </Button>
-          </Flex>
         </Flex>
       </Box>
     </Container>

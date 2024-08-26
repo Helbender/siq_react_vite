@@ -1,17 +1,19 @@
 import Pilots from "./components/Pilots";
 import Crew from "./components/Crew";
 import Flights from "./components/Flights";
-import Master from "./components/Master";
-import { Route, Routes, HashRouter, Navigate } from "react-router-dom";
+import Master from "./components/layout/Master";
 import LoginPage from "./components/loginComponents/LoginPage";
 import RecoverPass from "./components/loginComponents/RecoverPass";
 import { Fragment, useContext } from "react";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
+import Footer from "./components/layout/Footer";
 import AboutPage from "./components/About";
 import RecoverProcess from "./components/loginComponents/RecoverProcess";
-import { AuthContext } from "./AuthContext";
-import UserManagementPage from "./components/pilotComponents/UserManagementPage";
+
+import { AuthContext } from "./Contexts/AuthContext";
+import { HashRouter, Route, Routes, Navigate } from "react-router-dom";
+import UserManagementPage from "./components/UserC/UserManagementPage";
+
+import Header from "./components/layout/Header";
 
 function App() {
   // const { token, removeToken, setToken } = useToken();

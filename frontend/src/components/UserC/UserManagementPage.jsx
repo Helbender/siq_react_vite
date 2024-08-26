@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect, Fragment } from "react";
+import { useContext, useState, useEffect } from "react";
 import {
   Container,
   HStack,
@@ -15,8 +15,8 @@ import {
   Grid,
   useToast,
 } from "@chakra-ui/react";
-import { AuthContext } from "../../AuthContext";
-import CreateUserModal from "./CreateUserModal";
+import { AuthContext } from "../../Contexts/AuthContext";
+import CreateUserModal from "../pilotComponents/CreateUserModal";
 import { FaMailBulk } from "react-icons/fa";
 import UserDataCard from "./UserDataCard";
 import { useSendEmail } from "../../Functions/useSendEmail";

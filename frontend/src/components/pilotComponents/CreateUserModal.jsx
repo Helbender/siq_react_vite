@@ -24,7 +24,7 @@ import {
 import { FaEdit, FaPlus } from "react-icons/fa";
 import { useState, useContext } from "react";
 import axios from "axios";
-import { AuthContext } from "../../AuthContext";
+import { AuthContext } from "../../Contexts/AuthContext";
 import { BiTrash } from "react-icons/bi";
 
 function CreateUserModal({ edit, add, isDelete, user }) {

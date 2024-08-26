@@ -16,7 +16,7 @@ import {
   Spacer,
   useToast,
 } from "@chakra-ui/react";
-import CreateUserModal from "./CreateUserModal";
+import CreateUserModal from "../pilotComponents/CreateUserModal";
 import StyledText from "../styledcomponents/StyledText";
 import { FaMailBulk } from "react-icons/fa";
 import { useSendEmail } from "../../Functions/useSendEmail";
