@@ -17,7 +17,6 @@ export const UserProvider = ({ children }) => {
       const res = await axios.get(`/api/users`, {
         headers: { Authorization: "Bearer " + token },
       });
-      console.log(res);
       setPilotos(res.data || []);
     } catch (error) {
       console.log(error);

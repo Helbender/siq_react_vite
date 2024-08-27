@@ -15,12 +15,12 @@ import {
   Grid,
   useToast,
 } from "@chakra-ui/react";
-import { UserContext } from "../../Contexts/UserContext";
-import CreateUserModal from "./CreateUserModal";
+import { UserContext } from "../Contexts/UserContext";
+import CreateUserModal from "../components/UserC/CreateUserModal";
 import { FaMailBulk } from "react-icons/fa";
-import UserDataCard from "./UserDataCard";
-import { useSendEmail } from "../../Functions/useSendEmail";
-import { AuthContext } from "../../Contexts/AuthContext";
+import UserDataCard from "../components/UserC/UserDataCard";
+import { useSendEmail } from "../Functions/useSendEmail";
+import { AuthContext } from "../Contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 function UserManagementPage() {
@@ -38,9 +38,9 @@ function UserManagementPage() {
       navigate("/");
     }
   };
+  checkToken();
   // Filter users based on search term
   useEffect(() => {
-    checkToken();
     const results = pilotos.filter((user) =>
       [
         user.nip,

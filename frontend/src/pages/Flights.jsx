@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { Container, Stack, Center, FormControl, Input } from "@chakra-ui/react";
-import FlightCard from "./flightComponents/FlightCard";
-import CreateFlightModal from "./flightComponents/CreateFlightModal";
+import FlightCard from "../components/flightComponents/FlightCard";
+import CreateFlightModal from "../components/flightComponents/CreateFlightModal";
 import { AuthContext } from "../Contexts/AuthContext";
 import { useContext } from "react";
 import { FlightContext } from "../Contexts/FlightsContext";

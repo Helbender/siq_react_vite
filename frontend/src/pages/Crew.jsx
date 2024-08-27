@@ -1,9 +1,9 @@
-import { Container, Grid, Text } from "@chakra-ui/react";
+import { Grid } from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
-import { AuthContext } from "../../Contexts/AuthContext";
+import { AuthContext } from "../Contexts/AuthContext";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
-import CrewCard from "../crewComponents/CrewCard";
+import CrewCard from "../components/crewComponents/CrewCard";
 
 const Crew = () => {
   const [crew, setCrew] = useState([]);

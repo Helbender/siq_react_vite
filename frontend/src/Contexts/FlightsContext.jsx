@@ -11,18 +11,12 @@ export const FlightProvider = ({ children }) => {
   const [flights, setFlights] = useState([]);
   const { token, removeToken } = useContext(AuthContext);
 
-  const getSavedFlights = () => {
+  const getSavedFlights = async () => {
     try {
-      axios({
-        method: "GET",
-        url: `/api/flights`,
+      const response = await axios.get(`/api/flights`, {
         headers: { Authorization: "Bearer " + token },
-      }).then((response) => {
-        const res = response.data;
-        console.log("Flights");
-        console.log(res);
-        setFlights(res || []);
       });
+      setFlights(response.data || []);
     } catch (error) {
       console.log(error);
       console.log(error.response.status);
@@ -35,6 +29,7 @@ export const FlightProvider = ({ children }) => {
 
   useEffect(() => {
     getSavedFlights();
+    console.log("Flights Loaded");
   }, []);
 
   return (

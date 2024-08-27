@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 // import PILOTOS from "../dummy/pilotos";
-import { Button, Container, Grid, ButtonGroup } from "@chakra-ui/react";
-import UserCard from "./pilotComponents/PilotCard";
+import { Container, Grid } from "@chakra-ui/react";
+import UserCard from "../components/pilotComponents/PilotCard";
 import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../Contexts/AuthContext";
 import axios from "axios";

@@ -13,7 +13,7 @@ import {
 import axios from "axios";
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../../Contexts/AuthContext";
+import { AuthContext } from "../Contexts/AuthContext";
 
 function LoginPage() {
   const { removeToken, setToken } = useContext(AuthContext);
