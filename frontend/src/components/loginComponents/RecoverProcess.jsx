@@ -71,7 +71,15 @@ function RecoverProcess() {
       });
       return;
     }
-
+    if (newPassword === "") {
+      toast({
+        title: "Password vazia",
+        description: "Please use a non empty password",
+        status: "error",
+        duration: 5000,
+        position: "top",
+      });
+    }
     const loadingToast = toast({
       title: "Processing request...",
       description: "Please wait while we process your request.",

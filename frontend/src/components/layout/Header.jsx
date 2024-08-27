@@ -56,6 +56,8 @@ function Header() {
         navigate("/");
       })
       .catch((error) => {
+        removeToken();
+        navigate("/");
         if (error.response) {
           console.log(error.response);
           console.log(error.response.status);
@@ -148,7 +150,7 @@ function Header() {
                         color="teal.500"
                         fontSize="lg"
                         onClick={() => {
-                          navigate("/");
+                          navigate("/flights");
                           onClose();
                         }}
                         aria-label="Voos"
@@ -163,7 +165,7 @@ function Header() {
                         color="teal.500"
                         fontSize="lg"
                         onClick={() => {
-                          navigate("/");
+                          navigate("/pilots");
                           onClose();
                         }}
                         aria-label="Qualificações"

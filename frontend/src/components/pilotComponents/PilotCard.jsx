@@ -34,7 +34,7 @@ const PilotCard = ({ user }) => {
         </Flex>
       </CardHeader>
       <CardBody>
-        <Flex flexDirection={"row"}>
+        <Flex flexDirection={"row"} p="-1">
           {!!user.qualification?.lastDayLandings ? (
             <DaysLeftColumn
               qualification={"ATD"}
@@ -140,7 +140,6 @@ const PilotCard = ({ user }) => {
             <QualificationsPanel qualification={user.qualification?.lastVRP1} />
             <QualificationsPanel qualification={user.qualification?.lastVRP2} />
           </Box>
-          <Box borderColor={"black"} borderWidth={"2px"}></Box>
         </Flex>
       </CardBody>
     </Card>

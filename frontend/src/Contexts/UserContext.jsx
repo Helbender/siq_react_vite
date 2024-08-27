@@ -8,7 +8,7 @@ export const UserContext = createContext();
 
 // Create a provider component
 export const UserProvider = ({ children }) => {
-  const { token } = useContext(AuthContext);
+  const { token, removeToken } = useContext(AuthContext);
 
   const [pilotos, setPilotos] = useState([]);
 
@@ -21,6 +21,11 @@ export const UserProvider = ({ children }) => {
       setPilotos(res.data || []);
     } catch (error) {
       console.log(error);
+      console.log(error.response.status);
+      if (error.response.status === 401) {
+        console.log("Removing Token");
+        removeToken();
+      }
     }
   };
   useEffect(() => {

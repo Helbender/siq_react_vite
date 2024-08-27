@@ -1,5 +1,5 @@
 import Pilots from "./components/Pilots";
-import Crew from "./components/Crew";
+import Crew from "./components/pages/Crew";
 import Flights from "./components/Flights";
 import Master from "./components/layout/Master";
 import LoginPage from "./components/loginComponents/LoginPage";
@@ -10,7 +10,7 @@ import AboutPage from "./components/About";
 import RecoverProcess from "./components/loginComponents/RecoverProcess";
 
 import { AuthContext } from "./Contexts/AuthContext";
-import { HashRouter, Route, Routes, Navigate } from "react-router-dom";
+import { HashRouter, Route, Routes } from "react-router-dom";
 import UserManagementPage from "./components/UserC/UserManagementPage";
 
 import Header from "./components/layout/Header";
@@ -42,14 +42,16 @@ function App() {
       ) : (
         <Fragment>
           <Routes>
-            <Route index element={<Navigate replace to="flights" />} />
+            {/* <Route index element={<Navigate replace to="flights" />} /> */}
+            <Route path="/flights" index element={<Flights />} />
+            <Route path="/users" element={<UserManagementPage />} />
 
             <Route path="/" element={<Master />}>
-              <Route path="/flights" index element={<Flights />} />
-              <Route path="/pilots" element={<Pilots />} />
+              <Route path="/pilots" element={<Pilots position="PC" />} />
+              <Route path="/co-pilots" element={<Pilots position="CP" />} />
               <Route path="/crew" element={<Crew />} />
-              <Route path="/users" element={<UserManagementPage />} />
             </Route>
+            <Route path="/about" element={<AboutPage />} />
           </Routes>
         </Fragment>
       )}

@@ -17,8 +17,8 @@ from flask_jwt_extended import (
     unset_jwt_cookies,
 )
 from models import Crew, Flight, FlightPilots, Pilot, Qualification, QualificationCrew, User
-from sendemail import main
-from sqlalchemy import delete, select
+from sendemail import hash_code, main
+from sqlalchemy import delete, select, union_all
 from sqlalchemy.orm import Session
 
 # logging.basicConfig(filename="record.log", level=logging.DEBUG)
@@ -71,7 +71,8 @@ def create_token() -> tuple[Response | dict[str, str], int]:
     with Session(engine) as session:
         pilot = session.execute(select(Pilot).where(Pilot.nip == nip)).scalar_one_or_none()
         if pilot != None:
-            if password != pilot.password:
+            if hash_code(password) != pilot.password:
+                # if password != pilot.password:
                 return {"message": "Wrong password"}, 401
 
             access_token = create_access_token(
@@ -82,18 +83,6 @@ def create_token() -> tuple[Response | dict[str, str], int]:
             return response, 200
         return {"message": f"No user with NIP {nip}"}, 404
     return {"message": "Something went wrong in the server"}, 500
-
-
-@app.route("/api/profile")
-@jwt_required()  # new line
-def my_profile() -> Response:
-    """Handle Authorization test endpoint."""
-    response_body = {
-        "name": "Nagato",
-        "about": "Hello! I'm a full stack developer that loves python and javascript",
-    }
-
-    return response_body  # type: ignore  # noqa: PGH003, RET504
 
 
 @app.route("/api/logout", methods=["POST"])
@@ -110,9 +99,17 @@ def recover_process():
     email = request.json.get("email")
     token = request.json.get("token")
     with Session(engine) as session:
-        tripulante = session.execute(select(Pilot).where(Pilot.email == email)).scalar_one_or_none()
+        stmt = union_all(
+            select(Pilot).where(Pilot.email == email),
+            select(Crew).where(Crew.email == email),
+            select(User).where(User.email == email),
+        )
+
+        stmt2 = select(Pilot, Crew, User).from_statement(stmt)
+        tripulante = session.execute(stmt2).scalar_one_or_none()
         try:
             recover_data = json.loads(tripulante.recover)
+            print(recover_data)
         except json.JSONDecodeError:
             return jsonify({"message": "Token already was used"}), 403
 
@@ -121,23 +118,29 @@ def recover_process():
             token_timestamp = datetime.fromisoformat(recover_data["timestamp"])
             exp_timestamp = now + timedelta(hours=12)
             if exp_timestamp > token_timestamp:
-                # tripulante.recover = ""
-                # session.commit()
+                tripulante.recover = ""
+                session.commit()
                 return jsonify({"message": "Token Valid", "nip": tripulante.nip}), 200
 
     return jsonify({"message": "Token Expired"}), 408
 
 
 @app.route("/api/recover/<email>", methods=["POST"])
-def recover_pass(email) -> tuple[Response, int]:
+def recover_pass(email: str) -> tuple[Response, int]:
     with Session(engine) as session:
-        tripulante = session.execute(select(Pilot).where(Pilot.email == email)).scalar_one_or_none()
+        stmt = union_all(
+            select(Pilot).where(Pilot.email == email),
+            select(Crew).where(Crew.email == email),
+            select(User).where(User.email == email),
+        )
 
+        stmt2 = select(Pilot, Crew, User).from_statement(stmt)
+        tripulante = session.execute(stmt2).scalar_one_or_none()
         if tripulante is None:
             return jsonify({"message": "User not found"}), 404
-
         json_data = main(email)
         tripulante.recover = json_data
+        print(tripulante.recover)
         session.commit()
         return jsonify({"message": "Recovery email sent"}), 200
 
@@ -145,17 +148,29 @@ def recover_pass(email) -> tuple[Response, int]:
 
 
 @app.route("/api/storenewpass/<nip>", methods=["PATCH"])
-def storeNewPassord(nip: int) -> tuple[Response, int]:
+def store_new_passord(nip: int) -> tuple[Response, int]:
     if request.method == "PATCH":
         user: dict = request.get_json()
+        if user["password"] == "":
+            return jsonify({"msg": "Password can not be empty"}), 403
         with Session(engine) as session:
-            modified_pilot = session.execute(select(Pilot).where(Pilot.nip == nip)).scalar_one()
-            for k, v in user.items():
-                setattr(modified_pilot, k, v)
-            modified_pilot.recover = ""
-            session.commit()
+            stmt = union_all(
+                select(Pilot).where(Pilot.nip == nip),
+                select(Crew).where(Crew.nip == nip),
+                select(User).where(User.nip == nip),
+            )
 
-            return jsonify(modified_pilot.to_json()), 200
+            stmt2 = select(Pilot, Crew, User).from_statement(stmt)
+            modified_user = session.execute(stmt2).scalar_one_or_none()
+            print(type(modified_user))
+            print(user["password"])
+            print(hash_code(user["password"]))
+            modified_user.password = hash_code(user["password"])
+            # for k, v in user.items():
+            #     setattr(modified_user, k, v)
+            modified_user.recover = ""
+            session.commit()
+            return jsonify(modified_user.to_json()), 200
     return jsonify({"message": "Internal Error"}), 500
 
 
@@ -185,7 +200,7 @@ def retrieve_user() -> tuple[Response, int]:
                     rank=user["rank"],
                     position=user["position"],
                     email=user["email"],
-                    password=user["password"],
+                    password=hash_code(user["password"]),
                     qualification=Qualification(),
                 )
             elif user["position"] in crew_user:
@@ -196,7 +211,7 @@ def retrieve_user() -> tuple[Response, int]:
                     position=user["position"],
                     email=user["email"],
                     password=user["password"],
-                    qualification=QualificationCrew(),
+                    qualificationcrew=QualificationCrew(),
                 )
             else:
                 new_user = User(
@@ -342,50 +357,65 @@ def retrieve_flights() -> tuple[Response, int]:
     return jsonify({"message": "Bad Manual Request"}), 403
 
 
-@app.route("/api/pilots", methods=["GET"])
+@app.route("/api/pilots/<position>", methods=["GET"])
 @jwt_required()  # new line
-def retrieve_pilots() -> tuple[Response, int]:
+def retrieve_pilots(position: str) -> tuple[Response, int]:
     """Placehold."""
     if request.method == "GET":
         # Retrieve all pilots from db
         with Session(engine) as session:
-            stmt = select(Pilot)
+            stmt = select(Pilot).where(Pilot.position == position).order_by(Pilot.nip)
             result = session.execute(stmt).scalars().all()
             return jsonify([row.to_json(qualification_data=True) for row in result]), 200
 
     return jsonify({"message": "Bad Manual Request"}), 403
 
 
-@app.route("/api/pilots/<nip>", methods=["DELETE", "PATCH"])
+@app.route("/api/crew", methods=["GET"])
 @jwt_required()  # new line
-def handle_pilots(nip: int) -> tuple[Response, int]:
+def retrieve_crew() -> tuple[Response, int]:
     """Placehold."""
-    if request.method == "DELETE":
+    if request.method == "GET":
+        # Retrieve all crew from db
         with Session(engine) as session:
-            session.execute(delete(Pilot).where(Pilot.nip == nip))
-            result = session.execute(
-                delete(Qualification).where(Qualification.pilot_id == nip),
-            )
-
-            if result.rowcount == 1:
-                session.commit()
-                return jsonify({"deleted_id": f"{nip}"}), 200
-            else:  # noqa: RET505
-                return jsonify({"message": "Failed to delete"}), 304
-
-    if request.method == "PATCH":
-        user: dict = request.get_json()
-        with Session(engine) as session:
-            modified_pilot = session.execute(select(Pilot).where(Pilot.nip == nip)).scalar_one()
-            for k, v in user.items():
-                if k == "qualification":
-                    continue
-                setattr(modified_pilot, k, v)
-
-            session.commit()
-            return jsonify(modified_pilot.to_json()), 200
+            stmt = select(Crew).order_by(Crew.nip)
+            result = session.execute(stmt).scalars().all()
+            print(result)
+            return jsonify([row.to_json(qualification_data=True) for row in result]), 200
 
     return jsonify({"message": "Bad Manual Request"}), 403
+
+
+# @app.route("/api/pilots/<nip>", methods=["DELETE", "PATCH"])
+# @jwt_required()  # new line
+# def handle_pilots(nip: int) -> tuple[Response, int]:
+#     """Placehold."""
+#     if request.method == "DELETE":
+#         with Session(engine) as session:
+#             session.execute(delete(Pilot).where(Pilot.nip == nip))
+#             result = session.execute(
+#                 delete(Qualification).where(Qualification.pilot_id == nip),
+#             )
+
+#             if result.rowcount == 1:
+#                 session.commit()
+#                 return jsonify({"deleted_id": f"{nip}"}), 200
+#             else:
+#                 return jsonify({"message": "Failed to delete"}), 304
+
+#     if request.method == "PATCH":
+#         user: dict = request.get_json()
+#         with Session(engine) as session:
+#             modified_pilot = session.execute(select(Pilot).where(Pilot.nip == nip)).scalar_one()
+#             for k, v in user.items():
+#                 if k == "qualification":
+#                     continue
+#                 setattr(modified_pilot, k, v)
+
+#             session.commit()
+#             return jsonify(modified_pilot.to_json()), 200
+
+#     return jsonify({"message": "Bad Manual Request"}), 403
 
 
 @app.route("/api/flights/<flight_id>", methods=["DELETE", "PATCH"])

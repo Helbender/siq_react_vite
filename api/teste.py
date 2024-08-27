@@ -1,7 +1,7 @@
 from datetime import date
 
 from config import engine
-from models import Base, Flight, FlightPilots, Pilot, Qualification
+from models import Base, Crew, Flight, FlightPilots, Pilot, Qualification, QualificationCrew
 from sqlalchemy.orm import Session
 
 today = date.today()
@@ -34,7 +34,29 @@ pilot2 = Pilot(
     qualification=Qualification(),
 )
 a.append(pilot2)
+pilot3 = Pilot(
+    nip=138534,
+    name="Henrique Fontes",
+    rank="TEN",
+    position="CP",
+    email="hffontes@emfa.pt",
+    password="123745",
+    admin=0,
+    qualification=Qualification(),
+)
+a.append(pilot3)
 
+oc = Crew(
+    nip=110000,
+    name="Paulo Reis",
+    rank="SAJ",
+    position="OC",
+    email="pr@emfa.pt",
+    password="123745",
+    admin=0,
+    qualification=QualificationCrew(),
+)
+a.append(oc)
 with Session(engine) as session:
     session.add_all(a)
     session.commit()

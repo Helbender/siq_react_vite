@@ -13,10 +13,10 @@ DB_HOST = os.environ.get("DB_HOST", "esq502.pt")
 DB_PORT = os.environ.get("DB_PORT", 3306)
 DB_NAME = os.environ.get("DB_NAME", "esqpt_siq")
 
-# connection_string=("sqlite:///mydb.db")
+connection_string = "sqlite:///mydb.db"
 
 # Define connection string
-connection_string = f"mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+# connection_string = f"mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
 try:
     # Create the SQLAlchemy engine with improved configuration

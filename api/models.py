@@ -11,8 +11,8 @@ from sqlalchemy.orm import (
     relationship,
 )
 
-date_init = "2000-01-01"
-year_init = 2000
+year_init = 2010
+date_init = f"{year_init}-01-01"
 
 
 class Base(DeclarativeBase):
@@ -335,7 +335,7 @@ class Qualification(Base):
 class Crew(People, Base):
     __tablename__ = "crew"
 
-    qualificationcrew: Mapped[QualificationCrew] = relationship(
+    qualification: Mapped[QualificationCrew] = relationship(
         "QualificationCrew",
         back_populates="crew",
         cascade="all, delete",
@@ -343,7 +343,7 @@ class Crew(People, Base):
     )
     flight_crew: Mapped[List[FlightCrew]] = relationship(back_populates="crew")
 
-    def to_json(self, qualification_data=False) -> dict:
+    def to_json(self, qualification_data: bool = False) -> dict:
         """Return all model data in JSON format."""
         result = super().to_json()
         if qualification_data:
@@ -355,7 +355,7 @@ class QualificationCrew(Base):
     __tablename__ = "qualifications_crew"
 
     crew_id: Mapped[int] = mapped_column(ForeignKey("crew.nip"), primary_key=True)
-    crew: Mapped[Crew] = relationship(back_populates="qualificationcrew")
+    crew: Mapped[Crew] = relationship(back_populates="qualification")
     last_bsoc_date: Mapped[date] = mapped_column(insert_default=date(year_init, 1, 1))
 
     def to_json(self) -> dict:

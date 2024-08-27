@@ -99,7 +99,7 @@ def main(recipient_email):
 
     # Print the JSON data with hashed token and timestamp
     json_data = create_json_data(code)
-    print("JSON data for storage:")
+    print(f"JSON data for storage: {json_data}")
     return json_data
 
 

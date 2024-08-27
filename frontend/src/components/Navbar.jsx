@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   Box,
   Breadcrumb,
@@ -10,9 +10,15 @@ import {
 } from "@chakra-ui/react";
 
 const Navbar = () => {
-  // const location = useLocation();
+  const location = useLocation();
+  const selected_style = {
+    bg: "purple.600",
+    borderRadius: 10,
+    color: "black",
+    fontWeight: "bold",
+  };
   return (
-    <Container maxW={"800px"} mb={10} mt={20}>
+    <Container maxW={"80%"} mb={10} mt={10}>
       <Box
         px={5}
         my={4}
@@ -24,19 +30,35 @@ const Navbar = () => {
           {/* Left Side*/}
           <Flex alignItems={"center"} gap={3} display={{ sm: "flex" }}>
             <Breadcrumb separator={"-"}>
-              <BreadcrumbItem isCurrentPage>
-                <BreadcrumbLink as={Link} to="flights">
-                  Voos
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-
-              <BreadcrumbItem>
-                <BreadcrumbLink as={Link} to="pilots">
+              <BreadcrumbItem
+                isCurrentPage={location.pathname === "/pilots" ? true : false}
+              >
+                <BreadcrumbLink
+                  p={2}
+                  as={Link}
+                  to="pilots"
+                  sx={location.pathname === "/pilots" ? selected_style : null}
+                >
                   Pilotos
                 </BreadcrumbLink>
               </BreadcrumbItem>
 
-              <BreadcrumbItem>
+              <BreadcrumbItem
+                p={2}
+                isCurrentPage={
+                  location.pathname === "/co-pilots" ? true : false
+                }
+                sx={location.pathname === "/co-pilots" ? selected_style : null}
+              >
+                <BreadcrumbLink as={Link} to="co-pilots">
+                  CPs
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbItem
+                p={2}
+                isCurrentPage={location.pathname === "/crew" ? true : false}
+                sx={location.pathname === "/crew" ? selected_style : null}
+              >
                 <BreadcrumbLink as={Link} to="crew">
                   OCs
                 </BreadcrumbLink>

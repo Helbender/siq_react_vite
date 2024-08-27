@@ -9,7 +9,7 @@ export const FlightContext = createContext();
 // Create a provider component
 export const FlightProvider = ({ children }) => {
   const [flights, setFlights] = useState([]);
-  const { token } = useContext(AuthContext);
+  const { token, removeToken } = useContext(AuthContext);
 
   const getSavedFlights = () => {
     try {
@@ -25,6 +25,11 @@ export const FlightProvider = ({ children }) => {
       });
     } catch (error) {
       console.log(error);
+      console.log(error.response.status);
+      if (error.response.status === 401) {
+        console.log("Removing Token");
+        removeToken();
+      }
     }
   };
 

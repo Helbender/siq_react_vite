@@ -40,7 +40,8 @@ function UserManagementPage() {
   };
   // Filter users based on search term
   useEffect(() => {
-    const results = pilotos?.filter((user) =>
+    checkToken();
+    const results = pilotos.filter((user) =>
       [
         user.nip,
         user.name,
