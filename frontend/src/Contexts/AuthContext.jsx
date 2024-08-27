@@ -16,6 +16,7 @@ export const AuthProvider = ({ children }) => {
       return { name: decodedToken.name, admin: decodedToken.admin };
     }
   };
+
   return (
     <AuthContext.Provider
       value={{

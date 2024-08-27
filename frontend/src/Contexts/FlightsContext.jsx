@@ -21,7 +21,6 @@ export const FlightProvider = ({ children }) => {
         const res = response.data;
         console.log("Flights");
         console.log(res);
-        // res.access_token && setToken(res.access_token);
         setFlights(res || []);
       });
     } catch (error) {

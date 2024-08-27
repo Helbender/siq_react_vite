@@ -1,24 +1,49 @@
 // import PILOTOS from "../dummy/pilotos";
 import { Button, Container, Grid, ButtonGroup } from "@chakra-ui/react";
 import UserCard from "./pilotComponents/PilotCard";
-import { useContext } from "react";
-import CreateUserModal from "./pilotComponents/CreateUserModal";
+import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../Contexts/AuthContext";
-
+import axios from "axios";
 const Pilots = () => {
-  const { pilotos } = useContext(AuthContext);
+  const [pilotos, setPilotos] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredUsers, setFilteredUsers] = useState([]);
+  const { token } = useContext(AuthContext);
+
   const handlePositionFilter = (position) => {
     if (position === "ALL") {
-      null;
+      setSearchTerm("");
     } else {
-      // setPilotos(pilotos.filter((piloto) => piloto.position == position));
-      console.log(pilotos);
+      setSearchTerm(position);
     }
   };
+  useEffect(() => {
+    console.log(pilotos);
+    if (searchTerm === "") {
+      setFilteredUsers(pilotos);
+    } else {
+      const results = pilotos?.filter((user) => user.position == searchTerm);
+      setFilteredUsers(results);
+    }
+  }, [searchTerm, pilotos]);
 
+  const getSavedPilots = async () => {
+    try {
+      const res = await axios.get(`/api/pilots`, {
+        headers: { Authorization: "Bearer " + token },
+      });
+      console.log(res);
+      setPilotos(res.data || []);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    getSavedPilots();
+    console.log("Users Loaded");
+  }, []);
   return (
     <Container maxWidth={"1200px"} alignItems={"center"}>
-      <CreateUserModal add={true} />
       <ButtonGroup ml="5" colorScheme="blue">
         <Button onClick={() => handlePositionFilter("ALL")}>Todos</Button>
         <Button onClick={() => handlePositionFilter("PC")}>PC</Button>
@@ -33,7 +58,7 @@ const Pilots = () => {
         gap={5}
         mt="8"
       >
-        {pilotos.map((pilot) => (
+        {filteredUsers.map((pilot) => (
           <UserCard key={pilot.nip} user={pilot} />
         ))}
       </Grid>

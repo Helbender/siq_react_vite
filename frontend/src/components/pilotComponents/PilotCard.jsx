@@ -10,17 +10,11 @@ import {
   Flex,
   Circle,
   useColorModeValue,
-  IconButton,
 } from "@chakra-ui/react";
 import DaysLeftColumn from "./DaysLeftColumn";
 import QualificationsPanel from "./QualificationsPanel";
-import { useContext } from "react";
-import { AuthContext } from "../../Contexts/AuthContext";
-import CreateUserModal from "./CreateUserModal";
 
-const UserCard = ({ user }) => {
-  const { token, pilotos, setPilotos } = useContext(AuthContext);
-
+const PilotCard = ({ user }) => {
   return (
     <Card bg={useColorModeValue("gray.200", "gray.700")} boxShadow={"xl"}>
       <CardHeader>
@@ -36,10 +30,7 @@ const UserCard = ({ user }) => {
             </Circle>
             <Heading size="sm">{`${user.rank} ${user.name}`}</Heading>
           </Flex>
-          <Flex align={"center"} gap={2}>
-            <CreateUserModal edit={true} user={user} />
-            <CreateUserModal isDelete={true} user={user} />
-          </Flex>
+          <Flex align={"center"} gap={2}></Flex>
         </Flex>
       </CardHeader>
       <CardBody>
@@ -156,4 +147,4 @@ const UserCard = ({ user }) => {
   );
 };
 
-export default UserCard;
+export default PilotCard;

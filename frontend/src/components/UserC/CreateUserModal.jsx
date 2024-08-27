@@ -19,19 +19,22 @@ import {
   HStack,
   Switch,
   useToast,
+  Select,
   // Stack,
 } from "@chakra-ui/react";
 import { FaEdit, FaPlus } from "react-icons/fa";
 import { useState, useContext } from "react";
 import axios from "axios";
 import { AuthContext } from "../../Contexts/AuthContext";
+import { UserContext } from "../../Contexts/UserContext";
 import { BiTrash } from "react-icons/bi";
 
 function CreateUserModal({ edit, add, isDelete, user }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
   const [inputs, setInputs] = useState(user);
-  const { token, pilotos, setPilotos } = useContext(AuthContext);
+  const { token } = useContext(AuthContext);
+  const { pilotos, setPilotos } = useContext(UserContext);
 
   const handleInputsChange = async (event) => {
     event.preventDefault();
@@ -43,12 +46,13 @@ function CreateUserModal({ edit, add, isDelete, user }) {
     setInputs(() => ({ ...inputs, password: 12345 }));
     try {
       console.log(inputs);
-      const res = await axios.post(`/api/pilots`, inputs, {
+      const res = await axios.post(`/api/users`, inputs, {
         headers: { Authorization: "Bearer " + token },
       });
       toast({ title: "User created successfully", status: "success" });
 
       setPilotos([...pilotos, res.data]);
+      setInputs([]);
       onClose();
     } catch (error) {
       toast({ title: "Error updating user", status: "error" });
@@ -59,15 +63,23 @@ function CreateUserModal({ edit, add, isDelete, user }) {
     e.preventDefault();
 
     try {
-      const res = await axios.patch(`/api/pilots/${user.nip}`, inputs, {
-        headers: { Authorization: "Bearer " + token },
-      });
+      const res = await axios.patch(
+        `/api/users/${user.nip}/${user.position}`,
+        inputs,
+        {
+          headers: { Authorization: "Bearer " + token },
+        },
+      );
       toast({ title: "User updated successfully", status: "success" });
 
       console.log(res.data);
       setPilotos((prevUsers) =>
         prevUsers.map((u) => (u.nip === user.nip ? res.data : u)),
       );
+      // setFilteredUsers((prevUsers) =>
+      //   prevUsers.map((u) => (u.nip === user.nip ? res.data : u)),
+      // );
+
       onClose();
     } catch (error) {
       toast({ title: "Error adding user", status: "error" });
@@ -77,12 +89,16 @@ function CreateUserModal({ edit, add, isDelete, user }) {
 
   const handleDeletePilot = async () => {
     try {
-      const res = await axios.delete(`/api/pilots/${user.nip}`, {
-        headers: { Authorization: "Bearer " + token },
-      });
+      const res = await axios.delete(
+        `/api/users/${user.nip}/${user.position}`,
+        {
+          headers: { Authorization: "Bearer " + token },
+        },
+      );
       console.log(res);
       if (res.data?.deleted_id) {
         setPilotos(pilotos.filter((piloto) => piloto.nip != user.nip));
+        // setFilteredUsers(pilotos.filter((piloto) => piloto.nip != user.nip));
       }
     } catch (error) {
       console.log(error);
@@ -146,12 +162,27 @@ function CreateUserModal({ edit, add, isDelete, user }) {
                 </FormControl>
                 <FormControl>
                   <FormLabel>Função</FormLabel>
-                  <Input
+                  <Select
                     value={inputs?.position}
                     name="position"
-                    placeholder="Função a bordo"
                     onChange={handleInputsChange}
-                  ></Input>
+                  >
+                    <option>Default</option>
+                    <option>PC</option>
+                    <option>P</option>
+                    <option>CP</option>
+                    <option>PA</option>
+                    <option>PI</option>
+                    <option>OCI</option>
+                    <option>OC</option>
+                    <option>OCA</option>
+                    <option>CTI</option>
+                    <option>CT</option>
+                    <option>CTA</option>
+                    <option>OPVI</option>
+                    <option>OPV</option>
+                    <option>OPVA</option>
+                  </Select>
                 </FormControl>
               </Flex>
               <VStack mt={5} spacing={4} align="stretch">
