@@ -20,7 +20,12 @@ class Base(DeclarativeBase):
 
 
 class People:
-    # __tablename__: str = ""
+    """Basic People Model.
+
+    Used for non flying users and serves as super class for the flying users
+    """
+
+    # __tablename__: str = "users"
 
     nip: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(20))
@@ -36,6 +41,7 @@ class People:
         return f"{self.rank} {self.nip} {self.name}. I'm a {self.position}"
 
     def to_json(self):
+        """Return all model data in JSON format."""
         return {
             "nip": self.nip,
             "name": self.name,
@@ -47,6 +53,19 @@ class People:
             "squadron": self.squadron,
             "password": self.password,
         }
+
+
+class User(People, Base):
+    """Basic User model.
+
+    Created only because other Users Model can ineherith directly from a class with table name
+    """
+
+    __tablename__: str = "users"
+
+    def to_json(self) -> dict:
+        """Return all model data in JSON format."""
+        return super().to_json()
 
 
 class CrewAndPositions(Base):
@@ -63,7 +82,16 @@ class CrewAndPositions(Base):
 
 
 class Flight(Base):
-    __tablename__ = "flights_table"
+    """Flight Model.
+
+    Basic flight parameters and estabilish relations.
+
+    :param Flight Pilots for the FlightPilot Table with each Pilot flight data (One-To-Many)
+    :param Flight Crew for the FlightCrew Table with each Crew flight data (One-To-Many)
+
+    """
+
+    __tablename__: str = "flights_table"
 
     fid: Mapped[int] = mapped_column(primary_key=True)
     airtask: Mapped[str] = mapped_column(String(7), nullable=False)
@@ -84,6 +112,11 @@ class Flight(Base):
     orm: Mapped[int]
     fuel: Mapped[int]
     flight_pilots: Mapped[List[FlightPilots]] = relationship(
+        back_populates="flight",
+        cascade="all, delete",
+        passive_deletes=True,
+    )
+    flight_crew: Mapped[List[FlightCrew]] = relationship(
         back_populates="flight",
         cascade="all, delete",
         passive_deletes=True,
@@ -146,6 +179,7 @@ class FlightPilots(Base):
         return rep
 
     def to_json(self) -> dict:
+        """Return all model data in JSON format."""
         response = {
             "pilotName": self.pilot.name,
             "nip": self.pilot.nip,
@@ -172,21 +206,41 @@ class FlightPilots(Base):
         return response
 
 
+class FlightCrew(Base):
+    __tablename__ = "flight_crew"
+
+    flight_id: Mapped[int] = mapped_column(
+        ForeignKey("flights_table.fid"),
+        primary_key=True,
+    )
+
+    crew_id: Mapped[int] = mapped_column(ForeignKey("crew.nip"), primary_key=True)
+
+    bsoc: Mapped[Optional[bool]]
+
+    crew: Mapped[Crew] = relationship(back_populates="flight_crew")
+    flight: Mapped[Flight] = relationship(back_populates="flight_crew")
+
+
 class Pilot(People, Base):
     __tablename__ = "pilots"
 
     qualification: Mapped[Qualification] = relationship(
         "Qualification",
         back_populates="pilot",
+        cascade="all, delete",
+        passive_deletes=True,
     )
     flight_pilots: Mapped[List[FlightPilots]] = relationship(back_populates="pilot")
 
     def __repr__(self):
         return super().__repr__() + self.qualification.__repr__()
 
-    def to_json(self) -> dict:
+    def to_json(self, qualification_data=False) -> dict:
+        """Return all model data in JSON format."""
         result = super().to_json()
-        result["qualification"] = self.qualification.to_json()
+        if qualification_data:
+            result["qualification"] = self.qualification.to_json()
         return result
 
 
@@ -195,6 +249,7 @@ class Qualification(Base):
 
     pilot_id: Mapped[int] = mapped_column(ForeignKey("pilots.nip"), primary_key=True)
     pilot: Mapped[Pilot] = relationship(back_populates="qualification")
+
     last_day_landings: Mapped[str] = mapped_column(String(55), default=date_init)
     last_night_landings: Mapped[str] = mapped_column(String(55), default=date_init)
     last_prec_app: Mapped[str] = mapped_column(String(55), default=date_init)
@@ -277,8 +332,34 @@ class Qualification(Base):
         return string
 
 
-# class Crew(People):
-#     __tablename__ = "crew"
+class Crew(People, Base):
+    __tablename__ = "crew"
 
-#     def __init__(self, nip, name, rank, position):
-#         super().__init__(nip, name, rank, position)
+    qualificationcrew: Mapped[QualificationCrew] = relationship(
+        "QualificationCrew",
+        back_populates="crew",
+        cascade="all, delete",
+        passive_deletes=True,
+    )
+    flight_crew: Mapped[List[FlightCrew]] = relationship(back_populates="crew")
+
+    def to_json(self, qualification_data=False) -> dict:
+        """Return all model data in JSON format."""
+        result = super().to_json()
+        if qualification_data:
+            result["qualification"] = self.qualification.to_json()
+        return result
+
+
+class QualificationCrew(Base):
+    __tablename__ = "qualifications_crew"
+
+    crew_id: Mapped[int] = mapped_column(ForeignKey("crew.nip"), primary_key=True)
+    crew: Mapped[Crew] = relationship(back_populates="qualificationcrew")
+    last_bsoc_date: Mapped[date] = mapped_column(insert_default=date(year_init, 1, 1))
+
+    def to_json(self) -> dict:
+        """Return all model data in JSON format."""
+        return {
+            "lastBSOC": self.last_bsoc_date.strftime("%Y-%m-%d"),
+        }
