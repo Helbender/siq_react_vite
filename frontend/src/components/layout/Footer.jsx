@@ -1,9 +1,10 @@
+/* eslint-disable no-undef */
 // Footer.jsx
-import { Box, Text } from "@chakra-ui/react";
+import { HStack, Spacer, Text } from "@chakra-ui/react";
 
 function Footer() {
   return (
-    <Box
+    <HStack
       w="100%"
       bg="teal.500"
       color="white"
@@ -16,10 +17,16 @@ function Footer() {
       position="fixed"
       bottom={0}
     >
+      <Spacer />
+
       <Text mb={1} fontSize="lg" fontWeight="bold">
         Esquadra 502 @ 2024
       </Text>
-    </Box>
+      <Spacer />
+      <Text textAlign="right" mb={1} fontSize="sm" fontWeight="italic">
+        {"Build: " + BUILD_DATE}
+      </Text>
+    </HStack>
   );
 }
 

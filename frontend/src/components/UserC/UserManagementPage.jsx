@@ -15,14 +15,14 @@ import {
   Grid,
   useToast,
 } from "@chakra-ui/react";
-import { AuthContext } from "../../Contexts/AuthContext";
+import { UserContext } from "../../Contexts/UserContext";
 import CreateUserModal from "../pilotComponents/CreateUserModal";
 import { FaMailBulk } from "react-icons/fa";
 import UserDataCard from "./UserDataCard";
 import { useSendEmail } from "../../Functions/useSendEmail";
 
 function UserManagementPage() {
-  const { pilotos, setPilotos } = useContext(AuthContext);
+  const { pilotos } = useContext(UserContext);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const displayAsTable = useBreakpointValue({ base: false, xl: true });
@@ -30,7 +30,7 @@ function UserManagementPage() {
   const toast = useToast();
   // Filter users based on search term
   useEffect(() => {
-    const results = pilotos.filter((user) =>
+    const results = pilotos?.filter((user) =>
       [
         user.nip,
         user.name,

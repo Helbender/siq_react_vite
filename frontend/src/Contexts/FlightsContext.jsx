@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { createContext, useEffect, useState, useContext } from "react";
 import axios from "axios";
-import { AuthContext } from "../AuthContext";
+import { AuthContext } from "../Contexts/AuthContext";
 
 // Create the context
 export const FlightContext = createContext();

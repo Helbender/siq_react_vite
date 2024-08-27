@@ -6,6 +6,7 @@ import App from "./App";
 import { ChakraProvider } from "@chakra-ui/react";
 import { AuthProvider } from "./Contexts/AuthContext";
 import { FlightProvider } from "./Contexts/FlightsContext";
+import { UserProvider } from "./Contexts/UserContext";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -13,7 +14,9 @@ root.render(
     <ChakraProvider>
       <AuthProvider>
         <FlightProvider>
-          <App />
+          <UserProvider>
+            <App />
+          </UserProvider>
         </FlightProvider>
       </AuthProvider>
     </ChakraProvider>

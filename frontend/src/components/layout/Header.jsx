@@ -43,7 +43,8 @@ function Header() {
 
   // const [isSmallScreen] = useMediaQuery("(max-width: 480px)");
   // if (token) {
-  //   const { getUser, admin } = getUser();
+  const User = getUser();
+
   // }
   function handleLogout() {
     axios({
@@ -73,7 +74,7 @@ function Header() {
       boxShadow="md"
       // position="fixed"
       top={0}
-      zIndex={1000}
+      // zIndex={1000}
     >
       <Flex align="center" justify="space-between">
         {/* Menu Button on the Left */}
@@ -96,9 +97,9 @@ function Header() {
           >
             Sistema Integrado de Qualificações
           </Heading>
-          {/* Right Side*/}
         </Flex>
-        <Flex alignItems={"right"} display={{ base: "md" }}>
+        {/* Right Side Button Theme */}
+        <Flex display={{ base: "none", sm: "block" }}>
           <Button onClick={toggleColorMode}>
             {colorMode === "light" ? <IoMoon /> : <LuSun />}
           </Button>
@@ -113,8 +114,7 @@ function Header() {
                 <>
                   <DrawerHeader>
                     <Heading
-                      size="md"
-                      fontSize={"16"}
+                      size="sm"
                       color="teal.500"
                       mt="10"
                       cursor="pointer"
@@ -135,7 +135,10 @@ function Header() {
                         onClose();
                       }}
                     >
-                      {/* {getUser + (admin ? "YES" : "NO")} */}
+                      {User.name}
+                    </Heading>
+                    <Heading size="sm" mt="0" color={"teal.700"}>
+                      {User.admin ? "Admin" : ""}
                     </Heading>
                   </DrawerHeader>
                   <DrawerBody>

@@ -22,4 +22,7 @@ export default defineConfig({
       },
     },
   },
+  define: {
+    BUILD_DATE: JSON.stringify(new Date().toISOString().slice(0, 10)),
+  },
 });

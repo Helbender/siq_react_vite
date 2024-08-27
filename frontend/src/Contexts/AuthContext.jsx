@@ -1,8 +1,7 @@
 /* eslint-disable react/prop-types */
-import { createContext, useState, useEffect } from "react";
+import { createContext } from "react";
 import useToken from "../components/loginComponents/useToken";
 import { jwtDecode } from "jwt-decode";
-import axios from "axios";
 
 // Create the context
 export const AuthContext = createContext();
@@ -12,12 +11,11 @@ export const AuthProvider = ({ children }) => {
   const { token, removeToken, setToken } = useToken();
 
   const getUser = () => {
-    const decodedToken = jwtDecode(token);
-    return { name: decodedToken.name, admin: decodedToken.admin };
+    if (token && token !== "" && token !== undefined) {
+      const decodedToken = jwtDecode(token);
+      return { name: decodedToken.name, admin: decodedToken.admin };
+    }
   };
-  useEffect(() => {
-    getSavedPilots();
-  }, []);
   return (
     <AuthContext.Provider
       value={{
@@ -25,8 +23,6 @@ export const AuthProvider = ({ children }) => {
         removeToken,
         setToken,
         getUser,
-        pilotos,
-        setPilotos,
       }}
     >
       {children}

@@ -19,8 +19,8 @@ export default function Flights() {
           setFlights={setFlights}
           token={token}
         />
-        <FormControl maxW="130px">
-          <Input placeholder="00A0000" />
+        <FormControl textAlign={"center"} ml={5} maxW="95px">
+          <Input placeholder="00A0000" textAlign={"center"} />
         </FormControl>
       </Center>
       <Stack gap={5} mt="8" mb="10" overflow="initial">
