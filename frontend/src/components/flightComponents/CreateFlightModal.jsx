@@ -60,12 +60,13 @@ function CreateFlightModal({ token }) {
     let timeString2 = new Date(0, 0, 0, time2[0], time2[1], 0, 0);
     let dif = (timeString2 - timeString1) / 3600 / 1000;
     let hours = Math.floor(dif);
-    let minutes = (dif - hours) * 60;
+    let minutes = Math.round((dif - hours) * 60);
     let time = String(
       (hours < 10 ? "0" + hours : hours) +
         ":" +
         (minutes < 10 ? "0" + minutes : minutes),
     );
+    console.log(time);
     return time;
   };
   const handleCreateFlight = async (e) => {
@@ -77,8 +78,9 @@ function CreateFlightModal({ token }) {
         delete data[`pilot${i}`];
       }
     }
+    console.log(data);
     try {
-      console.log(token);
+      // console.log(token);
       const res = await axios.post(`/api/flights`, data, {
         headers: { Authorization: "Bearer " + token },
       });
@@ -409,7 +411,32 @@ function CreateFlightModal({ token }) {
             >
               Add
             </Button>
-            <Button colorScheme="blue" mr={3} onClick={onClose}>
+            <Button
+              colorScheme="blue"
+              mr={3}
+              onClick={() => {
+                onClose();
+                setInputs({
+                  airtask: "",
+                  flightType: "",
+                  flightAction: "",
+                  date: `${today.toISOString().substring(0, 10)}`,
+                  origin: "",
+                  destination: "",
+                  ATD: "",
+                  ATA: "",
+                  ATE: "",
+                  tailNumber: "",
+                  totalLandings: "",
+                  passengers: "",
+                  doe: "",
+                  cargo: "",
+                  numberOfCrew: "",
+                  orm: "",
+                  fuel: "",
+                });
+              }}
+            >
               Close
             </Button>
           </ModalFooter>

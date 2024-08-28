@@ -34,8 +34,13 @@ app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
 jwt = JWTManager(app)
 CORS(
     app,
-    # origins="http://127.0.0.1:5051",
-    allow_headers=["Content-Type", "Authorization", "Access-Control-Allow-Credentials"],
+    # origins="http://locahost:5173",
+    allow_headers=[
+        "Content-Type",
+        "Authorization",
+        "Access-Control-Allow-Credentials",
+        #    "Access-Control-Allow-Origin"
+    ],
     supports_credentials=True,
 )
 

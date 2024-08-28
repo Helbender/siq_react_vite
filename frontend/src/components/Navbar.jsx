@@ -44,13 +44,18 @@ const Navbar = () => {
               </BreadcrumbItem>
 
               <BreadcrumbItem
-                p={2}
                 isCurrentPage={
                   location.pathname === "/co-pilots" ? true : false
                 }
-                sx={location.pathname === "/co-pilots" ? selected_style : null}
               >
-                <BreadcrumbLink as={Link} to="co-pilots">
+                <BreadcrumbLink
+                  p={2}
+                  as={Link}
+                  to="co-pilots"
+                  sx={
+                    location.pathname === "/co-pilots" ? selected_style : null
+                  }
+                >
                   CPs
                 </BreadcrumbLink>
               </BreadcrumbItem>

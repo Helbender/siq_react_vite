@@ -1,12 +1,12 @@
 from datetime import date
 
 from config import engine
+from models.crew import Crew, QualificationCrew
+from models.flights import Flight, FlightPilots
+from models.pilots import Pilot, Qualification
+from models.users import Base
+from sendemail import hash_code
 from sqlalchemy.orm import Session
-
-from api.models.crew import Crew, QualificationCrew
-from api.models.flights import Flight, FlightPilots
-from api.models.pilots import Pilot, Qualification
-from api.models.users import Base
 
 today = date.today()
 
@@ -20,7 +20,7 @@ pilot1 = Pilot(
     rank="CAP",
     position="PC",
     email="tfp.branco@gmail.com",
-    password="12345",  # noqa: S106
+    password=hash_code("12345"),
     admin=1,
     qualification=Qualification(),
 )
@@ -31,7 +31,7 @@ pilot2 = Pilot(
     rank="MAJ",
     position="CP",
     email="pedro.miguel.rosa.andrade@gmail.com",
-    password="123745",  # noqa: S106
+    password=hash_code("123745"),
     admin=1,
     qualification=Qualification(),
 )
@@ -42,7 +42,7 @@ pilot3 = Pilot(
     rank="TEN",
     position="CP",
     email="hffontes@emfa.pt",
-    password="123745",  # noqa: S106
+    password=hash_code("12345"),
     admin=0,
     qualification=Qualification(),
 )
@@ -54,12 +54,14 @@ oc = Crew(
     rank="SAJ",
     position="OC",
     email="pr@emfa.pt",
-    password="123745",  # noqa: S106
+    password=hash_code("12345"),
     admin=0,
     qualification=QualificationCrew(),
 )
 a.append(oc)
 with Session(engine) as session:
+    # pilot: Pilot = session.execute(select(Pilot).where(Pilot.nip == 131464)).scalar_one()
+    # pilot.password = hash_code(hash_code("12345"))
     session.add_all(a)
     session.commit()
 

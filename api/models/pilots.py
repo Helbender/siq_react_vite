@@ -28,7 +28,7 @@ class Pilot(People, Base):
 
     def __repr__(self):
         repr = super().__repr__()
-        repr["qualification"] = self.qualification.__repr__()
+        repr += self.qualification.__repr__()
         return repr
 
     def to_json(self, qualification_data=False) -> dict:
@@ -57,7 +57,8 @@ class Qualification(Base):
     last_vrp1_date: Mapped[date] = mapped_column(insert_default=date(year_init, 1, 1))
     last_vrp2_date: Mapped[date] = mapped_column(insert_default=date(year_init, 1, 1))
 
-    def update(self, data: FlightPilots, date: date):
+    def update(self, data: FlightPilots, date: date) -> Qualification:
+        """Update with Last qualification date."""
         if data.qa1 and date > self.last_qa1_date:
             self.last_qa1_date = date
 
@@ -103,10 +104,11 @@ class Qualification(Base):
 
     def to_json(self) -> dict:
         return {
-            "lastDayLandings": [date for date in self.last_day_landings.split()],
-            "lastNightLandings": [date for date in self.last_night_landings.split()],
-            "lastPrecApp": [date for date in self.last_prec_app.split()],
-            "lastNprecApp": [date for date in self.last_nprec_app.split()],
+            # "lastDayLandings": [date for date in self.last_day_landings.split()],  # noqa: ERA001
+            "lastDayLandings": list(self.last_day_landings.split()),
+            "lastNightLandings": list(self.last_night_landings.split()),
+            "lastPrecApp": list(self.last_prec_app.split()),
+            "lastNprecApp": list(self.last_nprec_app.split()),
             "lastQA1": self.last_qa1_date.strftime("%Y-%m-%d"),
             "lastQA2": self.last_qa2_date.strftime("%Y-%m-%d"),
             "lastBSP1": self.last_bsp1_date.strftime("%Y-%m-%d"),

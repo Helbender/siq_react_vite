@@ -48,17 +48,14 @@ class Flight(Base):
     fuel: Mapped[int]
     flight_pilots: Mapped[List[FlightPilots]] = relationship(  # noqa: UP006
         back_populates="flight",
-        cascade="all, delete",
-        passive_deletes=True,
+        cascade="all, delete-orphan",
     )
     flight_crew: Mapped[List[FlightCrew]] = relationship(  # noqa: UP006
         back_populates="flight",
-        cascade="all, delete",
-        passive_deletes=True,
+        cascade="all, delete-orphan",
     )
 
     def __repr__(self):
-        # repr = self.to_json()
         return self.to_json()
 
     def to_json(self):
@@ -97,18 +94,18 @@ class FlightPilots(Base):
     night_landings: Mapped[int]
     prec_app: Mapped[int]
     nprec_app: Mapped[int]
-    qa1: Mapped[Optional[bool]]  # = mapped_column(nullable=True, default=False)
-    qa2: Mapped[Optional[bool]]  # = mapped_column(nullable=True, default=False)
-    bsp1: Mapped[Optional[bool]]  # = mapped_column(nullable=True, default=False)
-    bsp2: Mapped[Optional[bool]]  # = mapped_column(nullable=True, default=False)
-    ta: Mapped[Optional[bool]]  # = mapped_column(nullable=True, default=False)
-    vrp1: Mapped[Optional[bool]]  # = mapped_column(nullable=True, default=False)
-    vrp2: Mapped[Optional[bool]]  # = mapped_column(nullable=True, default=False)
+    qa1: Mapped[Optional[bool]]  # = mapped_column(nullable=True, default=False)# noqa: UP007
+    qa2: Mapped[Optional[bool]]  # = mapped_column(nullable=True, default=False)  # noqa: UP007
+    bsp1: Mapped[Optional[bool]]  # = mapped_column(nullable=True, default=False)# noqa: UP007
+    bsp2: Mapped[Optional[bool]]  # = mapped_column(nullable=True, default=False)# noqa: UP007
+    ta: Mapped[Optional[bool]]  # = mapped_column(nullable=True, default=False)# noqa: UP007
+    vrp1: Mapped[Optional[bool]]  # = mapped_column(nullable=True, default=False)# noqa: UP007
+    vrp2: Mapped[Optional[bool]]  # = mapped_column(nullable=True, default=False)# noqa: UP007
 
     pilot: Mapped[Pilot] = relationship(back_populates="flight_pilots")
     flight: Mapped[Flight] = relationship(back_populates="flight_pilots")
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         rep = f"Piloto: {self.pilot.name} Aterragens={self.day_landings} no airtask {self.flight.airtask} "
         if self.qa1:
             rep += "QA1"
@@ -117,12 +114,12 @@ class FlightPilots(Base):
     def to_json(self) -> dict:
         """Return all model data in JSON format."""
         response = {
-            "pilotName": self.pilot.name,
+            "name": self.pilot.name,
             "nip": self.pilot.nip,
             "ATR": self.day_landings,
             "ATN": self.night_landings,
-            "P": self.prec_app,
-            "NP": self.nprec_app,
+            "precapp": self.prec_app,
+            "nprecapp": self.nprec_app,
         }
         if self.qa1:
             response["QA1"] = self.qa1
@@ -156,3 +153,13 @@ class FlightCrew(Base):
 
     crew: Mapped[Crew] = relationship(back_populates="flight_crew")
     flight: Mapped[Flight] = relationship(back_populates="flight_crew")
+
+    def to_json(self) -> dict:
+        """Return all model data in JSON format."""
+        response = {
+            "name": self.crew.name,
+            "nip": self.crew.nip,
+        }
+        if self.bsoc:
+            response["BSOC"] = self.bsoc
+        return response

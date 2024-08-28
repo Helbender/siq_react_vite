@@ -23,21 +23,24 @@ import { BiTrash } from "react-icons/bi";
 import { useColorMode } from "@chakra-ui/react";
 import axios from "axios";
 import StyledText from "../styledcomponents/StyledText";
-import { FlightContext } from "../Contexts/FlightsContext";
+import { FlightContext } from "../../Contexts/FlightsContext";
 import { useContext } from "react";
 
 const FlightCard = ({ flight }) => {
   const { flights, setFlights } = useContext(FlightContext);
 
   const handleDeleteFlight = async (id) => {
+    console.log(`Flight Id: ${id}`);
     try {
       const res = await axios.delete(`/api/flights/${id}`);
       // console.log(res.data);
       if (res.data?.deleted_id) {
+        console.log(`Deleted flight ${res.data?.deleted_id}`);
+
         setFlights(flights.filter((flight) => flight.id != id));
       }
     } catch (error) {
-      console.log(error);
+      console.log(error.response);
     }
   };
   // console.log(flight);
@@ -70,10 +73,10 @@ const FlightCard = ({ flight }) => {
       <CardBody>
         <Flex alignItems={"top"}>
           <Stack>
-            <Text>{`${flight.flghtType} / ${flight.flightAction}`}</Text>
+            <Text>{`${flight.flightType} / ${flight.flightAction}`}</Text>
             <StyledText
               query={"Nº de Cauda"}
-              text={`Nº de Cauda: ${flight.tailnumber}`}
+              text={`Nº de Cauda: ${flight.tailNumber}`}
             />
             <StyledText
               query={"Nº TRIP"}
@@ -148,12 +151,16 @@ const FlightCard = ({ flight }) => {
                 return (
                   <Tr key={pilot.nip}>
                     <Td>{pilot.nip}</Td>
-                    <Td>{pilot.pilotName}</Td>
+                    <Td>{pilot.name}</Td>
                     <Td>{pilot.ATR}</Td>
                     <Td>{pilot.ATN}</Td>
-                    <Td>{pilot.P}</Td>
-                    <Td>{pilot.NP}</Td>
-                    <Td>{qualification}</Td>
+                    <Td>{pilot.precapp}</Td>
+                    <Td>{pilot.nprecapp}</Td>
+                    <Td>
+                      {qualification.length === 2
+                        ? `${qualification[0]} and ${qualification[1]}`
+                        : qualification[0]}
+                    </Td>
                   </Tr>
                 );
               })}

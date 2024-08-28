@@ -252,7 +252,7 @@ function CreateUserModal({ edit, add, isDelete, user }) {
                 type="submit"
                 onClick={edit ? handleEditUser : handleSubmit}
               >
-                Save
+                {edit ? "Guardar" : "Criar"}
               </Button>
             )}
             <Button colorScheme="blue" mr={3} onClick={onClose}>

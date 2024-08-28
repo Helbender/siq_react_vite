@@ -24,7 +24,7 @@ def retrieve_user() -> tuple[Response, int]:
         # Retrieve all users from db
         with Session(engine) as session:
             for db in [User, Pilot, Crew]:
-                stmt = select(db)
+                stmt = select(db).order_by(db.nip)
                 if session.execute(stmt).scalars().all() is not None:
                     result.extend(session.execute(stmt).scalars().all())
             return jsonify([row.to_json() for row in result]), 200
@@ -40,7 +40,8 @@ def retrieve_user() -> tuple[Response, int]:
                     rank=user["rank"],
                     position=user["position"],
                     email=user["email"],
-                    password=hash_code(user["password"]),
+                    squadron=user["squadron"],
+                    password=hash_code(str(user["password"])),
                     qualification=Qualification(),
                 )
             elif user["position"] in CREW_USER:
@@ -50,8 +51,9 @@ def retrieve_user() -> tuple[Response, int]:
                     rank=user["rank"],
                     position=user["position"],
                     email=user["email"],
-                    password=user["password"],
-                    qualificationcrew=QualificationCrew(),
+                    squadron=user["squadron"],
+                    password=hash_code(str(user["password"])),
+                    qualification=QualificationCrew(),
                 )
             else:
                 new_user = User(
@@ -60,7 +62,8 @@ def retrieve_user() -> tuple[Response, int]:
                     rank=user["rank"],
                     position=user["position"],
                     email=user["email"],
-                    password=user["password"],
+                    squadron=user["squadron"],
+                    password=hash_code(str(user["password"])),
                 )
             session.add(new_user)
             session.commit()

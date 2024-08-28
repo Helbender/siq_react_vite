@@ -33,12 +33,13 @@ const Crew = () => {
   }, [location]);
   return (
     <Grid
+      mx="5"
       templateColumns={{
         base: "1fr",
         md: "repeat(2,1fr)",
         lg: "repeat(3,1fr)",
       }}
-      gap={5}
+      gap={4}
       mt="8"
     >
       {crew.map((user) => (

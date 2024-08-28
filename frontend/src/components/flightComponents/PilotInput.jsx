@@ -4,23 +4,9 @@ import { FormControl, GridItem, Input, Select, Flex } from "@chakra-ui/react";
 import { useState } from "react";
 
 const PilotInput = ({ inputs, setInputs, pilotNumber, pilotos }) => {
-  // const [pilotos, setPilotos] = useState([]);
   const [name, setName] = useState([]);
   const [nip, setNip] = useState("");
-
-  // const getSavedPilots = async () => {
-  //   try {
-  //     const res = await axios.get(`/api/pilots`);
-  //     // console.log(res);
-  //     setPilotos(res.data || []);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-  // useEffect(() => {
-  //   getSavedPilots();
-  // }, []);
-
+  const [qualP, setQualP] = useState([]);
   const [pilot, setPilot] = useState({
     nip: "",
     name: "",
@@ -35,6 +21,7 @@ const PilotInput = ({ inputs, setInputs, pilotNumber, pilotos }) => {
     TA: false,
     VRP1: false,
     VRP2: false,
+    BSOC: false,
   });
 
   const handleNipForm = (name) => {
@@ -59,12 +46,15 @@ const PilotInput = ({ inputs, setInputs, pilotNumber, pilotos }) => {
     if (e.target.value === "PC") {
       setPilotSelect("PC");
       setNip("");
+      setQualP(["QA1", "QA2", "BSP1", "BSP2", "TA", "VRP1", "VRP2"]);
     } else if (e.target.value === "CP") {
       setPilotSelect("CP");
       setNip("");
+      setQualP(["QA1", "QA2", "BSP1", "BSP2", "TA", "VRP1", "VRP2"]);
     } else if (e.target.value === "OC") {
       setPilotSelect("OC");
       setNip("");
+      setQualP(["BSOC"]);
     }
   };
   return (
@@ -201,13 +191,13 @@ const PilotInput = ({ inputs, setInputs, pilotNumber, pilotos }) => {
               setInputs(newinput);
             }}
           >
-            <option value="QA1">QA1</option>
-            <option value="QA2">QA2</option>
-            <option value="BSP1">BSP1</option>
-            <option value="BSP2">BSP2</option>
-            <option value="TA">TA</option>
-            <option value="VRP1">VRP1</option>
-            <option value="VRP2">VRP2</option>
+            {qualP.map((qual, i) => {
+              return (
+                <option key={i} value={qual}>
+                  {qual}
+                </option>
+              );
+            })}
           </Select>
         </FormControl>
         <FormControl mx={1}>
@@ -225,13 +215,13 @@ const PilotInput = ({ inputs, setInputs, pilotNumber, pilotos }) => {
               setInputs(newinput);
             }}
           >
-            <option value="QA1">QA1</option>
-            <option value="QA2">QA2</option>
-            <option value="BSP1">BSP1</option>
-            <option value="BSP2">BSP2</option>
-            <option value="TA">TA</option>
-            <option value="VRP1">VRP1</option>
-            <option value="VRP2">VRP2</option>
+            {qualP.map((qual, i) => {
+              return (
+                <option key={i} value={qual}>
+                  {qual}
+                </option>
+              );
+            })}
           </Select>
         </FormControl>
       </Flex>

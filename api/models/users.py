@@ -47,7 +47,7 @@ class People:
             "admin": self.admin,
             "recover": self.recover,
             "squadron": self.squadron,
-            "password": self.password,
+            # "password": self.password,
         }
 
 

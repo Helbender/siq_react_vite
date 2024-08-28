@@ -46,3 +46,10 @@ class QualificationCrew(Base):
         return {
             "lastBSOC": self.last_bsoc_date.strftime("%Y-%m-%d"),
         }
+
+    def update(self, data: FlightCrew, date: date) -> QualificationCrew:
+        """Update with Last qualification date."""
+        if data.bsoc and date > self.last_bsoc_date:
+            self.last_bsoc_date = date
+
+        return self
