@@ -24,12 +24,11 @@ def retrieve_flights() -> tuple[Response, int]:
     Method POST:
     -   Saves a flight to the db
     """
-    print(request.method)
+    # Retrieve all flights from db
     if request.method == "GET":
-        flights = []
+        flights: list = []
         i = 0
 
-        # Retrieve all flights from db
         with Session(engine) as session:
             stmt = select(Flight)
             flights_obj = session.execute(stmt).scalars()
@@ -48,12 +47,10 @@ def retrieve_flights() -> tuple[Response, int]:
                     else:
                         flights[i]["flight_pilots"].append(flight_pilot.to_json())
                 i += 1
-            print("\n", "\n", flights, "\n", "\n")
             return jsonify(flights), 200
 
     if request.method == "POST":
         f: dict = request.get_json()
-        print(f)
         flight = Flight(
             airtask=f["airtask"],
             date=datetime.strptime(f["date"], "%Y-%m-%d").replace(tzinfo=UTC).date(),
@@ -96,6 +93,7 @@ def retrieve_flights() -> tuple[Response, int]:
                     vrp2=pilot["VRP2"],
                 )
                 qual.update(fp, flight.date)
+                pilot_obj.qualification.update(fp, flight.date)
 
                 pilot_obj.flight_pilots.append(fp)
                 flight.flight_pilots.append(fp)
@@ -105,8 +103,8 @@ def retrieve_flights() -> tuple[Response, int]:
     return jsonify({"message": "Bad Manual Request"}), 403
 
 
-@flights.route("/<int:flight_id>", methods=["DELETE", "PATCH"])
 @jwt_required()  # new line
+@flights.route("/<int:flight_id>", methods=["DELETE", "PATCH"])
 def handle_flights(flight_id: int) -> tuple[Response, int]:
     """Handle modifications to the Flights database."""
     if request.method == "DELETE":

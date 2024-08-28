@@ -23,8 +23,12 @@ import { BiTrash } from "react-icons/bi";
 import { useColorMode } from "@chakra-ui/react";
 import axios from "axios";
 import StyledText from "../styledcomponents/StyledText";
+import { FlightContext } from "../Contexts/FlightsContext";
+import { useContext } from "react";
 
-const FlightCard = ({ flight, flights, setFlights }) => {
+const FlightCard = ({ flight }) => {
+  const { flights, setFlights } = useContext(FlightContext);
+
   const handleDeleteFlight = async (id) => {
     try {
       const res = await axios.delete(`/api/flights/${id}`);

@@ -14,11 +14,7 @@ export default function Flights() {
   return (
     <Container maxW={"1000px"}>
       <Center>
-        <CreateFlightModal
-          flights={flights}
-          setFlights={setFlights}
-          token={token}
-        />
+        <CreateFlightModal token={token} />
         <FormControl textAlign={"center"} ml={5} maxW="95px">
           <Input placeholder="00A0000" textAlign={"center"} />
         </FormControl>
