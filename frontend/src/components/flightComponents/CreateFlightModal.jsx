@@ -20,12 +20,15 @@ import {
   Select,
   // Stack,
 } from "@chakra-ui/react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import PilotInput from "./PilotInput";
 import axios from "axios";
+import { FlightContext } from "../../Contexts/FlightsContext";
 
-function CreateFlightModal({ flights, setFlights, token }) {
+function CreateFlightModal({ token }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { flights, setFlights } = useContext(FlightContext);
+
   const [pilotos, setPilotos] = useState([]);
   let today = new Date();
   const [inputs, setInputs] = useState({
@@ -75,18 +78,20 @@ function CreateFlightModal({ flights, setFlights, token }) {
       }
     }
     try {
-      const res = axios.post(`/api/flights`, data);
-      console.log((await res).status);
-      if ((await res).status === 201) {
+      console.log(token);
+      const res = await axios.post(`/api/flights`, data, {
+        headers: { Authorization: "Bearer " + token },
+      });
+      if (res.status === 201) {
         setFlights([...flights, data]);
       }
     } catch (error) {
-      console.log(error);
+      console.log(error.response);
     }
   };
   const getSavedPilots = async () => {
     try {
-      const res = await axios.get(`/api/pilots`, {
+      const res = await axios.get(`/api/users`, {
         headers: { Authorization: "Bearer " + token },
       });
       // console.log(res);
@@ -107,304 +112,309 @@ function CreateFlightModal({ flights, setFlights, token }) {
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <form onSubmit={handleCreateFlight}>
-          <ModalContent minWidth={"1200px"}>
-            <ModalHeader>Novo Modelo 1M</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              <Stack>
-                <Flex gap={"5"}>
-                  <FormControl>
-                    <FormLabel textAlign={"center"}>Airtask</FormLabel>
-                    <Input
-                      name="airtask"
-                      type="text"
-                      isRequired
-                      textAlign={"center"}
-                      value={inputs.airtask}
-                      onChange={(e) =>
-                        setInputs({ ...inputs, airtask: e.target.value })
-                      }
-                    />
-                  </FormControl>
-                  <FormControl>
-                    <FormLabel textAlign={"center"}>Modalidade</FormLabel>
-                    <Select
-                      name="modalidade"
-                      type="text"
-                      isRequired
-                      placeholder=" "
-                      value={inputs.flightType}
-                      onChange={(e) =>
-                        setInputs({ ...inputs, flightType: e.target.value })
-                      }
-                    >
-                      <option value="ADEM">ADEM</option>
-                      <option value="ADROP">ADROP</option>
-                      <option value="AIREV">AIREV</option>
-                      <option value="ALSO">ALSO</option>
-                      <option value="AMOV">AMOV</option>
-                      <option value="AQUAL">AQUAL</option>
-                      <option value="ITAS">ITAS</option>
-                      <option value="MNT">MNT</option>
-                      <option value="PHOTO">PHOTO</option>
-                      <option value="RECCE">RECCE</option>
-                      <option value="SAO">SAO</option>
-                      <option value="SAR">SAR</option>
-                      <option value="SMOV">SMOV</option>
-                      <option value="TALD">TALD</option>
-                      <option value="VIPLF">VIPLF</option>
-                      <option value="VIS">VIS</option>
-                      <option value="ISR">ISR</option>
-                      <option value="TRCA">TRCA</option>
-                      <option value="SIM">SIM</option>
-                    </Select>
-                  </FormControl>
-                  <FormControl>
-                    <FormLabel textAlign={"center"}>Acção</FormLabel>
-                    <Select
-                      name="action"
-                      type="text"
-                      isRequired
-                      placeholder=" "
-                      value={inputs.flightAction}
-                      onChange={(e) =>
-                        setInputs({ ...inputs, flightAction: e.target.value })
-                      }
-                    >
-                      <option value="OPER">OPER</option>
-                      <option value="MNT">MNT</option>
-                      <option value="TRM">TRM</option>
-                      <option value="TRQ">TRQ</option>
-                      <option value="TRU">TRU</option>
-                      <option value="INST">INST</option>
-                    </Select>
-                  </FormControl>
+        {/* <form onSubmit={handleCreateFlight}> */}
+        <ModalContent minWidth={"1200px"}>
+          <ModalHeader>Novo Modelo 1M</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Stack>
+              <Flex gap={"5"}>
+                <FormControl>
+                  <FormLabel textAlign={"center"}>Airtask</FormLabel>
+                  <Input
+                    name="airtask"
+                    type="text"
+                    isRequired
+                    textAlign={"center"}
+                    value={inputs.airtask}
+                    onChange={(e) =>
+                      setInputs({ ...inputs, airtask: e.target.value })
+                    }
+                  />
+                </FormControl>
+                <FormControl>
+                  <FormLabel textAlign={"center"}>Modalidade</FormLabel>
+                  <Select
+                    name="modalidade"
+                    type="text"
+                    isRequired
+                    placeholder=" "
+                    value={inputs.flightType}
+                    onChange={(e) =>
+                      setInputs({ ...inputs, flightType: e.target.value })
+                    }
+                  >
+                    <option value="ADEM">ADEM</option>
+                    <option value="ADROP">ADROP</option>
+                    <option value="AIREV">AIREV</option>
+                    <option value="ALSO">ALSO</option>
+                    <option value="AMOV">AMOV</option>
+                    <option value="AQUAL">AQUAL</option>
+                    <option value="ITAS">ITAS</option>
+                    <option value="MNT">MNT</option>
+                    <option value="PHOTO">PHOTO</option>
+                    <option value="RECCE">RECCE</option>
+                    <option value="SAO">SAO</option>
+                    <option value="SAR">SAR</option>
+                    <option value="SMOV">SMOV</option>
+                    <option value="TALD">TALD</option>
+                    <option value="VIPLF">VIPLF</option>
+                    <option value="VIS">VIS</option>
+                    <option value="ISR">ISR</option>
+                    <option value="TRCA">TRCA</option>
+                    <option value="SIM">SIM</option>
+                  </Select>
+                </FormControl>
+                <FormControl>
+                  <FormLabel textAlign={"center"}>Acção</FormLabel>
+                  <Select
+                    name="action"
+                    type="text"
+                    isRequired
+                    placeholder=" "
+                    value={inputs.flightAction}
+                    onChange={(e) =>
+                      setInputs({ ...inputs, flightAction: e.target.value })
+                    }
+                  >
+                    <option value="OPER">OPER</option>
+                    <option value="MNT">MNT</option>
+                    <option value="TRM">TRM</option>
+                    <option value="TRQ">TRQ</option>
+                    <option value="TRU">TRU</option>
+                    <option value="INST">INST</option>
+                  </Select>
+                </FormControl>
 
-                  <FormControl maxWidth={"175px"}>
-                    <FormLabel textAlign={"center"}>Data</FormLabel>
-                    <Input
-                      name="date"
-                      type="date"
-                      value={inputs.date}
-                      onChange={(e) =>
-                        setInputs({ ...inputs, date: e.target.value })
-                      }
-                    />
-                  </FormControl>
-                  <FormControl ml={"5"} maxWidth={"90px"}>
-                    <FormLabel textAlign={"center"}>ATD</FormLabel>
-                    <Input
-                      name="departure_time"
-                      type="time"
-                      value={inputs.ATD}
-                      onChange={(e) =>
-                        setInputs({ ...inputs, ATD: e.target.value })
-                      }
-                    />
-                  </FormControl>
-                  <FormControl maxWidth={"90px"}>
-                    <FormLabel textAlign={"center"}>ATA</FormLabel>
-                    <Input
-                      name="arrival_time"
-                      type="time"
-                      value={inputs.ATA}
-                      onChange={(e) => {
-                        setInputs({ ...inputs, ATA: e.target.value });
-                      }}
-                    />
-                  </FormControl>
-                  <FormControl maxWidth={"90px"}>
-                    <FormLabel textAlign={"center"}>TOTAL</FormLabel>
-                    <Input
-                      type="time"
-                      defaultValue={inputs.ATE}
-                      // onChange={(e) => {
-                      //   setInputs({ ...inputs, ATE: e.target.value });
-                      // }}
-                      // isReadOnly
-                      onFocusCapture={() =>
-                        setInputs({
-                          ...inputs,
-                          ATE: getTimeDiff(inputs.ATD, inputs.ATA),
-                        })
-                      }
-                    />
-                  </FormControl>
-                  <FormControl ml={"5"} maxWidth={"90px"}>
-                    <FormLabel textAlign={"center"}>Origem</FormLabel>
-                    <Input
-                      name="origin"
-                      type="text"
-                      value={inputs.origin}
-                      onChange={(e) =>
-                        setInputs({
-                          ...inputs,
-                          origin: e.target.value.toUpperCase(),
-                        })
-                      }
-                    />
-                  </FormControl>
-                  <FormControl maxWidth={"75px"}>
-                    <FormLabel textAlign={"center"}>Destino</FormLabel>
-                    <Input
-                      name="destination"
-                      type="text"
-                      value={inputs.destination}
-                      onChange={(e) =>
-                        setInputs({
-                          ...inputs,
-                          destination: e.target.value.toUpperCase(),
-                        })
-                      }
-                      // onInput={(e) =>
-                      //   (e.target.value = ("" + e.target.value).toUpperCase())
-                      // }
-                    />
-                  </FormControl>
-                </Flex>
-                <Flex mt="5" gap={"5"}>
-                  <FormControl>
-                    <FormLabel textAlign={"center"}>Nº Cauda</FormLabel>
-                    <Select
-                      name="tailNumber"
-                      type="number"
-                      isRequired
-                      placeholder=" "
-                      value={inputs.tailNumber}
-                      onChange={(e) =>
-                        setInputs({ ...inputs, tailNumber: e.target.value })
-                      }
-                    >
-                      <option value={16701}>16701</option>
-                      <option value={16702}>16702</option>
-                      <option value={16703}>16703</option>
-                      <option value={16704}>16704</option>
-                      <option value={16705}>16705</option>
-                      <option value={16706}>16706</option>
-                      <option value={16707}>16707</option>
-                      <option value={16708}>16708</option>
-                      <option value={16709}>16709</option>
-                      <option value={16710}>16710</option>
-                      <option value={16711}>16711</option>
-                      <option value={16712}>16712</option>
-                    </Select>
-                  </FormControl>
-                  <FormControl>
-                    <FormLabel textAlign={"center"}>Aterragens</FormLabel>
-                    <Input
-                      name="aterragens"
-                      type="number"
-                      value={inputs.totalLandings}
-                      onChange={(e) =>
-                        setInputs({ ...inputs, totalLandings: e.target.value })
-                      }
-                    />
-                  </FormControl>
-                  <FormControl>
-                    <FormLabel textAlign={"center"}>Nº Tripulantes</FormLabel>
-                    <Input
-                      type="number"
-                      value={inputs.numberOfCrew}
-                      onChange={(e) =>
-                        setInputs({ ...inputs, numberOfCrew: e.target.value })
-                      }
-                    />
-                  </FormControl>
-                  <FormControl>
-                    <FormLabel textAlign={"center"}>PAX</FormLabel>
-                    <Input
-                      name="passengers"
-                      type="number"
-                      value={inputs.passengers}
-                      onChange={(e) =>
-                        setInputs({ ...inputs, passengers: e.target.value })
-                      }
-                    />
-                  </FormControl>
-                  <FormControl>
-                    <FormLabel textAlign={"center"}>Doentes</FormLabel>
-                    <Input
-                      name="doe"
-                      type="number"
-                      value={inputs.doe}
-                      onChange={(e) =>
-                        setInputs({ ...inputs, doe: e.target.value })
-                      }
-                    />
-                  </FormControl>
-                  <FormControl>
-                    <FormLabel textAlign={"center"}>Carga</FormLabel>
-                    <Input
-                      name="cargo"
-                      type="number"
-                      value={inputs.cargo}
-                      onChange={(e) =>
-                        setInputs({ ...inputs, cargo: e.target.value })
-                      }
-                    />
-                  </FormControl>
-                  <FormControl>
-                    <FormLabel textAlign={"center"}>ORM</FormLabel>
-                    <Input
-                      type="number"
-                      value={inputs.orm}
-                      onChange={(e) =>
-                        setInputs({ ...inputs, orm: e.target.value })
-                      }
-                    />
-                  </FormControl>
-                  <FormControl>
-                    <FormLabel textAlign={"center"}>FUEL</FormLabel>
-                    <Input
-                      placeholder="Kg"
-                      type="number"
-                      value={inputs.fuel}
-                      onChange={(e) =>
-                        setInputs({ ...inputs, fuel: e.target.value })
-                      }
-                    />
-                  </FormControl>
-                </Flex>
-                <Divider my={8} />
-                <Grid
-                  alignItems={"center"}
-                  // alignContent={"center"}
-                  // alignSelf={"center"}
-                  templateColumns="repeat(9, 1fr)"
-                >
-                  <GridItem textAlign={"center"}>Posição</GridItem>
-                  <GridItem textAlign={"center"}>Nome</GridItem>
-                  <GridItem textAlign={"center"}>NIP</GridItem>
-                  <GridItem textAlign={"center"}>ATR</GridItem>
-                  <GridItem textAlign={"center"}>ATN</GridItem>
-                  <GridItem textAlign={"center"}>PrecApp</GridItem>
-                  <GridItem textAlign={"center"}>NPrecApp</GridItem>
-                  <GridItem textAlign={"center"}>Qual1</GridItem>
-                  <GridItem textAlign={"center"}>Qual2</GridItem>
+                <FormControl maxWidth={"175px"}>
+                  <FormLabel textAlign={"center"}>Data</FormLabel>
+                  <Input
+                    name="date"
+                    type="date"
+                    value={inputs.date}
+                    onChange={(e) =>
+                      setInputs({ ...inputs, date: e.target.value })
+                    }
+                  />
+                </FormControl>
+                <FormControl ml={"5"} maxWidth={"90px"}>
+                  <FormLabel textAlign={"center"}>ATD</FormLabel>
+                  <Input
+                    name="departure_time"
+                    type="time"
+                    value={inputs.ATD}
+                    onChange={(e) =>
+                      setInputs({ ...inputs, ATD: e.target.value })
+                    }
+                  />
+                </FormControl>
+                <FormControl maxWidth={"90px"}>
+                  <FormLabel textAlign={"center"}>ATA</FormLabel>
+                  <Input
+                    name="arrival_time"
+                    type="time"
+                    value={inputs.ATA}
+                    onChange={(e) => {
+                      setInputs({ ...inputs, ATA: e.target.value });
+                    }}
+                  />
+                </FormControl>
+                <FormControl maxWidth={"90px"}>
+                  <FormLabel textAlign={"center"}>TOTAL</FormLabel>
+                  <Input
+                    type="time"
+                    defaultValue={inputs.ATE}
+                    // onChange={(e) => {
+                    //   setInputs({ ...inputs, ATE: e.target.value });
+                    // }}
+                    // isReadOnly
+                    onFocusCapture={() =>
+                      setInputs({
+                        ...inputs,
+                        ATE: getTimeDiff(inputs.ATD, inputs.ATA),
+                      })
+                    }
+                  />
+                </FormControl>
+                <FormControl ml={"5"} maxWidth={"90px"}>
+                  <FormLabel textAlign={"center"}>Origem</FormLabel>
+                  <Input
+                    name="origin"
+                    type="text"
+                    value={inputs.origin}
+                    onChange={(e) =>
+                      setInputs({
+                        ...inputs,
+                        origin: e.target.value.toUpperCase(),
+                      })
+                    }
+                  />
+                </FormControl>
+                <FormControl maxWidth={"75px"}>
+                  <FormLabel textAlign={"center"}>Destino</FormLabel>
+                  <Input
+                    name="destination"
+                    type="text"
+                    value={inputs.destination}
+                    onChange={(e) =>
+                      setInputs({
+                        ...inputs,
+                        destination: e.target.value.toUpperCase(),
+                      })
+                    }
+                    // onInput={(e) =>
+                    //   (e.target.value = ("" + e.target.value).toUpperCase())
+                    // }
+                  />
+                </FormControl>
+              </Flex>
+              <Flex mt="5" gap={"5"}>
+                <FormControl>
+                  <FormLabel textAlign={"center"}>Nº Cauda</FormLabel>
+                  <Select
+                    name="tailNumber"
+                    type="number"
+                    isRequired
+                    placeholder=" "
+                    value={inputs.tailNumber}
+                    onChange={(e) =>
+                      setInputs({ ...inputs, tailNumber: e.target.value })
+                    }
+                  >
+                    <option value={16701}>16701</option>
+                    <option value={16702}>16702</option>
+                    <option value={16703}>16703</option>
+                    <option value={16704}>16704</option>
+                    <option value={16705}>16705</option>
+                    <option value={16706}>16706</option>
+                    <option value={16707}>16707</option>
+                    <option value={16708}>16708</option>
+                    <option value={16709}>16709</option>
+                    <option value={16710}>16710</option>
+                    <option value={16711}>16711</option>
+                    <option value={16712}>16712</option>
+                  </Select>
+                </FormControl>
+                <FormControl>
+                  <FormLabel textAlign={"center"}>Aterragens</FormLabel>
+                  <Input
+                    name="aterragens"
+                    type="number"
+                    value={inputs.totalLandings}
+                    onChange={(e) =>
+                      setInputs({ ...inputs, totalLandings: e.target.value })
+                    }
+                  />
+                </FormControl>
+                <FormControl>
+                  <FormLabel textAlign={"center"}>Nº Tripulantes</FormLabel>
+                  <Input
+                    type="number"
+                    value={inputs.numberOfCrew}
+                    onChange={(e) =>
+                      setInputs({ ...inputs, numberOfCrew: e.target.value })
+                    }
+                  />
+                </FormControl>
+                <FormControl>
+                  <FormLabel textAlign={"center"}>PAX</FormLabel>
+                  <Input
+                    name="passengers"
+                    type="number"
+                    value={inputs.passengers}
+                    onChange={(e) =>
+                      setInputs({ ...inputs, passengers: e.target.value })
+                    }
+                  />
+                </FormControl>
+                <FormControl>
+                  <FormLabel textAlign={"center"}>Doentes</FormLabel>
+                  <Input
+                    name="doe"
+                    type="number"
+                    value={inputs.doe}
+                    onChange={(e) =>
+                      setInputs({ ...inputs, doe: e.target.value })
+                    }
+                  />
+                </FormControl>
+                <FormControl>
+                  <FormLabel textAlign={"center"}>Carga</FormLabel>
+                  <Input
+                    name="cargo"
+                    type="number"
+                    value={inputs.cargo}
+                    onChange={(e) =>
+                      setInputs({ ...inputs, cargo: e.target.value })
+                    }
+                  />
+                </FormControl>
+                <FormControl>
+                  <FormLabel textAlign={"center"}>ORM</FormLabel>
+                  <Input
+                    type="number"
+                    value={inputs.orm}
+                    onChange={(e) =>
+                      setInputs({ ...inputs, orm: e.target.value })
+                    }
+                  />
+                </FormControl>
+                <FormControl>
+                  <FormLabel textAlign={"center"}>FUEL</FormLabel>
+                  <Input
+                    placeholder="Kg"
+                    type="number"
+                    value={inputs.fuel}
+                    onChange={(e) =>
+                      setInputs({ ...inputs, fuel: e.target.value })
+                    }
+                  />
+                </FormControl>
+              </Flex>
+              <Divider my={8} />
+              <Grid
+                alignItems={"center"}
+                // alignContent={"center"}
+                // alignSelf={"center"}
+                templateColumns="repeat(9, 1fr)"
+              >
+                <GridItem textAlign={"center"}>Posição</GridItem>
+                <GridItem textAlign={"center"}>Nome</GridItem>
+                <GridItem textAlign={"center"}>NIP</GridItem>
+                <GridItem textAlign={"center"}>ATR</GridItem>
+                <GridItem textAlign={"center"}>ATN</GridItem>
+                <GridItem textAlign={"center"}>PrecApp</GridItem>
+                <GridItem textAlign={"center"}>NPrecApp</GridItem>
+                <GridItem textAlign={"center"}>Qual1</GridItem>
+                <GridItem textAlign={"center"}>Qual2</GridItem>
 
-                  {pilotList.map((number) => (
-                    <PilotInput
-                      key={number}
-                      inputs={inputs}
-                      setInputs={setInputs}
-                      pilotNumber={`pilot${number}`}
-                      pilotos={pilotos}
-                    />
-                  ))}
-                </Grid>
-              </Stack>
-            </ModalBody>
-            <ModalFooter>
-              <Button colorScheme="blue" mr={3} type="submit">
-                Add
-              </Button>
-              <Button colorScheme="blue" mr={3} onClick={onClose}>
-                Close
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </form>
+                {pilotList.map((number) => (
+                  <PilotInput
+                    key={number}
+                    inputs={inputs}
+                    setInputs={setInputs}
+                    pilotNumber={`pilot${number}`}
+                    pilotos={pilotos}
+                  />
+                ))}
+              </Grid>
+            </Stack>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              colorScheme="blue"
+              mr={3}
+              type="submit"
+              onClick={handleCreateFlight}
+            >
+              Add
+            </Button>
+            <Button colorScheme="blue" mr={3} onClick={onClose}>
+              Close
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+        {/* </form> */}
       </Modal>
     </>
   );

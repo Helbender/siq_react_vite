@@ -1,15 +1,17 @@
 from datetime import date
 
 from config import engine
-from models import Base, Crew, Flight, FlightPilots, Pilot, Qualification, QualificationCrew
 from sqlalchemy.orm import Session
+
+from api.models.crew import Crew, QualificationCrew
+from api.models.flights import Flight, FlightPilots
+from api.models.pilots import Pilot, Qualification
+from api.models.users import Base
 
 today = date.today()
 
 
-# engine = create_engine("sqlite:///mydb.db", echo=False)
 Base.metadata.create_all(bind=engine)
-
 
 a = []
 pilot1 = Pilot(
@@ -18,7 +20,7 @@ pilot1 = Pilot(
     rank="CAP",
     position="PC",
     email="tfp.branco@gmail.com",
-    password="12345",
+    password="12345",  # noqa: S106
     admin=1,
     qualification=Qualification(),
 )
@@ -29,7 +31,7 @@ pilot2 = Pilot(
     rank="MAJ",
     position="CP",
     email="pedro.miguel.rosa.andrade@gmail.com",
-    password="123745",
+    password="123745",  # noqa: S106
     admin=1,
     qualification=Qualification(),
 )
@@ -40,7 +42,7 @@ pilot3 = Pilot(
     rank="TEN",
     position="CP",
     email="hffontes@emfa.pt",
-    password="123745",
+    password="123745",  # noqa: S106
     admin=0,
     qualification=Qualification(),
 )
@@ -52,7 +54,7 @@ oc = Crew(
     rank="SAJ",
     position="OC",
     email="pr@emfa.pt",
-    password="123745",
+    password="123745",  # noqa: S106
     admin=0,
     qualification=QualificationCrew(),
 )
@@ -116,7 +118,7 @@ def insert_flight(f: dict):
         session.add(flight)
         for pilot in f["pilots"]:
             pilot_obj = session.get(Pilot, pilot["nip"])
-            qual = session.get(Qualification, pilot["nip"])
+            qual: Qualification = session.get(Qualification, pilot["nip"])  # type: ignore
 
             fp = FlightPilots(
                 day_landings=pilot["ATR"],
@@ -133,7 +135,7 @@ def insert_flight(f: dict):
             )
             qual.update(fp, flight.date)
 
-            pilot_obj.flight_pilots.append(fp)
+            pilot_obj.flight_pilots.append(fp)  # type: ignore
             print(pilot_obj)
             flight.flight_pilots.append(fp)
         session.commit()

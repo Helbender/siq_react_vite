@@ -1,7 +1,7 @@
 import os
 
 from dotenv import load_dotenv
-from models import Base
+from models.users import Base
 from sqlalchemy import create_engine, exc
 
 # Load enviroment variables

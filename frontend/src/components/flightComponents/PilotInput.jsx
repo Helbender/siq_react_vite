@@ -58,10 +58,13 @@ const PilotInput = ({ inputs, setInputs, pilotNumber, pilotos }) => {
     e.preventDefault();
     if (e.target.value === "PC") {
       setPilotSelect("PC");
+      setNip("");
     } else if (e.target.value === "CP") {
       setPilotSelect("CP");
+      setNip("");
     } else if (e.target.value === "OC") {
       setPilotSelect("OC");
+      setNip("");
     }
   };
   return (
