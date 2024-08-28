@@ -19,17 +19,18 @@ export const FlightProvider = ({ children }) => {
       setFlights(response.data || []);
     } catch (error) {
       console.log(error);
-      console.log(error.response.status);
-      if (error.response.status === 401) {
-        console.log("Removing Token");
-        removeToken();
-      }
+      // console.log(error.response.status);
+      // if (error.response.status === 401) {
+      //   console.log("Removing Token");
+      //   removeToken();
+      // }
     }
   };
 
   useEffect(() => {
     getSavedFlights();
     console.log("Flights Loaded");
+    console.log(flights);
   }, []);
 
   return (

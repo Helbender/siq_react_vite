@@ -27,22 +27,25 @@ from sqlalchemy.orm import Session
 # logging.basicConfig(filename="record.log", level=logging.DEBUG)
 load_dotenv(dotenv_path="./.env")
 JWT_KEY: str = os.environ.get("JWT_KEY", "")
+APPLY_CORS: bool = bool(os.environ.get("CORS", "False"))
+print(APPLY_CORS)
 
 app = Flask(__name__)
 app.config["JWT_SECRET_KEY"] = JWT_KEY
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
 jwt = JWTManager(app)
-CORS(
-    app,
-    # origins="http://locahost:5173",
-    allow_headers=[
-        "Content-Type",
-        "Authorization",
-        "Access-Control-Allow-Credentials",
-        #    "Access-Control-Allow-Origin"
-    ],
-    supports_credentials=True,
-)
+if APPLY_CORS:
+    CORS(
+        app,
+        # origins="http://locahost:5173",
+        allow_headers=[
+            "Content-Type",
+            "Authorization",
+            "Access-Control-Allow-Credentials",
+            #    "Access-Control-Allow-Origin"
+        ],
+        supports_credentials=True,
+    )
 
 
 application = app  # to work with CPANEL PYTHON APPS
