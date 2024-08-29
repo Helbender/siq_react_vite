@@ -72,9 +72,10 @@ function CreateFlightModal({ token }) {
   const handleCreateFlight = async (e) => {
     e.preventDefault();
     let data = inputs;
+    data.flight_pilots = [];
     for (let i = 0; i < 6; i++) {
       if (Object.hasOwn(inputs, `pilot${i}`)) {
-        data.flight_pilots = [inputs[`pilot${i}`]];
+        data.flight_pilots.push(inputs[`pilot${i}`]);
         delete data[`pilot${i}`];
       }
     }
@@ -121,7 +122,7 @@ function CreateFlightModal({ token }) {
           <ModalBody>
             <Stack>
               <Flex gap={"5"}>
-                <FormControl>
+                <FormControl minW={"100px"}>
                   <FormLabel textAlign={"center"}>Airtask</FormLabel>
                   <Input
                     name="airtask"
@@ -134,7 +135,7 @@ function CreateFlightModal({ token }) {
                     }
                   />
                 </FormControl>
-                <FormControl>
+                <FormControl minW={"100px"}>
                   <FormLabel textAlign={"center"}>Modalidade</FormLabel>
                   <Select
                     name="modalidade"
@@ -188,7 +189,7 @@ function CreateFlightModal({ token }) {
                   </Select>
                 </FormControl>
 
-                <FormControl maxWidth={"175px"}>
+                <FormControl maxWidth={"fit-content"}>
                   <FormLabel textAlign={"center"}>Data</FormLabel>
                   <Input
                     name="date"
@@ -199,9 +200,14 @@ function CreateFlightModal({ token }) {
                     }
                   />
                 </FormControl>
-                <FormControl ml={"5"} maxWidth={"90px"}>
+                <FormControl
+                  // ml={"5"}
+                  // maxWidth={"90px"}
+                  maxW={"fit-content"}
+                >
                   <FormLabel textAlign={"center"}>ATD</FormLabel>
                   <Input
+                    // as="text"
                     name="departure_time"
                     type="time"
                     value={inputs.ATD}
@@ -210,7 +216,7 @@ function CreateFlightModal({ token }) {
                     }
                   />
                 </FormControl>
-                <FormControl maxWidth={"90px"}>
+                <FormControl maxW={"fit-content"}>
                   <FormLabel textAlign={"center"}>ATA</FormLabel>
                   <Input
                     name="arrival_time"
@@ -221,9 +227,10 @@ function CreateFlightModal({ token }) {
                     }}
                   />
                 </FormControl>
-                <FormControl maxWidth={"90px"}>
+                <FormControl maxW={"fit-content"}>
                   <FormLabel textAlign={"center"}>TOTAL</FormLabel>
                   <Input
+                    textAlign="center"
                     type="time"
                     defaultValue={inputs.ATE}
                     // onChange={(e) => {
@@ -238,9 +245,10 @@ function CreateFlightModal({ token }) {
                     }
                   />
                 </FormControl>
-                <FormControl ml={"5"} maxWidth={"90px"}>
+                <FormControl ml={"5"}>
                   <FormLabel textAlign={"center"}>Origem</FormLabel>
                   <Input
+                    textAlign="center"
                     name="origin"
                     type="text"
                     value={inputs.origin}
@@ -252,9 +260,10 @@ function CreateFlightModal({ token }) {
                     }
                   />
                 </FormControl>
-                <FormControl maxWidth={"75px"}>
+                <FormControl>
                   <FormLabel textAlign={"center"}>Destino</FormLabel>
                   <Input
+                    textAlign="center"
                     name="destination"
                     type="text"
                     value={inputs.destination}
@@ -300,6 +309,7 @@ function CreateFlightModal({ token }) {
                 <FormControl>
                   <FormLabel textAlign={"center"}>Aterragens</FormLabel>
                   <Input
+                    textAlign="center"
                     name="aterragens"
                     type="number"
                     value={inputs.totalLandings}
@@ -311,6 +321,7 @@ function CreateFlightModal({ token }) {
                 <FormControl>
                   <FormLabel textAlign={"center"}>Nº Tripulantes</FormLabel>
                   <Input
+                    textAlign={"center"}
                     type="number"
                     value={inputs.numberOfCrew}
                     onChange={(e) =>
@@ -321,6 +332,7 @@ function CreateFlightModal({ token }) {
                 <FormControl>
                   <FormLabel textAlign={"center"}>PAX</FormLabel>
                   <Input
+                    textAlign={"center"}
                     name="passengers"
                     type="number"
                     value={inputs.passengers}
@@ -332,6 +344,7 @@ function CreateFlightModal({ token }) {
                 <FormControl>
                   <FormLabel textAlign={"center"}>Doentes</FormLabel>
                   <Input
+                    textAlign={"center"}
                     name="doe"
                     type="number"
                     value={inputs.doe}

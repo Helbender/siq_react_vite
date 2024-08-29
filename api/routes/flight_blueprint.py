@@ -100,6 +100,8 @@ def handle_flights(flight_id: int) -> tuple[Response, int]:
                 # Iterate over each pilot in the flight
             for pilot in flight.flight_pilots:
                 update_qualifications(flight_id, session, flight, pilot)
+            for crew in flight.flight_crew:
+                update_qualifications(flight_id, session, flight, crew)
 
             # Commit the updates
             session.commit()
@@ -111,15 +113,21 @@ def handle_flights(flight_id: int) -> tuple[Response, int]:
     return jsonify({"message": "Bad Manual Request"}), 403
 
 
-def update_qualifications(flight_id: int, session: Session, flight: Flight, pilot: dict):
+def update_qualifications(
+    flight_id: int,
+    session: Session,
+    flight: Flight,
+    tripulante: FlightPilots | FlightCrew,
+) -> None:
     """Update qualification of all crew before flight delete."""
-    if pilot["position"] in PILOT_USER:
-        pilot_qualification = session.query(Qualification).filter_by(pilot_id=pilot["nip"]).first()
+    if isinstance(tripulante, FlightPilots):
+        # pilot_qualification = session.query(Qualification).filter_by(pilot_id=tripulante.pilot_id).first()  # noqa: ERA001
+        pilot_qualification: Qualification = session.execute(
+            select(Qualification).filter_by(pilot_id=tripulante.pilot_id),
+        ).scalar_one()
 
         # Process day landings
-        day_landings_dates = (
-            pilot_qualification.last_day_landings.split() if pilot_qualification.last_day_landings else []
-        )
+        day_landings_dates = pilot_qualification.last_day_landings.split() if pilot_qualification.last_day_landings else []
         if flight.date in day_landings_dates:
             day_landings_dates.remove(flight.date.strftime("%Y-%m-%d"))
 
@@ -128,7 +136,7 @@ def update_qualifications(flight_id: int, session: Session, flight: Flight, pilo
             session.query(Flight.date)
             .filter(
                 and_(
-                    Flight.flight_pilots.any(id=pilot["nip"]),
+                    Flight.flight_pilots.any(id=tripulante.pilot_id),
                     Flight.fid != flight_id,
                     FlightPilots.day_landings > 0,
                 ),
@@ -143,9 +151,7 @@ def update_qualifications(flight_id: int, session: Session, flight: Flight, pilo
         pilot_qualification.last_day_landings = " ".join(day_landings_dates[:5])
 
         # Process night landings
-        night_landings_dates = (
-            pilot_qualification.last_night_landings.split() if pilot_qualification.last_night_landings else []
-        )
+        night_landings_dates = pilot_qualification.last_night_landings.split() if pilot_qualification.last_night_landings else []
         if flight.date in night_landings_dates:
             night_landings_dates.remove(flight.date.strftime("%Y-%m-%d"))
 
@@ -154,7 +160,7 @@ def update_qualifications(flight_id: int, session: Session, flight: Flight, pilo
             session.query(Flight.date)
             .filter(
                 and_(
-                    Flight.flight_pilots.any(id=pilot["nip"]),
+                    Flight.flight_pilots.any(id=tripulante.pilot_id),
                     Flight.fid != flight_id,
                     FlightPilots.night_landings > 0,
                 ),
@@ -184,9 +190,9 @@ def update_qualifications(flight_id: int, session: Session, flight: Flight, pilo
                 session.query(func.max(getattr(FlightPilots, field)))
                 .filter(
                     and_(
-                        Flight.flight_pilots.any(pilot_id=pilot["nip"]),
+                        Flight.flight_pilots.any(pilot_id=tripulante.pilot_id),
                         Flight.fid != flight_id,
-                        getattr(FlightPilots, field) != None,
+                        getattr(FlightPilots, field) != None,  # noqa: E711
                     ),
                 )
                 .scalar()
@@ -195,12 +201,12 @@ def update_qualifications(flight_id: int, session: Session, flight: Flight, pilo
             # Check if Date is None so to set a base Date
             if last_qualification_date is None:
                 last_qualification_date = date(year_init, 1, 1)
-                # Update the pilot's qualifications table
-            pilot_qualification = session.query(Qualification).filter_by(pilot_id=pilot["nip"]).first()
+
+                # Update the tripulante's qualifications table
             setattr(pilot_qualification, f"last_{field}_date", last_qualification_date)
 
-    elif pilot["position"] in CREW_USER:
-        crew_qualification = session.query(QualificationCrew).filter_by(crew_id=pilot["nip"]).first()
+    elif isinstance(tripulante, FlightCrew):
+        crew_qualification = session.query(QualificationCrew).filter_by(crew_id=tripulante.crew_id).first()
 
         # For each qualification type, find the last relevant flight before the one being deleted
         qualification_fields = [
@@ -212,9 +218,9 @@ def update_qualifications(flight_id: int, session: Session, flight: Flight, pilo
                 session.query(func.max(getattr(FlightCrew, field)))
                 .filter(
                     and_(
-                        Flight.flight_pilots.any(crew_id=pilot["nip"]),
+                        Flight.flight_pilots.any(crew_id=tripulante.crew_id),
                         Flight.fid != flight_id,
-                        getattr(FlightCrew, field) != None,
+                        (getattr(FlightCrew, field) != None),  # noqa: E711
                     ),
                 )
                 .scalar()
@@ -223,8 +229,7 @@ def update_qualifications(flight_id: int, session: Session, flight: Flight, pilo
             # Check if Date is None so to set a base Date
             if last_qualification_date is None:
                 last_qualification_date = date(year_init, 1, 1)
-                # Update the pilot's qualifications table
-            crew_qualification = session.query(QualificationCrew).filter_by(crew_id=pilot["nip"]).first()
+            # Update the tripulante's qualifications table
             setattr(crew_qualification, f"last_{field}_date", last_qualification_date)
 
 
