@@ -11,5 +11,5 @@ RUN pip install -r requirements.txt
 
 COPY . ./ 
 
-EXPOSE 5051
+# EXPOSE 5051
 CMD ["gunicorn", "-b", ":5051", "app:app"]

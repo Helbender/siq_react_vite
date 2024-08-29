@@ -11,14 +11,17 @@ export default defineConfig({
   },
   server: {
     port: 5173,
-    strictPort: true,
-    host: true,
-    origin: "http://localhost:5173",
+    // strictPort: true,
+    // host: true,
+    // origin: "http://0.0.0.0:5173",
     proxy: {
       "/api": {
-        target: "http://0.0.0.0:5051",
+        //target for local and standard deployment
+        target: "http://localhost:5051",
+        // target for docker deploiment with NGINX and reverse proxy to /api
+        // target: "http://api:5051",
         changeOrigin: true,
-        rewrite: (path) => path.replace("/^/api", ""),
+        rewrite: (path) => path.replace("/^/api/", ""),
       },
     },
   },

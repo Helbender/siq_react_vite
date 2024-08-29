@@ -17,6 +17,7 @@ export const UserProvider = ({ children }) => {
       const res = await axios.get(`/api/users`, {
         headers: { Authorization: "Bearer " + token },
       });
+      console.log(res.data);
       setPilotos(res.data || []);
     } catch (error) {
       console.log(error);
@@ -28,9 +29,8 @@ export const UserProvider = ({ children }) => {
     }
   };
   useEffect(() => {
-    getSavedPilots();
     console.log("Users Loaded");
-    console.log(pilotos);
+    getSavedPilots();
   }, []);
 
   return (

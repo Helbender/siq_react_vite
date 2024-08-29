@@ -10,7 +10,7 @@ import AboutPage from "./pages/About";
 import RecoverProcess from "./components/loginComponents/RecoverProcess";
 
 import { AuthContext } from "./Contexts/AuthContext";
-import { HashRouter, Route, Routes } from "react-router-dom";
+import { HashRouter, Route, Routes, BrowserRouter } from "react-router-dom";
 import UserManagementPage from "./pages/UserManagementPage";
 
 import Header from "./layout/Header";

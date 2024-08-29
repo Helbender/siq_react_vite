@@ -19,7 +19,7 @@ flights = Blueprint("flights", __name__)
 
 # FLight ROUTES
 @jwt_required()
-@flights.route("/", methods=["GET", "POST"])
+@flights.route("/", methods=["GET", "POST"], strict_slashes=False)
 def retrieve_flights() -> tuple[Response, int]:
     """Retrieve all flights from the db and sends to frontend.
 
@@ -88,7 +88,7 @@ def retrieve_flights() -> tuple[Response, int]:
 
 
 @jwt_required()  # new line
-@flights.route("/<int:flight_id>", methods=["DELETE", "PATCH"])
+@flights.route("/<int:flight_id>", methods=["DELETE", "PATCH"], strict_slashes=False)
 def handle_flights(flight_id: int) -> tuple[Response, int]:
     """Handle modifications to the Flights database."""
     if request.method == "DELETE":

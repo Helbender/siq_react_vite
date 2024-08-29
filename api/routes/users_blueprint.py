@@ -17,7 +17,7 @@ users = Blueprint("users", __name__)
 
 # User ROUTES
 @jwt_required()  # new line
-@users.route("/", methods=["GET", "POST"])
+@users.route("/", methods=["GET", "POST"], strict_slashes=False)
 def retrieve_user() -> tuple[Response, int]:
     if request.method == "GET":
         result = []
@@ -72,7 +72,7 @@ def retrieve_user() -> tuple[Response, int]:
     return jsonify({"message": "Bad Manual Request"}), 403
 
 
-@users.route("/<nip>/<position>", methods=["DELETE", "PATCH"])
+@users.route("/<nip>/<position>", methods=["DELETE", "PATCH"], strict_slashes=False)
 @jwt_required()  # new line
 def modify_user(nip: int, position: str) -> tuple[Response, int]:
     """Placehold."""

@@ -1,20 +1,20 @@
 services:
   api:
-    image: siq-api
+    image: siq-api:0.5
     restart: always
     build: ./api
     # ports:
     #   - '5051:5051'
     # volumes:
     #   - ./api:/app
-    environment:
-      - APPLY_CORS=True
+    # environment:
+    #   - APPLY_CORS=1
   frontend:
-    image: siq-frontend
+    image: siq-frontend:0.5
     restart: always
     build: ./frontend
     ports:
-      - "5173:80"
+      - "5173:80" #host:Container
     # volumes:
     #   - /app/node_modules
     #   - ./frontend:/app
