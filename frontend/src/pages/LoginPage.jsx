@@ -54,9 +54,6 @@ function LoginPage() {
       },
     })
       .then((response) => {
-        console.log("RESPONSE");
-        console.log(response);
-
         setToken(response.data.access_token);
         startTimeout(1 * 60 * 60 * 1000);
         navigate("/");

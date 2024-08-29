@@ -67,17 +67,6 @@ def upload():
                 print(e)
 
 
-# pilot1 = Pilot(
-#     nip=135885,
-#     name="Tiago",
-#     rank="CAP",
-#     position="PC",
-#     email="tfp.branco@gmail.com",
-#     password=hash_code("12345"),
-#     admin=1,
-#     qualification=Qualification(),
-# )
-
 if __name__ == "__main__":
     # download()
     upload()

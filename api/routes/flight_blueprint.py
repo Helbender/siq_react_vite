@@ -82,8 +82,10 @@ def retrieve_flights() -> tuple[Response, int]:
             for pilot in f["flight_pilots"]:
                 add_crew_and_pilots(session, flight, pilot)
             session.commit()
+            session.refresh(flight)
+            print(flight.fid)
 
-        return jsonify({"message": "Flight Inserted"}), 201
+        return jsonify({"message": flight.fid}), 201
     return jsonify({"message": "Bad Manual Request"}), 403
 
 
@@ -97,11 +99,13 @@ def handle_flights(flight_id: int) -> tuple[Response, int]:
             if not flight:
                 return jsonify({"msg": "Flight not found"}), 404
 
-                # Iterate over each pilot in the flight
+            # Iterate over each pilot in the flight
             for pilot in flight.flight_pilots:
-                update_qualifications(flight_id, session, flight, pilot)
+                update_qualifications(flight_id, session, pilot)
+
+            # Iterate over each crew in the flight
             for crew in flight.flight_crew:
-                update_qualifications(flight_id, session, flight, crew)
+                update_qualifications(flight_id, session, crew)
 
             # Commit the updates
             session.commit()
@@ -116,7 +120,6 @@ def handle_flights(flight_id: int) -> tuple[Response, int]:
 def update_qualifications(
     flight_id: int,
     session: Session,
-    flight: Flight,
     tripulante: FlightPilots | FlightCrew,
 ) -> None:
     """Update qualification of all crew before flight delete."""
@@ -126,53 +129,36 @@ def update_qualifications(
             select(Qualification).filter_by(pilot_id=tripulante.pilot_id),
         ).scalar_one()
 
-        # Process day landings
-        day_landings_dates = pilot_qualification.last_day_landings.split() if pilot_qualification.last_day_landings else []
-        if flight.date in day_landings_dates:
-            day_landings_dates.remove(flight.date.strftime("%Y-%m-%d"))
+        # Process repetion Qualifications
+        qualification_fields = ["day_landings", "night_landings", "prec_app", "nprec_app"]
+        # Query the most recent dates for day landings from other flights
+        for i in range(len(qualification_fields)):
+            process_repetion_qual(session, flight_id, tripulante, pilot_qualification, qualification_fields[i])
 
-            # Query the most recent dates for day landings from other flights
-        recent_day_landings = (
-            session.query(Flight.date)
-            .filter(
-                and_(
-                    Flight.flight_pilots.any(id=tripulante.pilot_id),
-                    Flight.fid != flight_id,
-                    FlightPilots.day_landings > 0,
-                ),
-            )
-            .order_by(Flight.date.desc())
-            .limit(5 - len(day_landings_dates))
-            .all()
-        )
+        # # Process night landings
+        # # Query the most recent dates for day landings from other flights
+        # recent_night_landings = session.execute(
+        #     select(Flight.date, FlightPilots.night_landings)
+        #     .join(FlightPilots)
+        #     .where(Flight.flight_pilots.any(pilot_id=tripulante.pilot_id))
+        #     .where(Flight.fid != flight_id)
+        #     .where(FlightPilots.night_landings > 0)
+        #     .order_by(Flight.date.desc()),
+        #     # .limit(5 - len(night_landings_dates)),
+        # ).all()
 
-        day_landings_dates.extend([date[0].strftime("%Y-%m-%d") for date in recent_day_landings])
-        day_landings_dates.sort(reverse=True)
-        pilot_qualification.last_day_landings = " ".join(day_landings_dates[:5])
+        # print(f"\nRecent night:\t{recent_night_landings}\n")
 
-        # Process night landings
-        night_landings_dates = pilot_qualification.last_night_landings.split() if pilot_qualification.last_night_landings else []
-        if flight.date in night_landings_dates:
-            night_landings_dates.remove(flight.date.strftime("%Y-%m-%d"))
+        # # Ensure there are no more than 5 entries
+        # night_landings_dates = [date[0].strftime("%Y-%m-%d") for date in recent_night_landings]
 
-            # Query the most recent dates for day landings from other flights
-        recent_night_landings = (
-            session.query(Flight.date)
-            .filter(
-                and_(
-                    Flight.flight_pilots.any(id=tripulante.pilot_id),
-                    Flight.fid != flight_id,
-                    FlightPilots.night_landings > 0,
-                ),
-            )
-            .order_by(Flight.date.desc())
-            .limit(5 - len(night_landings_dates))
-            .all()
-        )
+        # # Sort the dates in reverse chronological order
+        # night_landings_dates.sort(reverse=True)
 
-        night_landings_dates.extend([date[0].strftime("%Y-%m-%d") for date in recent_night_landings])
-        night_landings_dates.sort(reverse=True)
-        pilot_qualification.last_night_landings = " ".join(night_landings_dates[:5])
+        # # Update the qualification record
+        # pilot_qualification.last_night_landings = " ".join(night_landings_dates[:5])
+
+        # print(f"After Qual ATR:\t{pilot_qualification.last_night_landings}\n")
 
         # For each qualification type, find the last relevant flight before the one being deleted
         qualification_fields = [
@@ -187,17 +173,18 @@ def update_qualifications(
 
         for field in qualification_fields:
             last_qualification_date = (
-                session.query(func.max(getattr(FlightPilots, field)))
+                session.query(func.max(Flight.date))
                 .filter(
                     and_(
                         Flight.flight_pilots.any(pilot_id=tripulante.pilot_id),
                         Flight.fid != flight_id,
-                        getattr(FlightPilots, field) != None,  # noqa: E711
+                        (getattr(FlightPilots, field) != None),
                     ),
                 )
                 .scalar()
             )
-            print(f"\n\nLast Qualification: {last_qualification_date}\n\n")
+            # print(f"\n{tripulante.pilot_id}\nLast Qualification {field}: {last_qualification_date}\n\n")
+
             # Check if Date is None so to set a base Date
             if last_qualification_date is None:
                 last_qualification_date = date(year_init, 1, 1)
@@ -215,22 +202,58 @@ def update_qualifications(
 
         for field in qualification_fields:
             last_qualification_date = (
-                session.query(func.max(getattr(FlightCrew, field)))
+                session.query(func.max(Flight.date))
                 .filter(
                     and_(
-                        Flight.flight_pilots.any(crew_id=tripulante.crew_id),
+                        Flight.flight_crew.any(crew_id=tripulante.crew_id),
                         Flight.fid != flight_id,
                         (getattr(FlightCrew, field) != None),  # noqa: E711
                     ),
                 )
                 .scalar()
             )
-            print(f"\n\nLast Qualification: {last_qualification_date}\n\n")
+            print(f"\n{tripulante.crew_id}\nLast Qualification {field}: {last_qualification_date}\n\n")
             # Check if Date is None so to set a base Date
             if last_qualification_date is None:
                 last_qualification_date = date(year_init, 1, 1)
             # Update the tripulante's qualifications table
             setattr(crew_qualification, f"last_{field}_date", last_qualification_date)
+
+
+def process_repetion_qual(
+    session: Session,
+    flight_id: int,
+    tripulante: FlightPilots,
+    pilot_qualification: Qualification,
+    qualification_field: str,
+) -> None:
+    """Update Qualification table with data from other flights when deleting flights.
+
+    Used for repetion based qualifications
+    """
+    print(f"Processing { qualification_field}")
+    recent_day_landings = session.execute(
+        select(Flight.date, getattr(FlightPilots, qualification_field))  # FlightPilots.day_landings)
+        .join(FlightPilots)
+        .where(Flight.flight_pilots.any(pilot_id=tripulante.pilot_id))
+        .where(Flight.fid != flight_id)
+        .where(getattr(FlightPilots, qualification_field) > 0)
+        .order_by(Flight.date.desc()),
+        # .limit(5 - len(day_landings_dates)),
+    ).all()
+
+    print(f"\nRecent { qualification_field}:\t{recent_day_landings}\n")
+
+    # Ensure there are no more than 5 entries
+    day_landings_dates = [date[0].strftime("%Y-%m-%d") for date in recent_day_landings]
+
+    # Sort the dates in reverse chronological order
+    day_landings_dates.sort(reverse=True)
+
+    # Update the qualification record
+    pilot_qualification.last_day_landings = " ".join(day_landings_dates[:5])
+
+    print(f"After Qual { qualification_field}:\t{pilot_qualification.last_day_landings}\n")
 
 
 def add_crew_and_pilots(session: Session, flight: Flight, pilot: dict) -> None:

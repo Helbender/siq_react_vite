@@ -1,4 +1,4 @@
-from __future__ import annotations
+from __future__ import annotations  # noqa: D100, INP001
 
 import json
 from datetime import datetime, timedelta, timezone
@@ -33,30 +33,32 @@ def create_token() -> tuple[Response | dict[str, str], int]:
     password: str = login_data["password"]
 
     with Session(engine) as session:
-        pilot = session.execute(select(Pilot).where(Pilot.nip == nip)).scalar_one_or_none()
-        if pilot != None:
-            if hash_code(password) != pilot.password:
-                # if password != pilot.password:
+        stmt = union_all(
+            select(Pilot).where(Pilot.nip == nip),
+            select(Crew).where(Crew.nip == nip),
+            select(User).where(User.nip == nip),
+        )
+
+        stmt2 = select(Pilot, Crew, User).from_statement(stmt)
+        tripulante: Pilot | Crew | User = session.execute(stmt2).scalar_one_or_none()  # type: ignore  # noqa: PGH003
+
+        if tripulante is not None:
+            if hash_code(password) != tripulante.password:
+                # if password != tripulante.password:
                 return {"message": "Wrong password"}, 401
 
             access_token = create_access_token(
                 identity=nip,
-                additional_claims={"admin": pilot.admin, "name": pilot.name},
+                additional_claims={"admin": tripulante.admin, "name": tripulante.name},
             )
             response = {"access_token": access_token}
             return response, 200
-        return {"message": f"No user with NIP {nip}"}, 404
+        return {"message": f"No user with the NIP {nip}"}, 404
     return {"message": "Something went wrong in the server"}, 500
 
 
-Crew
-User
-json
-datetime
-
-
 @api.route("/logout", methods=["POST"])
-def logout():
+def logout() -> tuple[Response, int]:
     """Clear the login token on server side."""
     response = jsonify({"msg": "logout sucessful"})
     unset_jwt_cookies(response)
@@ -64,10 +66,12 @@ def logout():
 
 
 @api.route("/recovery", methods=["POST"])
-def recover_process():
+def recover_process() -> tuple[Response, int]:
     """Check token validity."""
-    email = request.json.get("email")
-    token = request.json.get("token")
+    recover_info: dict = request.get_json()
+
+    email = recover_info["email"]
+    token = recover_info["token"]
     with Session(engine) as session:
         stmt = union_all(
             select(Pilot).where(Pilot.email == email),
@@ -76,10 +80,9 @@ def recover_process():
         )
 
         stmt2 = select(Pilot, Crew, User).from_statement(stmt)
-        tripulante = session.execute(stmt2).scalar_one_or_none()
+        tripulante: Pilot | Crew | User = session.execute(stmt2).scalar_one()
         try:
             recover_data = json.loads(tripulante.recover)
-            print(recover_data)
         except json.JSONDecodeError:
             return jsonify({"message": "Token already was used"}), 403
 
@@ -97,6 +100,7 @@ def recover_process():
 
 @api.route("/recover/<email>", methods=["POST"])
 def recover_pass(email: str) -> tuple[Response, int]:
+    """Receive the email information and send a link to the user email to restore the password."""
     with Session(engine) as session:
         stmt = union_all(
             select(Pilot).where(Pilot.email == email),
@@ -110,15 +114,13 @@ def recover_pass(email: str) -> tuple[Response, int]:
             return jsonify({"message": "User not found"}), 404
         json_data = main(email)
         tripulante.recover = json_data
-        print(tripulante.recover)
         session.commit()
         return jsonify({"message": "Recovery email sent"}), 200
-
-    return jsonify({"message": "Internal Error"}), 500
 
 
 @api.route("/storenewpass/<nip>", methods=["PATCH"])
 def store_new_passord(nip: int) -> tuple[Response, int]:
+    """Update the database with the new password."""
     if request.method == "PATCH":
         user: dict = request.get_json()
         if user["password"] == "":
@@ -131,7 +133,7 @@ def store_new_passord(nip: int) -> tuple[Response, int]:
             )
 
             stmt2 = select(Pilot, Crew, User).from_statement(stmt)
-            modified_user: Pilot = session.execute(stmt2).scalar_one_or_none()  # type: ignore
+            modified_user: Pilot | Crew | User = session.execute(stmt2).scalar_one()
             modified_user.password = hash_code(user["password"])
             modified_user.recover = ""
             session.commit()

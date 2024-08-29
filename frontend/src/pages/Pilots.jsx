@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-// import PILOTOS from "../dummy/pilotos";
-import { Container, Grid } from "@chakra-ui/react";
+import { Grid, useToast } from "@chakra-ui/react";
 import UserCard from "../components/pilotComponents/PilotCard";
 import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../Contexts/AuthContext";
@@ -13,27 +14,44 @@ const Pilots = ({ position }) => {
   const { token, removeToken } = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation();
+  const toast = useToast();
 
   const getSavedPilots = async () => {
+    toast({
+      title: "A carregar Pilotos",
+      description: "Em processo.",
+      status: "loading",
+      duration: 10000,
+      isClosable: true,
+      position: "top",
+    });
     try {
       const res = await axios.get(`/api/pilots/${position}`, {
         headers: { Authorization: "Bearer " + token },
+      });
+      toast.closeAll();
+      toast({
+        title: "Pilotos Carregados",
+        description: "Informação carregada com sucesso",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+        position: "top",
       });
       setPilotos(res.data || []);
       setFilteredUsers(res.data || []);
     } catch (error) {
       console.log(error);
-      // console.log(error.response.status);
-      // if (error.response.status === 401) {
-      //   console.log("Removing Token");
-      //   removeToken();
-      //   navigate("/");
-      // }
+      console.log(error.response.status);
+      if (error.response.status === 401) {
+        console.log("Removing Token");
+        removeToken();
+        navigate("/");
+      }
     }
   };
   useEffect(() => {
     getSavedPilots();
-    // console.log("Pilots Loaded");
   }, [location]);
   return (
     // <Container maxWidth={"1200px"} alignItems={"center"}>
