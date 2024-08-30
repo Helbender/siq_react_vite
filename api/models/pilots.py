@@ -28,7 +28,7 @@ class Pilot(People, Base):
 
     def __repr__(self):
         repr = super().__repr__()
-        repr += self.qualification.__repr__()
+        # repr += self.qualification.__repr__()
         return repr
 
     def to_json(self, qualification_data=False) -> dict:

@@ -72,8 +72,8 @@ def retrieve_flights() -> tuple[Response, int]:
     # Retrieves flight from Frontend and saves is to DB
     if request.method == "POST":
         f: dict = request.get_json()
-        for k, v in f.items():
-            print(f"{k}: {v}")
+        # for k, v in f.items():
+        #     print(f"{k}: {v}")
         flight = Flight(
             airtask=f["airtask"],
             date=datetime.strptime(f["date"], "%Y-%m-%d").replace(tzinfo=UTC).date(),
@@ -277,10 +277,20 @@ def process_repetion_qual(
 
 def add_crew_and_pilots(session: Session, flight: Flight, pilot: dict) -> None:
     """Check type of crew and add it to respective Model Object."""
+    # Garanties data integrety while introducing several flights
+    pilot["ATR"] = 0 if pilot["ATR"] == "" else pilot["ATR"]
+    pilot["ATN"] = 0 if pilot["ATN"] == "" else pilot["ATN"]
+    pilot["precapp"] = 0 if pilot["precapp"] == "" else pilot["precapp"]
+    pilot["nprecapp"] = 0 if pilot["nprecapp"] == "" else pilot["nprecapp"]
+
+    if "QUAL1" in pilot and pilot["QUAL1"] != "":
+        pilot[pilot["QUAL1"]] = True
+    if "QUAL2" in pilot and pilot["QUAL2"] != "":
+        pilot[pilot["QUAL1"]] = True
     if pilot["position"] in PILOT_USER:
         pilot_obj: Pilot = session.get(Pilot, pilot["nip"])  # type: ignore  # noqa: PGH003
         qual_p: Qualification = session.get(Qualification, pilot["nip"])  # type: ignore  # noqa: PGH003
-        print(pilot_obj)
+
         fp = FlightPilots(
             day_landings=int(pilot["ATR"]),
             night_landings=int(pilot["ATN"]),
@@ -302,7 +312,6 @@ def add_crew_and_pilots(session: Session, flight: Flight, pilot: dict) -> None:
     elif pilot["position"] in CREW_USER:
         crew_obj: Crew = session.get(Crew, pilot["nip"])  # type: ignore  # noqa: PGH003
         qual_c: QualificationCrew = session.get(QualificationCrew, pilot["nip"])  # type: ignore  # noqa: PGH003
-        print(crew_obj)
         fp = FlightCrew(
             bsoc=pilot["BSOC"],
         )

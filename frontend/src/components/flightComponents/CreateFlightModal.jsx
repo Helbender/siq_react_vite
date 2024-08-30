@@ -91,6 +91,7 @@ function CreateFlightModal({ token }) {
         console.log(res);
         toast({ title: "Sucesso", description: res.data?.message });
         data.id = res.data?.message;
+
         setFlights([...flights, data]);
       }
     } catch (error) {

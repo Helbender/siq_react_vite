@@ -187,9 +187,9 @@ const PilotInput = ({ inputs, setInputs, pilotNumber, pilotos }) => {
             onChange={(e) => {
               setPilot({
                 ...pilot,
-                [e.target.value]: true,
+                QUAL1: e.target.value,
               });
-              let newpilot = { ...pilot, [e.target.value]: true };
+              let newpilot = { ...pilot, QUAL1: e.target.value };
               let newinput = { ...inputs, [pilotNumber]: newpilot };
               setInputs(newinput);
             }}
@@ -211,9 +211,9 @@ const PilotInput = ({ inputs, setInputs, pilotNumber, pilotos }) => {
             onChange={(e) => {
               setPilot({
                 ...pilot,
-                [e.target.value]: true,
+                QUAL2: e.target.value,
               });
-              let newpilot = { ...pilot, [e.target.value]: true };
+              let newpilot = { ...pilot, QUAL2: e.target.value };
               let newinput = { ...inputs, [pilotNumber]: newpilot };
               setInputs(newinput);
             }}
