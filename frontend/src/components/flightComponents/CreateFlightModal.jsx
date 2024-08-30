@@ -18,6 +18,7 @@ import {
   Grid,
   Divider,
   Select,
+  useToast,
   // Stack,
 } from "@chakra-ui/react";
 import { useState, useEffect, useContext } from "react";
@@ -28,6 +29,7 @@ import { FlightContext } from "../../Contexts/FlightsContext";
 function CreateFlightModal({ token }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { flights, setFlights } = useContext(FlightContext);
+  const toast = useToast();
 
   const [pilotos, setPilotos] = useState([]);
   let today = new Date();
@@ -86,6 +88,9 @@ function CreateFlightModal({ token }) {
         headers: { Authorization: "Bearer " + token },
       });
       if (res.status === 201) {
+        console.log(res);
+        toast({ title: "Sucesso", description: res.data?.message });
+        data.id = res.data?.message;
         setFlights([...flights, data]);
       }
     } catch (error) {

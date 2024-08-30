@@ -34,12 +34,18 @@ def retrieve_flights() -> tuple[Response, int]:
         with Session(engine) as session:
             stmt = select(Flight)
             flights_obj = session.execute(stmt).scalars()
+
+            # Iterates through flights and creates JSON response
             for row in flights_obj:
-                flights.append(row.to_json())
+                flights.append(row.to_json())  # Flight main data to JSON
+
+                # Retrieves the Pilots from the DB
                 stmt2 = select(FlightPilots).where(FlightPilots.flight_id == row.fid)
                 flight_pilots = session.execute(stmt2).scalars()
 
-                flights[i]["flight_pilots"] = []
+                # Creates Empty list of pilots and crew to append to JSON
+                flights[i]["flight_pilots"] = []  # "flight_pilots" key used for compatability with the FRONTEND
+
                 for flight_pilot in flight_pilots:
                     result = session.execute(
                         select(Pilot).where(Pilot.nip == flight_pilot.pilot_id),
@@ -48,9 +54,22 @@ def retrieve_flights() -> tuple[Response, int]:
                         flights[i]["flight_pilots"].append({"pilotName": "Not found, maybe deleted"})
                     else:
                         flights[i]["flight_pilots"].append(flight_pilot.to_json())
+
+                stmt3 = select(FlightCrew).where(FlightCrew.flight_id == row.fid)
+                flight_crews = session.execute(stmt3).scalars()
+
+                for flight_crew in flight_crews:
+                    result = session.execute(
+                        select(Crew).where(Crew.nip == flight_crew.crew_id),
+                    ).scalar_one_or_none()
+                    if result is None:
+                        flights[i]["flight_pilots"].append({"pilotName": "Not found, maybe deleted"})
+                    else:
+                        flights[i]["flight_pilots"].append(flight_crew.to_json())
                 i += 1
             return jsonify(flights), 200
 
+    # Retrieves flight from Frontend and saves is to DB
     if request.method == "POST":
         f: dict = request.get_json()
         for k, v in f.items():
