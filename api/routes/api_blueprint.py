@@ -6,12 +6,12 @@ from datetime import datetime, timedelta, timezone
 from config import engine
 from flask import Blueprint, Response, jsonify, request
 from flask_jwt_extended import create_access_token, jwt_required, unset_jwt_cookies
+from functions.sendemail import hash_code, main
 from models.crew import Crew
 from models.pilots import Pilot
 from models.users import User
 from routes.flight_blueprint import flights
 from routes.users_blueprint import users
-from sendemail import hash_code, main
 from sqlalchemy import select, union_all
 from sqlalchemy.orm import Session
 

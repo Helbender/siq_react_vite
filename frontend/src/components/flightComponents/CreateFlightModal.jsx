@@ -74,10 +74,12 @@ function CreateFlightModal({ token }) {
   const handleCreateFlight = async (e) => {
     e.preventDefault();
     let data = inputs;
-    data.flight_pilots = [];
+    !data.flight_pilots ? (data.flight_pilots = []) : null;
     for (let i = 0; i < 6; i++) {
+      console.log(i);
       if (Object.hasOwn(inputs, `pilot${i}`)) {
-        data.flight_pilots.push(inputs[`pilot${i}`]);
+        console.log(true);
+        data.flight_pilots[i] = inputs[`pilot${i}`];
         delete data[`pilot${i}`];
       }
     }
@@ -89,12 +91,24 @@ function CreateFlightModal({ token }) {
       });
       if (res.status === 201) {
         console.log(res);
-        toast({ title: "Sucesso", description: res.data?.message });
-        data.id = res.data?.message;
-
+        toast({
+          title: "Sucesso",
+          description: `Voo colocado com sucesso. ID: ${res.data?.message}`,
+          status: "success",
+          duration: 5000,
+          position: "bottom",
+        });
+        // data.id = res.data?.message;
         setFlights([...flights, data]);
       }
     } catch (error) {
+      toast({
+        title: "Erro",
+        description: error.data?.message,
+        status: "error",
+        duration: 5000,
+        position: "bottom",
+      });
       console.log(error.response);
     }
   };

@@ -80,7 +80,7 @@ const FlightCard = ({ flight }) => {
             />
             <StyledText
               query={"Nº TRIP"}
-              text={`Nº TRIP: ${flight.passengers}`}
+              text={`Nº TRIP: ${flight.numberOfCrew}`}
             />
 
             <StyledText
@@ -94,7 +94,7 @@ const FlightCard = ({ flight }) => {
 
             <StyledText
               query={["PAX", "DOE"]}
-              text={`PAX/DOE: ${flight.passengers} ${flight.doe}`}
+              text={`PAX/DOE: ${flight.passengers} / ${flight.doe}`}
             />
             <StyledText query={"CARGO"} text={`CARGO: ${flight.cargo} Kg`} />
             <StyledText query={"FUEL"} text={`FUEL: ${flight.fuel} Kg`} />

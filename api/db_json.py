@@ -3,10 +3,10 @@ from __future__ import annotations  # noqa: D100, INP001
 import json
 
 from config import engine
+from functions.sendemail import hash_code
 from models.crew import Crew, QualificationCrew
 from models.pilots import Pilot, Qualification
 from models.users import User
-from sendemail import hash_code
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session

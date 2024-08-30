@@ -126,6 +126,7 @@ const PilotInput = ({ inputs, setInputs, pilotNumber, pilotos }) => {
                 ATR: e.target.value,
               });
               let newpilot = { ...pilot, ATR: e.target.value };
+              console.log(pilotNumber);
               let newinput = { ...inputs, [pilotNumber]: newpilot };
               setInputs(newinput);
             }}
@@ -166,9 +167,9 @@ const PilotInput = ({ inputs, setInputs, pilotNumber, pilotos }) => {
             name="NPrecApp"
             type="number"
             onChange={(e) => {
-              if (e.target.value === "") {
-                e.target.value = 0;
-              }
+              // if (e.target.value === "") {
+              //   e.target.value = 0;
+              // }
               setPilot({
                 ...pilot,
                 nprecapp: e.target.value,

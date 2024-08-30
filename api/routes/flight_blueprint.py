@@ -72,8 +72,8 @@ def retrieve_flights() -> tuple[Response, int]:
     # Retrieves flight from Frontend and saves is to DB
     if request.method == "POST":
         f: dict = request.get_json()
-        # for k, v in f.items():
-        #     print(f"{k}: {v}")
+        for k, v in f.items():
+            print(f"{k}: {v}")
         flight = Flight(
             airtask=f["airtask"],
             date=datetime.strptime(f["date"], "%Y-%m-%d").replace(tzinfo=UTC).date(),
@@ -98,8 +98,13 @@ def retrieve_flights() -> tuple[Response, int]:
             session.add(flight)
             pilot: dict
 
+            # for i in range(6):
             for pilot in f["flight_pilots"]:
+                print("\n", pilot)
+                # try:
                 add_crew_and_pilots(session, flight, pilot)
+                # except KeyError:
+                # pass
             session.commit()
             session.refresh(flight)
             print(flight.fid)
@@ -120,6 +125,7 @@ def handle_flights(flight_id: int) -> tuple[Response, int]:
 
             # Iterate over each pilot in the flight
             for pilot in flight.flight_pilots:
+                print(pilot.pilot_id)
                 update_qualifications(flight_id, session, pilot)
 
             # Iterate over each crew in the flight
@@ -147,7 +153,7 @@ def update_qualifications(
         pilot_qualification: Qualification = session.execute(
             select(Qualification).filter_by(pilot_id=tripulante.pilot_id),
         ).scalar_one()
-
+        print(pilot_qualification)
         # Process repetion Qualifications
         qualification_fields = ["day_landings", "night_landings", "prec_app", "nprec_app"]
         # Query the most recent dates for day landings from other flights
@@ -250,8 +256,8 @@ def process_repetion_qual(
 
     Used for repetion based qualifications
     """
-    print(f"Processing { qualification_field}")
-    recent_day_landings = session.execute(
+    print(f"\nProcessing { qualification_field}")
+    recent_qualications = session.execute(
         select(Flight.date, getattr(FlightPilots, qualification_field))  # FlightPilots.day_landings)
         .join(FlightPilots)
         .where(Flight.flight_pilots.any(pilot_id=tripulante.pilot_id))
@@ -261,18 +267,20 @@ def process_repetion_qual(
         # .limit(5 - len(day_landings_dates)),
     ).all()
 
-    print(f"\nRecent { qualification_field}:\t{recent_day_landings}\n")
+    print(f"\nRecent { qualification_field}:\t{recent_qualications}\n")
 
     # Ensure there are no more than 5 entries
-    day_landings_dates = [date[0].strftime("%Y-%m-%d") for date in recent_day_landings]
+    qualification_dates = [date[0].strftime("%Y-%m-%d") for date in recent_qualications]
 
     # Sort the dates in reverse chronological order
-    day_landings_dates.sort(reverse=True)
+    qualification_dates.sort(reverse=True)
 
     # Update the qualification record
-    pilot_qualification.last_day_landings = " ".join(day_landings_dates[:5])
+    setattr(pilot_qualification, f"last_{qualification_field}", " ".join(qualification_dates[:5]))
+    # qualification_attr = " ".join(qualification_dates[:5])
+    # pilot_qualification.last_day_landings = " ".join(qualification_dates[:5])
 
-    print(f"After Qual { qualification_field}:\t{pilot_qualification.last_day_landings}\n")
+    print(f"After Qual { qualification_field}:\t{getattr(pilot_qualification, f"last_{qualification_field}")}\n")
 
 
 def add_crew_and_pilots(session: Session, flight: Flight, pilot: dict) -> None:
@@ -304,6 +312,7 @@ def add_crew_and_pilots(session: Session, flight: Flight, pilot: dict) -> None:
             vrp1=pilot["VRP1"],
             vrp2=pilot["VRP2"],
         )
+
         qual_p.update(fp, flight.date)
 
         pilot_obj.flight_pilots.append(fp)

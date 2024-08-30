@@ -43,7 +43,7 @@ function CreateUserModal({ edit, add, isDelete, user }) {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setInputs(() => ({ ...inputs, password: 12345 }));
+    // setInputs(() => ({ ...inputs, password: 12345 }));
     try {
       console.log(inputs);
       const res = await axios.post(`/api/users`, inputs, {

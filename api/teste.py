@@ -1,11 +1,11 @@
 from datetime import date
 
 from config import engine
+from functions.sendemail import hash_code
 from models.crew import Crew, QualificationCrew
 from models.flights import Flight, FlightPilots
 from models.pilots import Pilot, Qualification
 from models.users import Base
-from sendemail import hash_code
 from sqlalchemy.orm import Session
 
 today = date.today()

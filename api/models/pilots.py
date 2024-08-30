@@ -68,13 +68,15 @@ class Qualification(Base):
         if data.bsp1 and date > self.last_bsp1_date:
             self.last_bsp1_date = date
 
-        if data.bsp2 and date > self.last_qa2_date:
-            self.last_qa2_date = date
+        if data.bsp2 and date > self.last_bsp2_date:
+            self.last_bsp2_date = date
+
         if data.ta and date > self.last_ta_date:
             self.last_ta_date = date
+
         if data.vrp1 and date > self.last_vrp1_date:
             self.last_vrp1_date = date
-        if data.ta and date > self.last_vrp2_date:
+        if data.vrp2 and date > self.last_vrp2_date:
             self.last_vrp2_date = date
 
         self.last_day_landings = Qualification._get_last_five(
@@ -100,7 +102,7 @@ class Qualification(Base):
         return self
 
     def __repr__(self) -> str:
-        return f"\nATR:{self.last_day_landings} QA1: {self.last_qa1_date}\n"
+        return f"\nATR:{self.last_day_landings}\tATN:{self.last_night_landings}\tQA1: {self.last_qa1_date}\n"
 
     def to_json(self) -> dict:
         return {

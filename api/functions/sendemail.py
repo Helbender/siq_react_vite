@@ -16,7 +16,7 @@ def generate_code(length=8):
     return "".join(random.choice(characters) for _ in range(length))
 
 
-def hash_code(code):
+def hash_code(code: str) -> str:
     """Hash the given code using SHA-256."""
     return hashlib.sha256(code.encode()).hexdigest()
 

@@ -1,6 +1,6 @@
 from __future__ import annotations  # noqa: D100, INP001
 
-from datetime import date
+from datetime import date  # noqa: TCH003
 from typing import TYPE_CHECKING, List, Optional
 
 from models.users import Base
@@ -55,10 +55,12 @@ class Flight(Base):
         cascade="all, delete-orphan",
     )
 
-    def __repr__(self):
+    def __repr__(self) -> dict:
+        """Print Dictionary the instance attributes."""
         return self.to_json()
 
-    def to_json(self):
+    def to_json(self) -> dict:
+        """Return all model data in JSON format."""
         return {
             "id": self.fid,
             "airtask": self.airtask,
@@ -82,6 +84,8 @@ class Flight(Base):
 
 
 class FlightPilots(Base):
+    """SQLALCHEMY Database class with the Pilots of each flight."""
+
     __tablename__ = "flight_pilots"
 
     flight_id: Mapped[int] = mapped_column(
@@ -106,9 +110,10 @@ class FlightPilots(Base):
     flight: Mapped[Flight] = relationship(back_populates="flight_pilots")
 
     def __repr__(self) -> str:
-        rep = f"Piloto: {self.pilot.name} Aterragens={self.day_landings} no airtask {self.flight.airtask} "
-        if self.qa1:
-            rep += "QA1"
+        """Print Dictionary the instance attributes and Flight Info."""
+        rep = f"Airtask {self.flight.airtask}\n Database ID: {self.flight_id} "
+        for k, v in self.to_json():
+            rep += f"\n{k}:{v}"
         return rep
 
     def to_json(self) -> dict:
@@ -140,6 +145,8 @@ class FlightPilots(Base):
 
 
 class FlightCrew(Base):
+    """SQLALCHEMY Database class with the Crew of each flight."""
+
     __tablename__ = "flight_crew"
 
     flight_id: Mapped[int] = mapped_column(
@@ -149,7 +156,7 @@ class FlightCrew(Base):
 
     crew_id: Mapped[int] = mapped_column(ForeignKey("crew.nip"), primary_key=True)
 
-    bsoc: Mapped[Optional[bool]]
+    bsoc: Mapped[Optional[bool]]  # noqa: UP007
 
     crew: Mapped[Crew] = relationship(back_populates="flight_crew")
     flight: Mapped[Flight] = relationship(back_populates="flight_crew")

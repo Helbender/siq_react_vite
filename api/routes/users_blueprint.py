@@ -5,10 +5,10 @@ from flask import Blueprint, Response, jsonify, request
 from flask_jwt_extended import (
     jwt_required,
 )
+from functions.sendemail import hash_code
 from models.crew import Crew, QualificationCrew
 from models.pilots import Pilot, Qualification
 from models.users import User
-from sendemail import hash_code
 from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
@@ -41,7 +41,7 @@ def retrieve_user() -> tuple[Response, int]:
                     position=user["position"],
                     email=user["email"],
                     squadron=user["squadron"],
-                    password=hash_code(str(user["password"])),
+                    password=hash_code(str(12345)),
                     qualification=Qualification(),
                 )
             elif user["position"] in CREW_USER:
@@ -52,7 +52,7 @@ def retrieve_user() -> tuple[Response, int]:
                     position=user["position"],
                     email=user["email"],
                     squadron=user["squadron"],
-                    password=hash_code(str(user["password"])),
+                    password=hash_code(str(12345)),
                     qualification=QualificationCrew(),
                 )
             else:
@@ -63,7 +63,7 @@ def retrieve_user() -> tuple[Response, int]:
                     position=user["position"],
                     email=user["email"],
                     squadron=user["squadron"],
-                    password=hash_code(str(user["password"])),
+                    password=hash_code(str(12345)),
                 )
             session.add(new_user)
             session.commit()

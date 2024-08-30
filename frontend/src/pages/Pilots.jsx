@@ -21,9 +21,9 @@ const Pilots = ({ position }) => {
       title: "A carregar Pilotos",
       description: "Em processo.",
       status: "loading",
-      duration: 10000,
+      duration: 5000,
       isClosable: true,
-      position: "top",
+      position: "bottom",
     });
     try {
       const res = await axios.get(`/api/pilots/${position}`, {
@@ -36,7 +36,7 @@ const Pilots = ({ position }) => {
         status: "success",
         duration: 5000,
         isClosable: true,
-        position: "top",
+        position: "bottom",
       });
       setPilotos(res.data || []);
       setFilteredUsers(res.data || []);
@@ -54,8 +54,6 @@ const Pilots = ({ position }) => {
     getSavedPilots();
   }, [location]);
   return (
-    // <Container maxWidth={"1200px"} alignItems={"center"}>
-
     <Grid
       mx="5"
       templateColumns={{
@@ -70,7 +68,6 @@ const Pilots = ({ position }) => {
         <UserCard key={pilot.nip} user={pilot} />
       ))}
     </Grid>
-    // </Container>
   );
 };
 
