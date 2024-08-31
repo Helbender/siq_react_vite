@@ -1,16 +1,23 @@
 /* eslint-disable react/prop-types */
-import { Container, Stack, Center, FormControl, Input } from "@chakra-ui/react";
+import {
+  Stack,
+  FormControl,
+  Input,
+  Text,
+  VStack,
+  Flex,
+  Spacer,
+  useColorModeValue,
+} from "@chakra-ui/react";
 import FlightCard from "../components/flightComponents/FlightCard";
 import CreateFlightModal from "../components/flightComponents/CreateFlightModal";
-import { AuthContext } from "../Contexts/AuthContext";
 import { useContext, useEffect, useState } from "react";
 import { FlightContext } from "../Contexts/FlightsContext";
 
 export default function Flights() {
   const [filteredFlights, setFilteredFlights] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-
-  const { token } = useContext(AuthContext);
+  useColorModeValue();
   const { flights } = useContext(FlightContext);
 
   useEffect(() => {
@@ -31,9 +38,11 @@ export default function Flights() {
   }, [searchTerm, flights]);
 
   return (
-    <Container maxW={"1000px"}>
-      <Center mt={10}>
-        <CreateFlightModal token={token} />
+    <VStack mt={10}>
+      <Flex w={"1000px"} alignItems={"center"} flex={"row"}>
+        <Text ml={10}>{`Numero de Voos: ${flights.length}`}</Text>
+        <Spacer />
+        <CreateFlightModal />
         <FormControl textAlign={"center"} ml={5} maxW="130px">
           <Input
             placeholder="Search..."
@@ -41,15 +50,21 @@ export default function Flights() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </FormControl>
-      </Center>
-      <Stack gap={5} mt="8" mb="10" overflow="initial">
+        <Spacer />
+
+        <Text mr={10}>
+          {`Voos filtrados: ${filteredFlights.length}`}
+          {/* {!searchTerm ? null : `Voos filtrados: ${filteredFlights.length}`} */}
+        </Text>
+      </Flex>
+      <Stack gap={5} mt="8" overflowY="scroll" w={"90%"} maxW={"1200px"}>
         {filteredFlights.length
           ? !!filteredFlights.length &&
-            filteredFlights.map((flight) => (
-              <FlightCard key={flight.id} flight={flight} />
-            ))
+            filteredFlights
+              .slice(0, 5)
+              .map((flight) => <FlightCard key={flight.id} flight={flight} />)
           : null}
       </Stack>
-    </Container>
+    </VStack>
   );
 }

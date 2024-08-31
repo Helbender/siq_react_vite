@@ -16,7 +16,7 @@ import QualificationsPanel from "./QualificationsPanel";
 
 const PilotCard = ({ user }) => {
   return (
-    <Card bg={useColorModeValue("gray.200", "gray.700")} boxShadow={"xl"}>
+    <Card bg={useColorModeValue("gray.400", "gray.700")} boxShadow={"xl"}>
       <CardHeader>
         <Flex gap={4}>
           <Flex flex={"1"} flexDirection={"row"} align="center" gap={"5"}>

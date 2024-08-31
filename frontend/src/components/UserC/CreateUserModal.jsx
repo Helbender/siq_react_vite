@@ -33,6 +33,7 @@ function CreateUserModal({ edit, add, isDelete, user }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
   const [inputs, setInputs] = useState(user);
+
   const { token } = useContext(AuthContext);
   const { pilotos, setPilotos } = useContext(UserContext);
 
@@ -43,7 +44,6 @@ function CreateUserModal({ edit, add, isDelete, user }) {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // setInputs(() => ({ ...inputs, password: 12345 }));
     try {
       console.log(inputs);
       const res = await axios.post(`/api/users`, inputs, {
@@ -145,7 +145,7 @@ function CreateUserModal({ edit, add, isDelete, user }) {
                 <FormControl>
                   <FormLabel>Posto</FormLabel>
                   <Input
-                    value={inputs?.rank}
+                    value={inputs?.rank ? inputs.rank : ""}
                     name="rank"
                     placeholder="Posto"
                     onChange={handleInputsChange}
@@ -163,7 +163,7 @@ function CreateUserModal({ edit, add, isDelete, user }) {
                 <FormControl>
                   <FormLabel>Função</FormLabel>
                   <Select
-                    value={inputs?.position}
+                    value={inputs?.position ? inputs.position : ""}
                     name="position"
                     onChange={handleInputsChange}
                   >
@@ -189,7 +189,7 @@ function CreateUserModal({ edit, add, isDelete, user }) {
                 <FormControl>
                   <FormLabel flexGrow={"2"}>Nome</FormLabel>
                   <Input
-                    value={inputs?.name}
+                    value={inputs?.name ? inputs.name : ""}
                     name="name"
                     flexGrow={"2"}
                     placeholder="Nome"
@@ -199,7 +199,7 @@ function CreateUserModal({ edit, add, isDelete, user }) {
                 <FormControl>
                   <FormLabel>Email</FormLabel>
                   <Input
-                    value={inputs?.email}
+                    value={inputs?.email ? inputs.email : ""}
                     name="email"
                     type="email"
                     placeholder="Email"
@@ -211,7 +211,7 @@ function CreateUserModal({ edit, add, isDelete, user }) {
                     <FormLabel textAlign={"center"}>Admin</FormLabel>
                     <Switch
                       name="admin"
-                      isChecked={inputs?.admin}
+                      isChecked={inputs?.admin ? inputs.admin : ""}
                       onChange={(e) => {
                         setInputs(() => ({
                           ...inputs,
@@ -224,7 +224,7 @@ function CreateUserModal({ edit, add, isDelete, user }) {
                   <FormControl>
                     <FormLabel>Esquadra</FormLabel>
                     <Input
-                      value={inputs?.squadron}
+                      value={inputs?.squadron ? inputs.squadron : ""}
                       name="squadron"
                       type="text"
                       placeholder="Esquadra"
@@ -255,7 +255,14 @@ function CreateUserModal({ edit, add, isDelete, user }) {
                 {edit ? "Guardar" : "Criar"}
               </Button>
             )}
-            <Button colorScheme="blue" mr={3} onClick={onClose}>
+            <Button
+              colorScheme="blue"
+              mr={3}
+              onClick={() => {
+                onClose();
+                setInputs([]);
+              }}
+            >
               Close
             </Button>
           </ModalFooter>

@@ -25,10 +25,13 @@ import { useState, useEffect, useContext } from "react";
 import PilotInput from "./PilotInput";
 import axios from "axios";
 import { FlightContext } from "../../Contexts/FlightsContext";
+import { AuthContext } from "../../Contexts/AuthContext";
 
-function CreateFlightModal({ token }) {
+function CreateFlightModal() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { flights, setFlights } = useContext(FlightContext);
+  const { token } = useContext(AuthContext);
+
   const toast = useToast();
 
   const [pilotos, setPilotos] = useState([]);

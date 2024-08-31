@@ -10,7 +10,7 @@ from email.mime.text import MIMEText
 from email.utils import formataddr
 
 
-def generate_code(length=8):
+def generate_code(length: int = 8) -> str:
     """Generate a random alphanumeric code of a given length."""
     characters = string.ascii_letters + string.digits
     return "".join(random.choice(characters) for _ in range(length))
@@ -75,6 +75,8 @@ def main(recipient_email):
 
     # Create the recovery URL with email and code
     recovery_url = f"https://esq502.pt/#/recovery/{code}/{recipient_email}"
+    recovery_url_docker = f"https://siq.brancohome.synology.me/#/recovery/{code}/{recipient_email}"
+    recovery_url_local = f"http://localhost:5173/#/recovery/{code}/{recipient_email}"
 
     # Prepare the HTML email body with a clickable link
     body = f"""<!DOCTYPE html>
@@ -86,6 +88,8 @@ def main(recipient_email):
     <p>Bom dia,</p>
     <p>Foi iniciado um restauro de password da sua conta do SIQ. Clique no seguinte link para completar a operação:</p>
     <p><a href="{recovery_url}"><-- CLICK AQUI PARA NOVA PASSWORD --></a></p>
+    <p>Link Docker (Teste)<a href="{recovery_url_docker}"><-- CLICK AQUI PARA NOVA PASSWORD --></a></p>
+    <p>Link Local (Teste)<a href="{recovery_url_local}"><-- CLICK AQUI PARA NOVA PASSWORD --></a></p>
     <p>Bons voos!</p>
 </body>
 </html>"""

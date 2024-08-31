@@ -57,14 +57,13 @@ function UserManagementPage() {
     setFilteredUsers(results);
   }, [searchTerm, pilotos]);
   return (
-    <Container maxW="container.lg" py={6} mb={35}>
-      <HStack spacing={4} mb={10} align={"center"}>
+    <Container maxW="90%" py={6} mb={35}>
+      <HStack mb={10} align={"center"}>
         <CreateUserModal add={true} />
 
         <Spacer />
         <Input
           placeholder="Search..."
-          // value={searchTerm}
           maxWidth={200}
           onChange={(e) => setSearchTerm(e.target.value)}
           size="md"

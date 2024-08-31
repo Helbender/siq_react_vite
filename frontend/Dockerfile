@@ -12,5 +12,5 @@ RUN npm run build
 # Build step #2: build an nginx container
 FROM nginx:stable-alpine
 COPY --from=build-step /app/frontend/dist /usr/share/nginx/html
-COPY nginx.default.conf /etc/nginx/conf.d/default.conf
+COPY ./conf/default.nginx /etc/nginx/conf.d/default.conf
 # CMD [ "npm", "run",  "dev" ]

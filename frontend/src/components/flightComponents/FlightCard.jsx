@@ -18,6 +18,7 @@ import {
   Th,
   Td,
   TableContainer,
+  useToast,
 } from "@chakra-ui/react";
 import { BiTrash } from "react-icons/bi";
 import { useColorMode } from "@chakra-ui/react";
@@ -28,9 +29,8 @@ import { useContext } from "react";
 
 const FlightCard = ({ flight }) => {
   const { flights, setFlights } = useContext(FlightContext);
-
+  const toast = useToast();
   const handleDeleteFlight = async (id) => {
-    console.log(`Flight Id: ${id}`);
     try {
       const res = await axios.delete(`/api/flights/${id}`);
       // console.log(res.data);
@@ -40,6 +40,16 @@ const FlightCard = ({ flight }) => {
         setFlights(flights.filter((flight) => flight.id != id));
       }
     } catch (error) {
+      if (error.response.status === 404) {
+        toast({
+          title: "Erro a apagar",
+          description: `ID is ${id}. Voo não encontrado.\nExperimente fazer refresh à página`,
+          status: "error",
+          duration: 5000,
+          position: "bottom",
+        });
+      }
+      // window.location.reload(false);
       console.log(error.response);
     }
   };
@@ -53,8 +63,9 @@ const FlightCard = ({ flight }) => {
     <Card boxShadow={"lg"} bg={colorMode === "light" ? "gray.100" : "gray.700"}>
       <CardHeader>
         <Flex align={"center"}>
-          <Heading>{`${flight.airtask}`} </Heading>
+          <Heading>{flight.airtask}</Heading>
           <Spacer />
+          <Heading as="h3">{flight.ATD}</Heading>
           <IconButton
             variant="ghost"
             colorScheme="red"
@@ -75,35 +86,39 @@ const FlightCard = ({ flight }) => {
           <Stack>
             <Text>{`${flight.flightType} / ${flight.flightAction}`}</Text>
             <StyledText
-              query={"Nº de Cauda"}
+              query={"Nº de Cauda:"}
               text={`Nº de Cauda: ${flight.tailNumber}`}
             />
             <StyledText
-              query={"Nº TRIP"}
+              query={"Nº TRIP:"}
               text={`Nº TRIP: ${flight.numberOfCrew}`}
             />
 
             <StyledText
-              query={"Aterragens"}
+              query={"Aterragens:"}
               text={`Aterragens: ${flight.totalLandings}`}
             />
           </Stack>
           <Spacer />
           <Stack>
-            <StyledText query={"ORM"} text={`ORM: ${flight.orm}`} />
+            <StyledText query={"ORM:"} text={`ORM: ${flight.orm}`} />
 
             <StyledText
-              query={["PAX", "DOE"]}
-              text={`PAX/DOE: ${flight.passengers} / ${flight.doe}`}
+              query={["PAX:", "DOE:", "/"]}
+              text={
+                flight.doe
+                  ? `PAX/DOE: ${flight.passengers} / ${flight.doe}`
+                  : `PAX: ${flight.passengers}`
+              }
             />
-            <StyledText query={"CARGO"} text={`CARGO: ${flight.cargo} Kg`} />
-            <StyledText query={"FUEL"} text={`FUEL: ${flight.fuel} Kg`} />
+            <StyledText query={"CARGO:"} text={`CARGO: ${flight.cargo} Kg`} />
+            <StyledText query={"FUEL:"} text={`FUEL: ${flight.fuel} Kg`} />
           </Stack>
           <Spacer />
           <Stack>
-            <StyledText query={"ATD"} text={`ATD ${flight.ATD}`} />
-            <StyledText query={"ATA"} text={`ATA ${flight.ATA}`} />
-            <StyledText query={"ATE"} text={`ATE ${flight.ATE}`} />
+            <StyledText query={"ATD:"} text={`ATD: ${flight.ATD}`} />
+            <StyledText query={"ATA:"} text={`ATA: ${flight.ATA}`} />
+            <StyledText query={"ATE:"} text={`ATE: ${flight.ATE}`} />
             <StyledText
               query={["De", "para"]}
               text={`De ${flight.origin} para ${flight.destination}`}
@@ -112,16 +127,17 @@ const FlightCard = ({ flight }) => {
         </Flex>
         <Divider my="5" />
         <TableContainer>
-          <Table>
+          <Table size={"sm"}>
             <Thead>
               <Tr>
-                <Th>NIP</Th>
+                <Th textAlign={"center"}>NIP</Th>
+                <Th textAlign={"center"}>Func</Th>
                 <Th>Nome</Th>
-                <Th>ATR</Th>
-                <Th>ATN</Th>
-                <Th>PrecApp</Th>
-                <Th>NPrecApp</Th>
-                <Th>Qualifications</Th>
+                <Th textAlign={"center"}>ATR</Th>
+                <Th textAlign={"center"}>ATN</Th>
+                <Th textAlign={"center"}>PrecApp</Th>
+                <Th textAlign={"center"}>NPrecApp</Th>
+                <Th textAlign={"center"}>Qualifications</Th>
               </Tr>
             </Thead>
             <Tbody>
@@ -148,15 +164,22 @@ const FlightCard = ({ flight }) => {
                 if (pilot.VRP2) {
                   qualification = [...qualification, "VRP2"];
                 }
+                if (pilot.QUAL1) {
+                  qualification = [...qualification, pilot.QUAL1];
+                }
+                if (pilot.QUAL2) {
+                  qualification = [...qualification, pilot.QUAL2];
+                }
                 return (
                   <Tr key={pilot.nip}>
-                    <Td>{pilot.nip}</Td>
+                    <Td textAlign={"center"}>{pilot.nip}</Td>
+                    <Td textAlign={"center"}>{pilot.position}</Td>
                     <Td>{pilot.name}</Td>
-                    <Td>{pilot.ATR}</Td>
-                    <Td>{pilot.ATN}</Td>
-                    <Td>{pilot.precapp}</Td>
-                    <Td>{pilot.nprecapp}</Td>
-                    <Td>
+                    <Td textAlign={"center"}>{pilot.ATR}</Td>
+                    <Td textAlign={"center"}>{pilot.ATN}</Td>
+                    <Td textAlign={"center"}>{pilot.precapp}</Td>
+                    <Td textAlign={"center"}>{pilot.nprecapp}</Td>
+                    <Td textAlign={"center"}>
                       {qualification.length === 2
                         ? `${qualification[0]} and ${qualification[1]}`
                         : qualification[0]}

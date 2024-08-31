@@ -16,9 +16,9 @@ export default defineConfig({
     origin: "http://0.0.0.0:5173",
     proxy: {
       "/api": {
-        //target for local and standard deployment
+        //target for local deployment and NGINX and reverse proxy to /api
         target: "http://localhost:5051",
-        // target for docker deploiment with NGINX and reverse proxy to /api
+        // target for docker deploiment with standard deployment
         // target: "http://api:5051",
         changeOrigin: true,
         rewrite: (path) => path.replace("/^/api/", ""),
