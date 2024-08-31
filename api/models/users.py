@@ -30,7 +30,7 @@ class People:
     email: Mapped[str] = mapped_column(String(50))
     admin: Mapped[bool] = mapped_column(default=False)
     recover: Mapped[str] = mapped_column(String(500), default="")
-    squadron: Mapped[str] = mapped_column(String(6), default="")
+    squadron: Mapped[str] = mapped_column(String(30), default="")
     password: Mapped[str] = mapped_column(String(150))
 
     def __repr__(self):

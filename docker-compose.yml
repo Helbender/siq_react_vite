@@ -5,8 +5,8 @@ services:
     build: ./api
     # ports:
     #   - '5051:5051'
-    # volumes:
-    #   - ./api:/app
+    volumes:
+      - ./api/database:/app/database
     # environment:
     #   - APPLY_CORS=1
   frontend:

@@ -103,6 +103,7 @@ def modify_user(nip: int, position: str) -> tuple[Response, int]:
             for k, v in user.items():
                 if k == "qualification":
                     continue
+                print(k, v)
                 setattr(modified_pilot, k, v)
 
             session.commit()

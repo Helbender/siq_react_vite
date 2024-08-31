@@ -55,8 +55,8 @@ function CreateUserModal({ edit, add, isDelete, user }) {
       setInputs([]);
       onClose();
     } catch (error) {
-      toast({ title: "Error updating user", status: "error" });
-      console.error("Error updating user:", error);
+      toast({ title: "Error saving user", status: "error" });
+      console.error("Error sasving user:", error);
     }
   };
   const handleEditUser = async (e) => {
@@ -224,7 +224,7 @@ function CreateUserModal({ edit, add, isDelete, user }) {
                   <FormControl>
                     <FormLabel>Esquadra</FormLabel>
                     <Input
-                      value={inputs?.squadron ? inputs.squadron : ""}
+                      value={inputs?.squadron}
                       name="squadron"
                       type="text"
                       placeholder="Esquadra"
@@ -260,7 +260,7 @@ function CreateUserModal({ edit, add, isDelete, user }) {
               mr={3}
               onClick={() => {
                 onClose();
-                setInputs([]);
+                // setInputs([]);
               }}
             >
               Close

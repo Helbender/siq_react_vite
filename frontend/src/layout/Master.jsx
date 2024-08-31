@@ -4,7 +4,7 @@ import { Box } from "@chakra-ui/react";
 
 export default function Master() {
   return (
-    <Box w="100vw" h={"100vh"}>
+    <Box w="100vw">
       {/* // <div className=" h-[100dvh] bg-gray-200"> */}
       {/* <div className="flex flex-col items-center gap-8 "> */}
       {/* <Text

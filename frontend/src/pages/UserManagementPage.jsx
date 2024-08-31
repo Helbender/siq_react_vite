@@ -22,6 +22,8 @@ import UserDataCard from "../components/UserC/UserDataCard";
 import { useSendEmail } from "../Functions/useSendEmail";
 import { AuthContext } from "../Contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { IoCheckmarkCircleSharp } from "react-icons/io5";
+import { IoCloseCircleSharp } from "react-icons/io5";
 
 function UserManagementPage() {
   const navigate = useNavigate();
@@ -92,7 +94,13 @@ function UserManagementPage() {
                 <Td>{user.rank}</Td>
                 <Td>{user.position}</Td>
                 <Td>{user.email}</Td>
-                <Td>{user.admin ? "Yes" : "No"}</Td>
+                <Td>
+                  {user.admin ? (
+                    <IoCheckmarkCircleSharp size={"30px"} color="green" />
+                  ) : (
+                    <IoCloseCircleSharp size={"30px"} color="red" />
+                  )}
+                </Td>
                 <Td>{user.squadron}</Td>
                 <Td>
                   <HStack spacing={2} align="center">

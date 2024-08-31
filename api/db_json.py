@@ -43,6 +43,12 @@ def upload():
                 obj.password = hash_code("12345")
                 # print(obj.to_json())
                 session.add(obj)
+                try:
+                    session.commit()
+                except IntegrityError as e:
+                    session.rollback()
+                    print(e)
+                    continue
             for item in lista["crew"]:
                 obj = Crew(qualification=QualificationCrew())
                 for k, v in item.items():
@@ -65,6 +71,15 @@ def upload():
                 session.commit()
             except IntegrityError as e:
                 print(e)
+
+
+def teste(a):
+    try:
+        int(a)
+    except ValueError:
+        int(a)
+    finally:
+        print("HAHAHA")
 
 
 if __name__ == "__main__":

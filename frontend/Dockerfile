@@ -1,7 +1,7 @@
 FROM node:22.3-alpine AS build-step
 
 WORKDIR /app/frontend
-ENV PATH /app/frontend/node_modules/.bin:$PATH
+ENV PATH=/app/frontend/node_modules/.bin:$PATH
 COPY package.json package-lock.json ./
 RUN npm install --silent
 COPY . ./
