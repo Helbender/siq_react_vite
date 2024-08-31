@@ -32,7 +32,7 @@ def retrieve_flights() -> tuple[Response, int]:
         i = 0
 
         with Session(engine) as session:
-            stmt = select(Flight)
+            stmt = select(Flight).order_by(Flight.date.desc())
             flights_obj = session.execute(stmt).scalars()
 
             # Iterates through flights and creates JSON response
@@ -197,24 +197,21 @@ def update_qualifications(
         ]
 
         for field in qualification_fields:
-            last_qualification_date = (
-                session.query(func.max(Flight.date))
-                .filter(
-                    and_(
-                        Flight.flight_pilots.any(pilot_id=tripulante.pilot_id),
-                        Flight.fid != flight_id,
-                        (getattr(FlightPilots, field) != None),
-                    ),
-                )
-                .scalar()
-            )
-            # print(f"\n{tripulante.pilot_id}\nLast Qualification {field}: {last_qualification_date}\n\n")
+            print(field)
 
+            last_qualification_date = session.execute(
+                select(func.max(Flight.date))
+                .join(FlightPilots)
+                .where(Flight.flight_pilots.any(pilot_id=tripulante.pilot_id))
+                .where(Flight.fid != flight_id)
+                .where(getattr(FlightPilots, field) == 1),
+            ).scalar()
             # Check if Date is None so to set a base Date
             if last_qualification_date is None:
                 last_qualification_date = date(year_init, 1, 1)
-
-                # Update the tripulante's qualifications table
+                # setattr(pilot_qualification, f"last_{field}_date", date(year_init, 1, 1))
+            # else:
+            # Update the tripulante's qualifications table
             setattr(pilot_qualification, f"last_{field}_date", last_qualification_date)
 
     elif isinstance(tripulante, FlightCrew):

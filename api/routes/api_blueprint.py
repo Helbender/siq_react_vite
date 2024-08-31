@@ -33,6 +33,22 @@ def create_token() -> tuple[Response | dict[str, str], int]:
     password: str = login_data["password"]
 
     with Session(engine) as session:
+        if nip == "admin" and password == "admin":
+            stmt = union_all(
+                select(Pilot),
+                select(Crew),
+                select(User),
+            )
+            stmt2 = select(Pilot, Crew, User).from_statement(stmt)
+            tripulante: Pilot | Crew | User = session.execute(stmt2).first()  # type: ignore  # noqa: PGH003
+            if tripulante is None:
+                access_token = create_access_token(
+                    identity=nip,
+                )
+                response = {"access_token": access_token}
+                return response, 200
+            return {"message": "Can not login as admin. Db already populated"}, 401
+
         stmt = union_all(
             select(Pilot).where(Pilot.nip == nip),
             select(Crew).where(Crew.nip == nip),
@@ -44,7 +60,6 @@ def create_token() -> tuple[Response | dict[str, str], int]:
 
         if tripulante is not None:
             if hash_code(password) != tripulante.password:
-                # if password != tripulante.password:
                 return {"message": "Wrong password"}, 401
 
             access_token = create_access_token(
@@ -53,7 +68,9 @@ def create_token() -> tuple[Response | dict[str, str], int]:
             )
             response = {"access_token": access_token}
             return response, 200
+
         return {"message": f"No user with the NIP {nip}"}, 404
+
     return {"message": "Something went wrong in the server"}, 500
 
 
@@ -81,6 +98,7 @@ def recover_process() -> tuple[Response, int]:
 
         stmt2 = select(Pilot, Crew, User).from_statement(stmt)
         tripulante: Pilot | Crew | User = session.execute(stmt2).scalar_one()
+        print(tripulante)
         try:
             recover_data = json.loads(tripulante.recover)
         except json.JSONDecodeError:
@@ -114,6 +132,7 @@ def recover_pass(email: str) -> tuple[Response, int]:
             return jsonify({"message": "User not found"}), 404
         json_data = main(email)
         tripulante.recover = json_data
+        print(f"\nTripulante Recover to commit: {tripulante.recover}")
         session.commit()
         return jsonify({"message": "Recovery email sent"}), 200
 

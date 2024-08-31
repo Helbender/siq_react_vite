@@ -121,6 +121,7 @@ class FlightPilots(Base):
         response = {
             "name": self.pilot.name,
             "nip": self.pilot.nip,
+            "position": self.pilot.position,
             "ATR": self.day_landings,
             "ATN": self.night_landings,
             "precapp": self.prec_app,
@@ -165,6 +166,7 @@ class FlightCrew(Base):
         """Return all model data in JSON format."""
         response = {
             "name": self.crew.name,
+            "position": self.crew.position,
             "nip": self.crew.nip,
         }
         if self.bsoc:
