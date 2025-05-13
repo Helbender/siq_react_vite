@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+import React from "react";
 import Pilots from "./pages/Pilots";
 import Crew from "./pages/Crew";
 import Flights from "./pages/Flights";
@@ -16,16 +16,12 @@ import { HashRouter, Navigate, Route, Routes } from "react-router-dom";
 import UserManagementPage from "./pages/UserManagementPage";
 
 import Header from "./layout/Header";
-import { FlightProvider } from "./Contexts/FlightsContext";
-import { UserProvider } from "./Contexts/UserContext";
 
 function App() {
   const { token, removeToken, setToken } = useContext(AuthContext);
 
   return (
     <HashRouter>
-      {/* <UserProvider>
-        <FlightProvider> */}
       <Header />
       {!token && token !== "" && token !== undefined ? (
         <Routes>
@@ -47,9 +43,6 @@ function App() {
         <Fragment>
           <Routes>
             <Route index element={<Navigate replace to="flights" />} />
-            {/* <Suspense fallback={<div>Loading...</div>}>
-              <Route path="/flights" element={<Flights />} />
-            </Suspense> */}
             <Route path="/flights" index element={<Flights />} />
             <Route path="/users" element={<UserManagementPage />} />
 
@@ -63,8 +56,6 @@ function App() {
         </Fragment>
       )}
       <Footer />
-      {/* </FlightProvider>
-      </UserProvider> */}
     </HashRouter>
   );
 }
