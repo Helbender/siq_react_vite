@@ -1,26 +1,41 @@
 from __future__ import annotations  # noqa: D100, INP001
 
 import os
-from datetime import UTC, date, datetime
+from datetime import UTC
+from datetime import date
+from datetime import datetime
 from threading import Thread
 
-from config import CREW_USER, PILOT_USER, engine  # type:ignore  # noqa: PGH003
 from dotenv import load_dotenv
-from flask import Blueprint, Response, jsonify, request
+from flask import Blueprint
+from flask import Response
+from flask import jsonify
+from flask import request
 from flask_jwt_extended import verify_jwt_in_request
+from sqlalchemy import exc
+from sqlalchemy import func
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+from sqlalchemy.orm import joinedload
+
+from config import CREW_USER  # type:ignore  # noqa: PGH003
+from config import PILOT_USER  # type:ignore  # noqa: PGH003
+from config import engine  # type:ignore  # noqa: PGH003
 from functions.gdrive import tarefa_enviar_para_drive  # type:ignore  # noqa: PGH003
-from models.crew import Crew, QualificationCrew  # type:ignore  # noqa: PGH003
-from models.flights import Flight, FlightCrew, FlightPilots  # type:ignore  # noqa: PGH003
-from models.pilots import Pilot, Qualification  # type:ignore  # noqa: PGH003
-from models.users import year_init  # type:ignore  # noqa: PGH003
-from sqlalchemy import exc, func, select
-from sqlalchemy.orm import Session, joinedload
+from models.crew import Crew  # type:ignore  # noqa: PGH003
+from models.crew import QualificationCrew  # type:ignore  # noqa: PGH003
+from models.flights import Flight  # type:ignore  # noqa: PGH003
+from models.flights import FlightCrew  # type:ignore  # noqa: PGH003
+from models.flights import FlightPilots  # type:ignore  # noqa: PGH003
+from models.pilots import Pilot  # type:ignore  # noqa: PGH003
+from models.pilots import Qualification  # type:ignore  # noqa: PGH003
+from models.users import year_init  # type:ignore  # noqa: F401
 
 flights = Blueprint("flights", __name__)
 
 # Load enviroment variables
 load_dotenv(dotenv_path="./.env")
-DEV = bool(os.environ.get("DEV", "0"))
+DEV = int(os.environ.get("DEV", 0))
 
 
 # FLight ROUTES
@@ -61,6 +76,7 @@ def retrieve_flights() -> tuple[Response, int]:
     # Retrieves flight from Frontend and saves is to DB
     if request.method == "POST":
         verify_jwt_in_request()
+        print("POST request received")
         f: dict = request.get_json()
 
         with Session(engine) as session:
@@ -112,7 +128,7 @@ def retrieve_flights() -> tuple[Response, int]:
                 print("\n", e.orig.__repr__())
                 return jsonify({"message": e.orig.__repr__()}), 400
             else:
-                session.commit()
+                # session.commit()
                 nome_arquivo_voo = flight.get_file_name()
                 nome_pdf = nome_arquivo_voo.replace(".1m", ".pdf")
 

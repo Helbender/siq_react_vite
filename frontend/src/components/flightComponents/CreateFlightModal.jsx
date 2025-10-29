@@ -133,11 +133,23 @@ function CreateFlightModal({ flight }) {
     console.log("Creating new flight with data:", formData);
     await handleCreateFlight(formData, true);
   };
+  const handleEditFlight = async () => {
+    const formData = methods.getValues();
+    
+    // Ensure the flight ID is included in the data when editing
+    if (flight && flight.id) {
+      formData.id = flight.id;
+    }
+    
+    console.log("Editingflight with data:", formData);
+    await handleCreateFlight(formData, false);
+  };
+
 
   // Create Flight Endpoint
   const handleCreateFlight = async (data, isNewFlight = false) => {
     toast({
-      title: "A adicionar voo",
+      title: isNewFlight ? "A adicionar voo" : "A editar voo",
       description: "Em processo.",
       status: "loading",
       duration: 10000,
@@ -146,8 +158,10 @@ function CreateFlightModal({ flight }) {
     });
     try {
       let res;
-      if (flight && !isNewFlight) {
-        res = await api.patch(`/api/flights/${flight.id}`, data, {
+      // Check if we're editing an existing flight (has ID and not creating new)
+      if ((flight?.id || data?.id) && !isNewFlight) {
+        const flightId = data?.id || flight?.id;
+        res = await api.patch(`/api/flights/${flightId}`, data, {
           headers: { Authorization: "Bearer " + token },
         });
       } else {
@@ -156,6 +170,7 @@ function CreateFlightModal({ flight }) {
         });
       }
       console.log(res);
+      // Response 201 is for creating new flight
       if (res.status === 201) {
         toast.closeAll();
         const message = isNewFlight ? "Novo voo criado com sucesso" : "Voo adicionado com sucesso";
@@ -170,10 +185,11 @@ function CreateFlightModal({ flight }) {
         setFlights((prev) => [...prev, data]);
         
         // If creating new flight from edit mode, reset form to create mode
-        if (isNewFlight && flight) {
-          reset(defaultFlightData);
-        }
+        // if (isNewFlight && flight) {
+        //   reset(defaultFlightData);
+        // }
       }
+      //Response 204 is for editing flight
       if (res.status === 204) {
         toast.closeAll();
         toast({
@@ -230,6 +246,15 @@ function CreateFlightModal({ flight }) {
   useEffect(() => {
     setValue("destination", DESTINATION.toUpperCase());
   }, [DESTINATION]);
+
+    // Reset form when modal opens with flight data
+  useEffect(() => {
+    if (isOpen && flight) {
+      reset(flight);
+    } else if (isOpen && !flight) {
+      reset(defaultFlightData);
+    }
+  }, [isOpen, flight, reset]);
   return (
     <>
       {flight ? (
@@ -253,7 +278,9 @@ function CreateFlightModal({ flight }) {
       >
         <ModalOverlay />
         <FormProvider {...methods}>
-          <form onSubmit={handleSubmit(handleCreateFlight)}>
+          <form 
+          // onSubmit={handleSubmit(handleCreateFlight)}
+          >
             <ModalContent
             // minWidth={"1200px"}
             >
@@ -619,7 +646,7 @@ function CreateFlightModal({ flight }) {
                     Novo Voo
                   </Button>
                 )}
-                <Button colorScheme="green" mr={3} type="submit">
+                <Button colorScheme="green" mr={3} onClick={flight ? handleEditFlight : handleCreateNewFlight}>
                   {flight ? "Editar Voo" : "Registar Voo"}
                 </Button>
                 <Button

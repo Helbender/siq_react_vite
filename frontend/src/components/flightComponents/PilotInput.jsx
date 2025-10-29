@@ -4,11 +4,12 @@ import {
   Input,
   Select,
   IconButton,
+  Text,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { Fragment, useEffect, useMemo } from "react";
 import { FaMinus } from "react-icons/fa";
-import { useFormContext } from "react-hook-form";
+import { Controller,useFormContext } from "react-hook-form";
 import { apiAuth } from "../../utils/api";
 
 const PilotInput = ({ index, pilotos, member, remove }) => {
@@ -17,6 +18,9 @@ const PilotInput = ({ index, pilotos, member, remove }) => {
     register,
     formState: { errors },
     setValue,
+    getValues,
+    control,
+    watch,
   } = useFormContext();
 
   useEffect(() => {
@@ -64,6 +68,22 @@ const PilotInput = ({ index, pilotos, member, remove }) => {
       }
     }
   }, [member.name, pilotos, setValue, index]);
+
+  // Ensure qualification values are preserved when options load
+  useEffect(() => {
+    if (qualP.length > 0) {
+      // When qualifications load, ensure existing values are preserved
+      // This is needed because the Select might not recognize values before options are available
+      for (let n = 1; n <= 6; n++) {
+        const qualFieldName = `flight_pilots.${index}.QUAL${n}`;
+        const currentValue = getValues(qualFieldName);
+        if (currentValue && qualP.includes(currentValue)) {
+          // Value exists and is valid, ensure it's set
+          setValue(qualFieldName, currentValue, { shouldValidate: false });
+        }
+      }
+    }
+  }, [qualP, index, getValues, setValue]);
 
   return (
     <Fragment>
@@ -148,24 +168,34 @@ const PilotInput = ({ index, pilotos, member, remove }) => {
           </GridItem>
         ),
       )}
-      {[1, 2, 3, 4, 5, 6].map((n) => (
-        <GridItem key={n} minW={"70px"}>
-          <FormControl>
-            <Select
-              name={`Qual${n}`}
-              placeholder=" "
-              {...register(`flight_pilots.${index}.QUAL${n}`)}
-            >
-              {qualP &&
-                qualP.map((qual, i) => (
-                  <option key={i} value={qual}>
-                    {qual}
-                  </option>
-                ))}
-            </Select>
-          </FormControl>
-        </GridItem>
-      ))}
+      {[1, 2, 3, 4, 5, 6].map((n) => {
+        const qualFieldName = `flight_pilots.${index}.QUAL${n}`;
+        
+        return (
+          <GridItem key={n} minW={"70px"}>
+            <FormControl>
+              <Controller
+                name={qualFieldName}
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    placeholder=" "
+                    value={field.value || ""}
+                  >
+                    {qualP &&
+                      qualP.map((qual, i) => (
+                        <option key={i} value={qual}>
+                          {qual}
+                        </option>
+                      ))}
+                  </Select>
+                )}
+              />
+            </FormControl>
+          </GridItem>
+        );
+      })}
       <GridItem justifyContent={"flex-end"} display={"flex"}>
         <IconButton
           icon={<FaMinus />}

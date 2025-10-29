@@ -2,15 +2,16 @@ from __future__ import annotations  # noqa: D100, INP001
 
 # import locale
 from datetime import date  # noqa: TC003
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING
+from typing import List
+
+from sqlalchemy import ForeignKey
+from sqlalchemy import String
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
+from sqlalchemy.orm import relationship
 
 from models.users import Base  # type: ignore
-from sqlalchemy import ForeignKey, String
-from sqlalchemy.orm import (
-    Mapped,
-    mapped_column,
-    relationship,
-)
 
 # locale.setlocale(locale.LC_TIME, "pt_PT.UTF-8")  # Ou 'pt_BR.UTF-8' para português do Brasil
 if TYPE_CHECKING:
@@ -127,56 +128,54 @@ class FlightPilots(Base):
     prec_app: Mapped[int]
     nprec_app: Mapped[int]
 
-    cto: Mapped[Optional[bool]]  # = mapped_column(nullable=True, default=False)# noqa: UP007
-    sid: Mapped[Optional[bool]]  # = mapped_column(nullable=True, default=False)# noqa: UP007
-    mono: Mapped[Optional[bool]]  # = mapped_column(nullable=True, default=False)# noqa: UP007
-    nfp: Mapped[Optional[bool]]  # = mapped_column(nullable=True, default=False)# noqa: UP007
+    cto: Mapped[bool | None]  # = mapped_column(nullable=True, default=False)# noqa: UP007
+    sid: Mapped[bool | None]  # = mapped_column(nullable=True, default=False)# noqa: UP007
+    mono: Mapped[bool | None]  # = mapped_column(nullable=True, default=False)# noqa: UP007
+    nfp: Mapped[bool | None]  # = mapped_column(nullable=True, default=False)# noqa: UP007
 
-    qa1: Mapped[Optional[bool]]  # = mapped_column(nullable=True, default=False)# noqa: UP007
-    qa2: Mapped[Optional[bool]]  # = mapped_column(nullable=True, default=False)  # noqa: UP007
-    bsp1: Mapped[Optional[bool]]  # = mapped_column(nullable=True, default=False)# noqa: UP007
-    bsp2: Mapped[Optional[bool]]  # = mapped_column(nullable=True, default=False)# noqa: UP007
-    ta: Mapped[Optional[bool]]  # = mapped_column(nullable=True, default=False)# noqa: UP007
-    vrp1: Mapped[Optional[bool]]  # = mapped_column(nullable=True, default=False)# noqa: UP007
-    vrp2: Mapped[Optional[bool]]  # = mapped_column(nullable=True, default=False)# noqa: UP007
-    bskit: Mapped[Optional[bool]]  # = mapped_column(nullable=True, default=False)# noqa: UP007
-    paras: Mapped[Optional[bool]]  # = mapped_column(nullable=True, default=False)# noqa: UP007
-    nvg: Mapped[Optional[bool]]  # = mapped_column(nullable=True, default=False) # noqa: UP007
-    nvg2: Mapped[Optional[bool]]  # = mapped_column(nullable=True, default=False) # noqa: UP007
+    qa1: Mapped[bool | None]  # = mapped_column(nullable=True, default=False)# noqa: UP007
+    qa2: Mapped[bool | None]  # = mapped_column(nullable=True, default=False)  # noqa: UP007
+    bsp1: Mapped[bool | None]  # = mapped_column(nullable=True, default=False)# noqa: UP007
+    bsp2: Mapped[bool | None]  # = mapped_column(nullable=True, default=False)# noqa: UP007
+    ta: Mapped[bool | None]  # = mapped_column(nullable=True, default=False)# noqa: UP007
+    vrp1: Mapped[bool | None]  # = mapped_column(nullable=True, default=False)# noqa: UP007
+    vrp2: Mapped[bool | None]  # = mapped_column(nullable=True, default=False)# noqa: UP007
+    bskit: Mapped[bool | None]  # = mapped_column(nullable=True, default=False)# noqa: UP007
+    paras: Mapped[bool | None]  # = mapped_column(nullable=True, default=False)# noqa: UP007
+    nvg: Mapped[bool | None]  # = mapped_column(nullable=True, default=False) # noqa: UP007
+    nvg2: Mapped[bool | None]  # = mapped_column(nullable=True, default=False) # noqa: UP007
 
     pilot: Mapped[Pilot] = relationship(back_populates="flight_pilots")
     flight: Mapped[Flight] = relationship(back_populates="flight_pilots")
 
     def to_json(self) -> dict:
         """Return all model data in JSON format."""
+        # Collect qualifications that are True, in order
+        qualifications_list = []
+        for i in self.pilot.qualification.get_qualification_list():
+            if getattr(self, i.lower(), False):
+                qualifications_list.append(i)
+
+        # Map first 6 qualifications to QUAL1-QUAL6
         response = {
             "name": self.pilot.name,
             "nip": self.pilot.nip,
             "rank": self.pilot.rank,
             "position": self.position,
+            "VIR": "",
+            "VN": "",
+            "CON": "",
             "ATR": self.day_landings,
             "ATN": self.night_landings,
             "precapp": self.prec_app,
             "nprecapp": self.nprec_app,
+            "QUAL1": qualifications_list[0] if len(qualifications_list) > 0 else "",
+            "QUAL2": qualifications_list[1] if len(qualifications_list) > 1 else "",
+            "QUAL3": qualifications_list[2] if len(qualifications_list) > 2 else "",
+            "QUAL4": qualifications_list[3] if len(qualifications_list) > 3 else "",
+            "QUAL5": qualifications_list[4] if len(qualifications_list) > 4 else "",
+            "QUAL6": qualifications_list[5] if len(qualifications_list) > 5 else "",
         }
-        # response["QA1"] = self.qa1
-        # response["QA2"] = self.qa2
-        # response["BSP1"] = self.bsp1
-        # response["BSP2"] = self.bsp2
-        # response["TA"] = self.ta
-        # response["VRP1"] = self.vrp1
-        # response["VRP2"] = self.vrp2
-        # response["CTO"] = self.cto
-        # response["SID"] = self.sid
-        # response["MONO"] = self.mono
-        # response["NFP"] = self.nfp
-        # response["BSKIT"] = self.bskit
-        # response["PARAS"] = self.paras
-        # response["NVG"] = self.nvg
-        # response["NVG2"] = self.nvg2
-        for i in self.pilot.qualification.get_qualification_list():
-            # print(f"{i.lower()}: {getattr(self, i.lower())}")
-            response[i] = getattr(self, i.lower(), False)
 
         return response
 
@@ -194,21 +193,32 @@ class FlightCrew(Base):
     crew_id: Mapped[int] = mapped_column(ForeignKey("crew.nip", ondelete="CASCADE"), primary_key=True)
     position: Mapped[str] = mapped_column(String(5))
 
-    bsoc: Mapped[Optional[bool]]  # noqa: UP007
-    bskit: Mapped[Optional[bool]]  # noqa: UP007
-    paras: Mapped[Optional[bool]]  # noqa: UP007
+    bsoc: Mapped[bool | None]  # noqa: UP007
+    bskit: Mapped[bool | None]  # noqa: UP007
+    paras: Mapped[bool | None]  # noqa: UP007
 
     crew: Mapped[Crew] = relationship(back_populates="flight_crew")
     flight: Mapped[Flight] = relationship(back_populates="flight_crew")
 
     def to_json(self) -> dict:
         """Return all model data in JSON format."""
+        # Collect qualifications that are True, in order
+        qualifications_list = []
+        for i in self.crew.qualification.get_qualification_list():
+            if getattr(self, i.lower(), False):
+                qualifications_list.append(i)
+
+        # Map first 6 qualifications to QUAL1-QUAL6
         response = {
             "name": self.crew.name,
             "position": self.position,
             "nip": self.crew.nip,
+            "QUAL1": qualifications_list[0] if len(qualifications_list) > 0 else "",
+            "QUAL2": qualifications_list[1] if len(qualifications_list) > 1 else "",
+            "QUAL3": qualifications_list[2] if len(qualifications_list) > 2 else "",
+            "QUAL4": qualifications_list[3] if len(qualifications_list) > 3 else "",
+            "QUAL5": qualifications_list[4] if len(qualifications_list) > 4 else "",
+            "QUAL6": qualifications_list[5] if len(qualifications_list) > 5 else "",
         }
-        for i in self.crew.qualification.get_qualification_list():
-            # print(f"{i.lower()}: {getattr(self, i.lower())}")
-            response[i] = getattr(self, i.lower(), False)
+
         return response
