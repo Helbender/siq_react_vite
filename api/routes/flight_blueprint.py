@@ -128,7 +128,7 @@ def retrieve_flights() -> tuple[Response, int]:
                 print("\n", e.orig.__repr__())
                 return jsonify({"message": e.orig.__repr__()}), 400
             else:
-                # session.commit()
+                session.commit()
                 nome_arquivo_voo = flight.get_file_name()
                 nome_pdf = nome_arquivo_voo.replace(".1m", ".pdf")
 
