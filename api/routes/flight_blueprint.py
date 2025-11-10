@@ -147,7 +147,10 @@ def handle_flights(flight_id: int) -> tuple[Response, int]:
         verify_jwt_in_request()
         f: dict = request.get_json()
         with Session(engine, autoflush=False) as session:
-            flight: Flight = session.execute(select(Flight).where(Flight.fid == flight_id)).scalar_one_or_none()
+            flight: Flight | None = session.execute(select(Flight).where(Flight.fid == flight_id)).scalar_one_or_none()
+
+            if flight is None:
+                return jsonify({"msg": "Flight not found"}), 404
 
             flight.airtask = f.get("airtask", "")
             flight.date = datetime.strptime(f["date"], "%Y-%m-%d").replace(tzinfo=UTC).date()
@@ -171,11 +174,39 @@ def handle_flights(flight_id: int) -> tuple[Response, int]:
             flight.ready_ac = f.get("readyAC", "__:__")
             flight.med_arrival = f.get("medArrival", "__:__")
 
-            pilot: dict
+            existing_pilot_records = {str(fp.pilot_id): fp for fp in flight.flight_pilots}
+            existing_crew_records = {str(fc.crew_id): fc for fc in flight.flight_crew}
+            incoming_pilot_ids: set[str] = set()
+            incoming_crew_ids: set[str] = set()
 
-            for pilot in f["flight_pilots"]:
-                update_qualifications(flight_id, session, pilot)
-                add_crew_and_pilots(session, flight, pilot, edit=True)
+            for person in f.get("flight_pilots", []):
+                nip = str(person.get("nip", ""))
+                position = person.get("position", "")
+
+                if position in PILOT_USER and nip:
+                    incoming_pilot_ids.add(nip)
+                elif position in CREW_USER and nip:
+                    incoming_crew_ids.add(nip)
+
+                add_crew_and_pilots(session, flight, person, edit=True)
+
+            for pilot_id, pilot_record in list(existing_pilot_records.items()):
+                if pilot_id not in incoming_pilot_ids:
+                    update_qualifications(flight_id, session, pilot_record)
+                    if pilot_record.pilot and pilot_record in pilot_record.pilot.flight_pilots:
+                        pilot_record.pilot.flight_pilots.remove(pilot_record)
+                    if pilot_record in flight.flight_pilots:
+                        flight.flight_pilots.remove(pilot_record)
+                    session.delete(pilot_record)
+
+            for crew_id, crew_record in list(existing_crew_records.items()):
+                if crew_id not in incoming_crew_ids:
+                    update_qualifications(flight_id, session, crew_record)
+                    if crew_record.crew and crew_record in crew_record.crew.flight_crew:
+                        crew_record.crew.flight_crew.remove(crew_record)
+                    if crew_record in flight.flight_crew:
+                        flight.flight_crew.remove(crew_record)
+                    session.delete(crew_record)
 
             session.commit()
             session.refresh(flight)
