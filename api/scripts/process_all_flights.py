@@ -14,8 +14,8 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 from sqlalchemy.orm import joinedload
 
-# Add the current directory to Python path to import local modules
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+# Add the parent directory (api/) to Python path to import local modules
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from config import engine
 from functions.gdrive import tarefa_enviar_para_drive
