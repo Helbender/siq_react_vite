@@ -1,15 +1,17 @@
 from __future__ import annotations  # noqa: D100, INP001
 
-from datetime import date, timedelta
-from typing import TYPE_CHECKING, List
+from datetime import date
+from datetime import timedelta
+from typing import TYPE_CHECKING
 
-from models.users import Base, People, year_init  # type: ignore
 from sqlalchemy import ForeignKey
-from sqlalchemy.orm import (
-    Mapped,
-    mapped_column,
-    relationship,
-)
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
+from sqlalchemy.orm import relationship
+
+from models.users import Base  # type: ignore
+from models.users import People  # type: ignore
+from models.users import year_init  # type: ignore
 
 if TYPE_CHECKING:
     from flights import FlightCrew  # type: ignore
@@ -32,7 +34,7 @@ class Crew(People, Base):
         cascade="all, delete-orphan",
         passive_deletes=True,
     )
-    flight_crew: Mapped[List[FlightCrew]] = relationship(
+    flight_crew: Mapped[list[FlightCrew]] = relationship(
         back_populates="crew",
         cascade="all, delete-orphan",
         passive_deletes=True,
@@ -71,7 +73,9 @@ class QualificationCrew(Base):
         """Return all model data in JSON format."""
         qualist: list = self.get_qualification_list()
 
-        mylist = [{"name": item, "dados": self._get_days(getattr(self, f"last_{item.lower()}_date"))} for item in qualist]
+        mylist = [
+            {"name": item, "dados": self._get_days(getattr(self, f"last_{item.lower()}_date"))} for item in qualist
+        ]
         oldest = min(mylist, key=lambda x: x["dados"][0])
         mylist.append({"name": "oldest", "dados": [oldest["name"], oldest["dados"][1]]})
         return mylist
@@ -80,7 +84,10 @@ class QualificationCrew(Base):
         """Update with Last qualification date."""
         if data.bsoc and date > self.last_bsoc_date:
             self.last_bsoc_date = date
-
+        if data.bskit and date > self.last_bskit_date:
+            self.last_bskit_date = date
+        if data.paras and date > self.last_paras_date:
+            self.last_paras_date = date
         return self
 
     def is_qualified(self) -> bool:

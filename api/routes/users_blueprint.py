@@ -1,19 +1,32 @@
 from __future__ import annotations
 
 import json
+from datetime import UTC
+from datetime import datetime
 
-from config import CREW_USER, PILOT_USER, engine  # type: ignore
-from flask import Blueprint, Response, jsonify, request
+from flask import Blueprint
+from flask import Response
+from flask import jsonify
+from flask import request
 from flask_jwt_extended import verify_jwt_in_request
-from functions.gdrive import ID_PASTA_VOO, enviar_json_para_pasta
-from functions.sendemail import hash_code  # type: ignore
-from models.crew import Crew, QualificationCrew  # type: ignore
-from models.pilots import Pilot, Qualification  # type: ignore
-from models.users import User, year_init  # type: ignore
-from sqlalchemy import delete, select
-from sqlalchemy.exc import IntegrityError, NoResultFound
+from sqlalchemy import delete
+from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import Session
-from datetime import datetime, UTC
+
+from config import CREW_USER  # type: ignore
+from config import PILOT_USER  # type: ignore
+from config import engine  # type: ignore
+from functions.gdrive import ID_PASTA_VOO
+from functions.gdrive import enviar_json_para_pasta
+from functions.sendemail import hash_code  # type: ignore
+from models.crew import Crew  # type: ignore
+from models.crew import QualificationCrew  # type: ignore
+from models.pilots import Pilot  # type: ignore
+from models.pilots import Qualification  # type: ignore
+from models.users import User  # type: ignore
+from models.users import year_init  # type: ignore
 
 users = Blueprint("users", __name__)
 
@@ -211,8 +224,8 @@ def get_qualifications(nip: int) -> tuple[Response, int]:
                 break
         match request.method:
             case "GET":
-                print(type(tripulante))
-                print(tripulante)
+                # print(type(tripulante))
+                # print(tripulante)
                 try:
                     quallist: list = tripulante.qualification.get_qualification_list()
                 except Exception as e:
@@ -220,7 +233,7 @@ def get_qualifications(nip: int) -> tuple[Response, int]:
                     return jsonify({"message": str(e)}), 400
                 # if isinstance(tripulante, Pilot):
                 #     quallist = quallist[4:]
-                print(quallist)
+                # print(quallist)
                 return jsonify(quallist), 200
 
             case "POST":
@@ -229,8 +242,8 @@ def get_qualifications(nip: int) -> tuple[Response, int]:
                 date = datetime.strptime(data["date"], "%Y-%m-%d").replace(tzinfo=UTC).date()
                 qualification = tripulante.qualification
                 attr = "last_" + nome_qualificação.lower() + "_date"
-                print(attr)
-                print(getattr(qualification, attr))
+                # print(attr)
+                # print(getattr(qualification, attr))
                 if getattr(qualification, attr).year == year_init:
                     setattr(qualification, attr, date)
                     session.commit()

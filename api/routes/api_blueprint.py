@@ -1,20 +1,30 @@
 from __future__ import annotations  # noqa: D100, INP001
 
 import json
-from datetime import datetime, timedelta, timezone
+from datetime import UTC
+from datetime import datetime
+from datetime import timedelta
+
+from flask import Blueprint
+from flask import Response
+from flask import jsonify
+from flask import request
+from flask_jwt_extended import create_access_token
+from flask_jwt_extended import unset_jwt_cookies
+from flask_jwt_extended import verify_jwt_in_request
+from sqlalchemy import select
+from sqlalchemy import union_all
+from sqlalchemy.orm import Session
 
 from config import engine  # type:ignore
-from flask import Blueprint, Response, jsonify, request
-from flask_jwt_extended import create_access_token, unset_jwt_cookies, verify_jwt_in_request
-from functions.sendemail import hash_code, main  # type:ignore
+from functions.sendemail import hash_code  # type:ignore
+from functions.sendemail import main  # type:ignore
 from models.crew import Crew  # type:ignore
 from models.pilots import Pilot  # type:ignore
 from models.users import User  # type:ignore
 from routes.dashboard_blueprint import dashboard  # type:ignore
 from routes.flight_blueprint import flights  # type:ignore
 from routes.users_blueprint import users  # type:ignore
-from sqlalchemy import select, union_all
-from sqlalchemy.orm import Session
 
 # Main Blueprint ro register with application
 api = Blueprint("api", __name__)
@@ -110,7 +120,7 @@ def recover_process() -> tuple[Response, int]:
             return jsonify({"message": "Token already was used"}), 403
 
         if token == recover_data["token"]:
-            now = datetime.now(timezone.utc)
+            now = datetime.now(UTC)
             token_timestamp = datetime.fromisoformat(recover_data["timestamp"])
             exp_timestamp = now + timedelta(hours=12)
             if exp_timestamp > token_timestamp:

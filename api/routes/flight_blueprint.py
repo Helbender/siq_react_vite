@@ -80,7 +80,7 @@ def retrieve_flights() -> tuple[Response, int]:
         f: dict = request.get_json()
 
         with Session(engine) as session:
-            flight: Flight = session.execute(
+            flight: Flight | None = session.execute(
                 select(Flight)
                 .where(Flight.airtask == f["airtask"])
                 .where(Flight.date == datetime.strptime(f["date"], "%Y-%m-%d").replace(tzinfo=UTC).date())
@@ -311,6 +311,7 @@ def update_qualifications(
         qualification_fields = [
             "bsoc",
             "bskit",
+            "paras",
         ]
 
         for field in qualification_fields:
@@ -477,17 +478,21 @@ def add_crew_and_pilots(session: Session, flight: Flight, pilot: dict, edit: boo
             if flight_crew is not None:
                 flight_crew.position = pilot["position"]
                 flight_crew.bsoc = pilot["BSOC"]
+                flight_crew.bskit = pilot["BSKIT"]
+                flight_crew.paras = pilot["PARAS"]
             else:
                 flight_crew = FlightCrew(
                     position=pilot["position"],
                     bsoc=pilot["BSOC"],
                     bskit=pilot["BSKIT"],
+                    paras=pilot["PARAS"],
                 )
         else:
             flight_crew = FlightCrew(
                 position=pilot["position"],
                 bsoc=pilot["BSOC"],
                 bskit=pilot["BSKIT"],
+                paras=pilot["PARAS"],
             )
         qual_c.update(flight_crew, flight.date)
 
