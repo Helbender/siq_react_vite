@@ -477,22 +477,22 @@ def add_crew_and_pilots(session: Session, flight: Flight, pilot: dict, edit: boo
             ).scalar_one_or_none()
             if flight_crew is not None:
                 flight_crew.position = pilot["position"]
-                flight_crew.bsoc = pilot["BSOC"]
-                flight_crew.bskit = pilot["BSKIT"]
-                flight_crew.paras = pilot["PARAS"]
+                flight_crew.bsoc = pilot.get("BSOC", False)
+                flight_crew.bskit = pilot.get("BSKIT", False)
+                flight_crew.paras = pilot.get("PARAS", False)
             else:
                 flight_crew = FlightCrew(
                     position=pilot["position"],
-                    bsoc=pilot["BSOC"],
-                    bskit=pilot["BSKIT"],
-                    paras=pilot["PARAS"],
+                    bsoc=pilot.get("BSOC", False),
+                    bskit=pilot.get("BSKIT", False),
+                    paras=pilot.get("PARAS", False),
                 )
         else:
             flight_crew = FlightCrew(
                 position=pilot["position"],
-                bsoc=pilot["BSOC"],
-                bskit=pilot["BSKIT"],
-                paras=pilot["PARAS"],
+                bsoc=pilot.get("BSOC", False),
+                bskit=pilot.get("BSKIT", False),
+                paras=pilot.get("PARAS", False),
             )
         qual_c.update(flight_crew, flight.date)
 
